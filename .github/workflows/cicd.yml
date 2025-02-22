@@ -2,7 +2,7 @@ name: Deploy to Render
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
 
 env:
   BACKEND_IMAGE: backend-image
