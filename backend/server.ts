@@ -61,39 +61,38 @@ app.use((err: any, req: any, res: any, next: any) => {
       res.status(500).json({ error: 'Internal Server Error' });
     });
 
-    
+
 async function startServer() {
   try {
     // Check db connection
     const connectionStatus = await databaseService.testConnection();
-    console.log(connectionStatus.message);
-    const stats = await databaseService.getDatabaseStats();
-    console.log('Database Stats:', stats);
+    console.log("here is the connectionstatus message",connectionStatus.message);
 
-    mongoose.connection.once('open', () => {
-      console.log(`Connected Successfully to the Database: ${mongoose.connection.name}`);
-      const PORT = process.env.PORT || 3000;
-      app.listen(PORT, () => {
-        console.log(`Server running on port ${PORT}`);
-      })
-      .on('error', (error) => {
-        console.log(`Error is : ${error}`);
-      })
-      .on('disconnected', () => {
-        console.log("Database is disconnected");
-      })
-      .on('reconnected', () => {
-        console.log("Database is reconnected");
-      })
-      .on('close', () => {
-        console.log("Database connection is closed");
-      });
+    if (!connectionStatus.success) {
+      console.log("Waiting for database connection...");
+      // Wait for a bit and try again or proceed with caution
+    } else {
+      try {
+        const stats = await databaseService.getDatabaseStats();
+        console.log('Database Stats:', stats);
+      } catch (error) {
+        console.error("Failed to get database stats:", error);
+        // Continue anyway as this isn't critical
+      }
+    }
+
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    })
+    .on('error', (error) => {
+      console.log(`Error is : ${error}`);
     });
+
   } catch (error) {
     console.error("Failed to start server:", error);
     process.exit(1);
   }
 }
-
 
 startServer();
