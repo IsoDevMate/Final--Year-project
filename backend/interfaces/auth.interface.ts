@@ -1,0 +1,35 @@
+import { UserRole } from '../models/user.model';
+
+export interface RegisterUserDto {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  role?: UserRole;
+  phoneNumber?: string;
+}
+
+export interface LoginUserDto {
+  email: string;
+  password: string;
+}
+
+export interface AuthTokens {
+  accessToken: string;
+  refreshToken: string;
+}
+
+export interface TokenPayload {
+  userId: string;
+  email: string;
+   role: string;
+}
+
+export interface ResetPasswordDto {
+  token: string;
+  newPassword: string;
+}
+
+export interface ForgotPasswordDto {
+  email: string;
+}
