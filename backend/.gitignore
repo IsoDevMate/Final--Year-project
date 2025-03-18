@@ -3,3 +3,4 @@ node_modules/
 dist/
 coverage/
 comfybase-348d1-firebase-adminsdk-fbsvc-3a35a942ec.json
+config/config.ts

@@ -9,6 +9,12 @@ dotenv.config()
 import { databaseService } from './config/db';
 import { Request, Response, NextFunction } from 'express';
 import mongoose from 'mongoose';
+import { setupPassport } from './config/passport';
+import passport from 'passport';
+import session from 'express-session';
+import config from './config/config';
+// import cookieParser from 'cookie-parser';
+
 
 const params = {
   type: serviceAccount.type,
@@ -30,13 +36,30 @@ const Admin = admin.initializeApp({
 
 const storage = Admin.storage().bucket();
 const corsOptions = {
-  origin:"*"
+  origin: "*"
+  
 }
+// app.use(cookieParser());
+
+app.use(session({
+  secret: config.sessionSecret || 'defaultSecret',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+  }
+}));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors(corsOptions))
-app.use('/api', router);
+setupPassport();
+app.use(passport.initialize());
+
+
+app.use('/', router);
 
 //middlewares
 app.use((err: any, req: any, res: any, next: any) => {

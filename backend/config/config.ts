@@ -38,6 +38,7 @@ const config = {
   env: process.env.NODE_ENV || 'development',
   port: process.env.PORT || 3000,
   mongoUri: process.env.MONGO_URI,
+  sessionSecret: process.env.SESSION_SECRET,
 
   jwt: {
     accessTokenSecret: process.env.JWT_ACCESS_TOKEN_SECRET,
@@ -70,9 +71,9 @@ frontendUrl: process.env.FRONTEND_URL || 'http://localhost:5173',
   cors: {
     origin: process.env.CORS_ORIGIN || 'http://localhost:3000'
     },
-    sendgrid: {
-    apiKey: process.env.SENDGRID_API_KEY,
-    fromEmail: process.env.SENDGRID_FROM_EMAIL,
+  sendgrid: {
+    apiKey: process.env.SENDGRID_API_KEY || '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',
+    fromEmail: process.env.SENDGRID_FROM_EMAIL || "oumabarack1047@gmail.com",
   },
 };
 

@@ -135,7 +135,7 @@ export class AuthService {
 
     if (!user) {
       // Don't reveal if user exists or not
-      return;
+      return 
     }
 
     // Generate reset token

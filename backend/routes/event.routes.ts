@@ -1,0 +1,58 @@
+import { Router } from 'express';
+import { EventController } from '../controllers/event.controller';
+import { AuthMiddleware } from '../middleware/auth.mddleware';
+import { UserRole } from '../models/user.model';
+import multer from 'multer';
+
+// Configure multer for file uploads
+const storage = multer.memoryStorage();
+const upload = multer({
+  storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit
+  }
+});
+
+const router = Router();
+const eventController = new EventController();
+
+// Public routes - anyone can view published events
+router.get('/', eventController.getEvents.bind(eventController));
+router.get('/:id', eventController.getEventById.bind(eventController));
+
+// Protected routes - only authenticated users
+router.post(
+  '/register/:id',
+  AuthMiddleware.verifyToken,
+  eventController.registerForEvent.bind(eventController)
+);
+
+// Organizer routes - only event organizers and admins
+router.post(
+  '/',
+  AuthMiddleware.verifyToken,
+  AuthMiddleware.hasRole([UserRole.ORGANIZER, UserRole.ADMIN]),
+  eventController.createEvent.bind(eventController)
+);
+
+router.put(
+  '/:id',
+  AuthMiddleware.verifyToken,
+  eventController.updateEvent.bind(eventController)
+);
+
+router.delete(
+  '/:id',
+  AuthMiddleware.verifyToken,
+  eventController.deleteEvent.bind(eventController)
+);
+
+// Cover image upload
+router.post(
+  '/:id/cover-image',
+  AuthMiddleware.verifyToken,
+  upload.single('image'),
+  eventController.uploadEventCoverImage.bind(eventController)
+);
+
+export default router;
