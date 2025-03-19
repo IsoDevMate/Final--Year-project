@@ -1,4 +1,3 @@
-// src/controllers/linkedin.controller.ts
 import { Request, Response, NextFunction } from 'express';
 import session from 'express-session';
 import {LinkedInService } from '../services/linkedin.auth.service';
@@ -31,34 +30,9 @@ export class LinkedInController {
   };
 
 
-
-// static async handleCallback(req: Request, res: Response, next: NextFunction) {
-//   const { code, state } = req.query;
-//   try {
-//     console.log('LinkedIn callback received:', req.query);
-//     console.log('LinkedIn callback code:', code);
-//     console.log('LinkedIn callback state:', state);
-
-//     if (!code) {
-//       return ResponseUtil.error(res, 400, 'Authorization code not provided');
-//     }
-
-//     const { user, tokens } = await LinkedInService.authenticate(code.toString());
-
-//     const redirectUrl = `${config.frontendUrl}/dashboard?accessToken=${tokens.accessToken}&refreshToken=${tokens.refreshToken}`;
-//     console.log('Redirect URL:', redirectUrl);
-//     res.redirect(redirectUrl.replace(/['"]+/g, ''));
-
-
-//     //  return ResponseUtil.success(res, 200, { user, tokens }, 'LinkedIn authentication successful');
-//   } catch (error) {
-//     console.error('LinkedIn callback error:', error);
-//     if (error instanceof Error) {
-//       return ResponseUtil.error(res, 500, (error as Error).message);
-//     }
-//     next(error);
-//   }
-// }
+  /**
+   * Handle LinkedIn callback
+   */
 
 static async handleCallback(req: Request, res: Response, next: NextFunction) {
   const { code, state } = req.query;
