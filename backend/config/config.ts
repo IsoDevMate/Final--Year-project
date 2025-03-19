@@ -51,8 +51,9 @@ const config = {
   linkedin: {
     clientId: process.env.LINKEDIN_CLIENT_ID,
     clientSecret: process.env.LINKEDIN_CLIENT_SECRET,
-    callbackUrl: process.env.LINKEDIN_CALLBACK_URL || 'http://localhost:3000/api/auth/linkedin/callback'
-  },
+    callbackUrl: process.env.LINKEDIN_CALLBACK_URL || 'http://localhost:3000/api/auth/linkedin/callback',
+    scope: 'openid profile email'
+},
 
   stripe: {
     secretKey: process.env.STRIPE_SECRET_KEY,
@@ -67,7 +68,7 @@ const config = {
     messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
     appId: process.env.FIREBASE_APP_ID
   },
-frontendUrl: process.env.FRONTEND_URL || 'http://localhost:5173',
+frontendUrl: process.env.FRONTEND_URL,
   cors: {
     origin: process.env.CORS_ORIGIN || 'http://localhost:3000'
     },

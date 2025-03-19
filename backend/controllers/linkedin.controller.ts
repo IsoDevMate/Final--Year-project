@@ -32,23 +32,59 @@ export class LinkedInController {
 
 
 
+// static async handleCallback(req: Request, res: Response, next: NextFunction) {
+//   const { code, state } = req.query;
+//   try {
+//     console.log('LinkedIn callback received:', req.query);
+//     console.log('LinkedIn callback code:', code);
+//     console.log('LinkedIn callback state:', state);
+
+//     if (!code) {
+//       return ResponseUtil.error(res, 400, 'Authorization code not provided');
+//     }
+
+//     const { user, tokens } = await LinkedInService.authenticate(code.toString());
+
+//     const redirectUrl = `${config.frontendUrl}/dashboard?accessToken=${tokens.accessToken}&refreshToken=${tokens.refreshToken}`;
+//     console.log('Redirect URL:', redirectUrl);
+//     res.redirect(redirectUrl.replace(/['"]+/g, ''));
+
+
+//     //  return ResponseUtil.success(res, 200, { user, tokens }, 'LinkedIn authentication successful');
+//   } catch (error) {
+//     console.error('LinkedIn callback error:', error);
+//     if (error instanceof Error) {
+//       return ResponseUtil.error(res, 500, (error as Error).message);
+//     }
+//     next(error);
+//   }
+// }
+
 static async handleCallback(req: Request, res: Response, next: NextFunction) {
   const { code, state } = req.query;
   try {
     console.log('LinkedIn callback received:', req.query);
-    console.log('LinkedIn callback code:', code);
-    console.log('LinkedIn callback state:', state);
 
     if (!code) {
-      return ResponseUtil.error(res, 400, 'Authorization code is required');
+      return ResponseUtil.error(res, 400, 'Authorization code not provided');
     }
 
-    const { user, tokens } = await LinkedInService.authenticate(code.toString());
+    const result = await LinkedInService.authenticate(code.toString());
 
-    return ResponseUtil.success(res, 200, { user, tokens }, 'LinkedIn authentication successful');
+    // Build the redirect URL with properly encoded parameters
+    const redirectUrl = new URL(`${config.frontendUrl}/auth/linkedin/callback`);
+    redirectUrl.searchParams.append('accessToken', result.tokens.accessToken);
+    redirectUrl.searchParams.append('refreshToken', result.tokens.refreshToken);
+
+    console.log('Redirect URL:', redirectUrl.toString());
+    res.redirect(redirectUrl.toString());
   } catch (error) {
     console.error('LinkedIn callback error:', error);
-    next(error);
+
+    // Redirect to login page with error message
+    const loginUrl = new URL(`${config.frontendUrl}/auth/login`);
+    loginUrl.searchParams.append('error', 'LinkedIn authentication failed');
+    res.redirect(loginUrl.toString());
   }
 }
 }

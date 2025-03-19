@@ -1,5 +1,3 @@
-
-
 import axios from 'axios';
 import { User, UserRole } from '../models/user.model';
 import { AppError } from '../utils/errors.utils';
@@ -22,7 +20,6 @@ interface LinkedInUserProfile {
 }
 
 export class LinkedInService {
-
   constructor(
     private authService: AuthService = new AuthService(),
     private userModel: typeof User = User,
