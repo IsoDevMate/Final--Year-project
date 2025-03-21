@@ -7,6 +7,10 @@ declare global {
       email: string;
       role: UserRole;
     }
+
+    interface Request {
+      user?: User;
+    }
   }
 }
 

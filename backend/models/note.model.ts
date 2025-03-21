@@ -1,10 +1,18 @@
+import { storage } from 'firebase-admin';
 import mongoose, { Document, Schema } from 'mongoose';
 
+//note type
+export type NoteType = 'image' | 'audio' | 'video' | 'document';
+
 export interface MediaAttachment {
+  _id?: mongoose.Types.ObjectId;
   type: 'image' | 'audio' | 'video' | 'document';
   url: string;
+  fileName: string;
+  fileSize: number;
   caption?: string;
   createdAt: Date;
+  storageRef?: string;
 }
 
 export interface Note extends Document {
@@ -52,6 +60,7 @@ const noteSchema = new Schema<Note>(
         enum: ['image', 'audio', 'video', 'document'],
         required: true
       },
+
       url: {
         type: String,
         required: true
@@ -72,7 +81,8 @@ const noteSchema = new Schema<Note>(
     sharedWith: [{
       type: Schema.Types.ObjectId,
       ref: 'User'
-    }]
+    }],
+
   },
   {
     timestamps: true
@@ -85,3 +95,6 @@ noteSchema.index({ session: 1 });
 noteSchema.index({ title: 'text', content: 'text', tags: 'text' });
 
 export const Note = mongoose.model<Note>('Note', noteSchema);
+
+
+

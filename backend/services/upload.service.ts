@@ -1,21 +1,42 @@
 import * as admin from 'firebase-admin';
-import { v4 as uuidv4 } from 'uuid';
+import * as dotenv from 'dotenv';
+dotenv.config();
+import * as serviceAccount from '../comfybase-348d1-firebase-adminsdk-fbsvc-3a35a942ec.json';
 import { AppError } from '../utils/errors.utils';
+import { v4 as uuidv4 } from 'uuid';
+
+const params = {
+  type: serviceAccount.type,
+  projectId: serviceAccount.project_id,
+  privateKeyId: serviceAccount.private_key_id,
+  privateKey: serviceAccount.private_key,
+  clientEmail: serviceAccount.client_email,
+  clientId: serviceAccount.client_id,
+  authUri: serviceAccount.auth_uri,
+  tokenUri: serviceAccount.token_uri,
+  authProviderX509CertUrl: serviceAccount.auth_provider_x509_cert_url,
+  clientC509CertUrl: serviceAccount.client_x509_cert_url
+};
+
+admin.initializeApp({
+  credential: admin.credential.cert(params as admin.ServiceAccount),
+  storageBucket: process.env.FIREBASE_STORAGE_BUCKET || 'gs://comfybase-348d1.appspot.com',
+});
 
 export class StorageService {
-  private bucket: admin.storage.Bucket;
+  private bucket: any;
+  private readonly bucketName: string = process.env.FIREBASE_STORAGE_BUCKET || 'gs://comfy......com';
 
   constructor() {
+    if (!admin.apps.length) {
+      admin.initializeApp({
+        credential: admin.credential.applicationDefault(),
+        storageBucket: this.bucketName
+      });
+    }
     this.bucket = admin.storage().bucket();
   }
 
-  /**
-   * Upload a file to Firebase Storage
-   * @param file - The file buffer
-   * @param fileName - Original filename
-   * @param userId - User ID for path construction
-   * @param fileType - Type of file (image, video, audio, document)
-   */
   async uploadFile(
     file: Buffer,
     fileName: string,
@@ -28,37 +49,27 @@ export class StorageService {
     fileSize: number;
   }> {
     try {
-      // Generate a unique filename
       const fileExtension = fileName.split('.').pop();
       const uniqueFileName = `${uuidv4()}.${fileExtension}`;
-
-      // Create a proper path in storage
       const filePath = `uploads/${userId}/${fileType}s/${uniqueFileName}`;
       const fileBuffer = file;
-
-      // Create a file reference
       const fileRef = this.bucket.file(filePath);
 
-      // Upload the file
       await fileRef.save(fileBuffer, {
         metadata: {
           contentType: this.getContentType(fileType, fileExtension || '')
         }
       });
 
-      // Make the file publicly accessible
       await fileRef.makePublic();
-
-      // Get the public URL
       const publicUrl = `https://storage.googleapis.com/${this.bucket.name}/${filePath}`;
-
       const [metadata] = await fileRef.getMetadata();
 
       return {
         url: publicUrl,
         storageRef: filePath,
         fileName: fileName,
-        fileSize: parseInt(metadata.size, 10)
+        fileSize: metadata.size ? parseInt(metadata.size.toString(), 10) : 0
       };
     } catch (error) {
       if (error instanceof Error) {
@@ -68,10 +79,7 @@ export class StorageService {
     }
   }
 
-  /**
-   * Delete a file from Firebase Storage
-   * @param storageRef - The storage reference path
-   */
+  // Other methods remain the same
   async deleteFile(storageRef: string): Promise<void> {
     try {
       const fileRef = this.bucket.file(storageRef);
@@ -84,11 +92,8 @@ export class StorageService {
     }
   }
 
-  /**
-   * Determine content type based on file type and extension
-   */
   private getContentType(fileType: string, extension: string): string {
-    const types = {
+    const types: Record<string, Record<string, string>> = {
       image: {
         jpg: 'image/jpeg',
         jpeg: 'image/jpeg',
@@ -118,9 +123,13 @@ export class StorageService {
     };
 
     const lowerExt = extension.toLowerCase();
-    return types[fileType as keyof typeof types]?.[lowerExt as keyof typeof types[keyof typeof types]] ||
-           types[fileType as keyof typeof types]?.default ||
-           'application/octet-stream';
+    const fileTypeTypes = types[fileType];
+
+    if (!fileTypeTypes) {
+      return 'application/octet-stream';
+    }
+
+    return fileTypeTypes[lowerExt] || fileTypeTypes.default || 'application/octet-stream';
   }
 }
 

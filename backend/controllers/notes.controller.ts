@@ -1,23 +1,19 @@
 import { Request, Response, NextFunction } from 'express';
 import { ZodError } from 'zod';
-import { NoteService } from '../services/note.service';
+import { NoteService } from '../services/notes.service';
 import {
   createNoteSchema,
   updateNoteSchema,
   noteQuerySchema,
   noteIdSchema
-} from '../utils/note.validation.utils';
+} from '../utils/notes.validation.utils';
 import { ResponseUtil } from '../utils/response.utils';
 import { AppError } from '../utils/errors.utils';
 
 export class NoteController {
-  private noteService: NoteService;
+  private static noteService: NoteService = new NoteService(); //research  moore why this works like this...
 
-  constructor() {
-    this.noteService = new NoteService();
-  }
-
-  async createNote(req: Request, res: Response, next: NextFunction) {
+   static async createNote(req: Request, res: Response, next: NextFunction) {
     try {
       const validatedData = createNoteSchema.parse(req.body);
 
@@ -29,7 +25,8 @@ export class NoteController {
       // Get user ID from request (set by auth middleware)
       const userId = (req.user as any).userId;
 
-      const note = await this.noteService.createNote(validatedData, userId);
+      const noteData = { ...validatedData, eventId: validatedData.event };
+      const note = await NoteController.noteService.createNote(noteData, userId);
 
       return ResponseUtil.success(res, 201, note, 'Note created successfully');
     } catch (error) {
@@ -40,7 +37,7 @@ export class NoteController {
     }
   }
 
-  async getNotes(req: Request, res: Response, next: NextFunction) {
+   static async getNotes(req: Request, res: Response, next: NextFunction) {
     try {
       const validatedQuery = noteQuerySchema.parse(req.query);
 
@@ -50,6 +47,7 @@ export class NoteController {
       }
 
       const userId = (req.user as any).userId;
+
 
       const notes = await this.noteService.getNotes(validatedQuery, userId);
 
@@ -62,15 +60,9 @@ export class NoteController {
     }
   }
 
-  async getNoteById(req: Request, res: Response, next: NextFunction) {
+  static async getNoteById(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = noteIdSchema.parse(req.params);
-      const note = await this.noteService.getNoteById(id);
-
-      if (!note) {
-        return ResponseUtil.error(res, 404, 'Note not found');
-      }
-
       // Check if user object exists (should be set by auth middleware)
       if (!req.user) {
         return ResponseUtil.error(res, 401, 'Not authenticated');
@@ -78,8 +70,14 @@ export class NoteController {
 
       const userId = (req.user as any).userId;
 
+      const note = await this.noteService.getNoteById(id, userId);
+
+      if (!note) {
+        return ResponseUtil.error(res, 404, 'Note not found');
+      }
+
       // Users can only view their own notes or public notes
-      if (note.userId.toString() !== userId && !note.isPublic) {
+      if (note.user.toString() !== userId) {
         return ResponseUtil.error(res, 403, 'You do not have permission to view this note');
       }
 
@@ -92,7 +90,7 @@ export class NoteController {
     }
   }
 
-  async updateNote(req: Request, res: Response, next: NextFunction) {
+  static async updateNote(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = noteIdSchema.parse(req.params);
       const validatedData = updateNoteSchema.parse(req.body);
@@ -115,7 +113,7 @@ export class NoteController {
     }
   }
 
-  async deleteNote(req: Request, res: Response, next: NextFunction) {
+  static async deleteNote(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = noteIdSchema.parse(req.params);
 
@@ -137,12 +135,145 @@ export class NoteController {
     }
   }
 
-  async uploadAttachment(req: Request, res: Response, next: NextFunction) {
+//  static  async uploadAttachment(req: Request, res: Response, next: NextFunction) {
+//     try {
+//       const { id } = noteIdSchema.parse(req.params);
+
+//       if (!req.file) {
+//         return ResponseUtil.error(res, 400, 'No file uploaded');
+//       }
+
+//       // Check if user object exists (should be set by auth middleware)
+//       if (!req.user) {
+//         return ResponseUtil.error(res, 401, 'Not authenticated');
+//       }
+
+//       const userId = (req.user as any).userId;
+
+//       // Determine file type based on MIME type
+//       const fileType = req.file.mimetype.split('/')[0];
+
+//       const attachment = {
+//         type: fileType,
+//         url: req.file.path,
+//         name: req.file.originalname,
+//         size: req.file.size
+//       };
+
+//       const updatedNote = await this.noteService.addMediaAttachment(id, attachment, userId);
+
+//       return ResponseUtil.success(res, 200, updatedNote, 'Attachment uploaded successfully');
+//     } catch (error) {
+//       if (error instanceof ZodError) {
+//         return ResponseUtil.error(res, 400, error.errors[0].message);
+//       }
+//       next(error);
+//     }
+//   }
+
+//  static  async removeAttachment(req: Request, res: Response, next: NextFunction) {
+//     try {
+//       const { id } = noteIdSchema.parse(req.params);
+//       const { url } = req.body;
+
+//       if (!url) {
+//         return ResponseUtil.error(res, 400, 'Attachment URL is required');
+//       }
+
+//       // Check if user object exists (should be set by auth middleware)
+//       if (!req.user) {
+//         return ResponseUtil.error(res, 401, 'Not authenticated');
+//       }
+
+//       const userId = (req.user as any).userId;
+
+//       const updatedNote = await this.noteService.removeAttachment(id, url, userId);
+
+//       return ResponseUtil.success(res, 200, updatedNote, 'Attachment removed successfully');
+//     } catch (error) {
+//       if (error instanceof ZodError) {
+//         return ResponseUtil.error(res, 400, error.errors[0].message);
+//       }
+//       next(error);
+//     }
+  //   }
+
+  static async uploadAttachment(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { id } = noteIdSchema.parse(req.params);
+
+    if (!req.file) {
+      return ResponseUtil.error(res, 400, 'No file uploaded');
+    }
+
+    // Check if user object exists (should be set by auth middleware)
+    if (!req.user) {
+      return ResponseUtil.error(res, 401, 'Not authenticated');
+    }
+
+    const userId = (req.user as any).userId;
+
+    // Determine file type based on MIME type
+    const fileType = req.file.mimetype.split('/')[0] as 'image' | 'audio' | 'video' | 'document';
+
+    // Create a Buffer from the file
+    const fileBuffer = req.file.buffer;
+    const fileName = req.file.originalname;
+    const caption = req.body.caption || '';
+
+    const updatedNote = await this.noteService.addMediaAttachment(
+      id,
+      userId,
+      fileBuffer,
+      fileName,
+      fileType,
+      caption
+    );
+
+    return ResponseUtil.success(res, 200, updatedNote, 'Attachment uploaded successfully');
+  } catch (error) {
+    if (error instanceof ZodError) {
+      return ResponseUtil.error(res, 400, error.errors[0].message);
+    }
+    next(error);
+  }
+}
+
+
+static async removeAttachment(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { id } = noteIdSchema.parse(req.params);
+    const { attachmentId } = req.body;
+
+    if (!attachmentId) {
+      return ResponseUtil.error(res, 400, 'Attachment ID is required');
+    }
+
+    // Check if user object exists (should be set by auth middleware)
+    if (!req.user) {
+      return ResponseUtil.error(res, 401, 'Not authenticated');
+    }
+
+    const userId = (req.user as any).userId;
+
+    const updatedNote = await this.noteService.removeMediaAttachment(id, attachmentId, userId);
+
+    return ResponseUtil.success(res, 200, updatedNote, 'Attachment removed successfully');
+  } catch (error) {
+    if (error instanceof ZodError) {
+      return ResponseUtil.error(res, 400, error.errors[0].message);
+    }
+    next(error);
+  }
+}
+
+  static async shareNote(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = noteIdSchema.parse(req.params);
+      const { userId } = req.body;
 
-      if (!req.file) {
-        return ResponseUtil.error(res, 400, 'No file uploaded');
+      if (!userId) {
+        return ResponseUtil.error(res, 400, 'User ID is required');
       }
 
       // Check if user object exists (should be set by auth middleware)
@@ -150,21 +281,11 @@ export class NoteController {
         return ResponseUtil.error(res, 401, 'Not authenticated');
       }
 
-      const userId = (req.user as any).userId;
+      const currentUserId = (req.user as any).userId;
 
-      // Determine file type based on MIME type
-      const fileType = req.file.mimetype.split('/')[0];
+      const updatedNote = await this.noteService.shareNote(id, userId, currentUserId);
 
-      const attachment = {
-        type: fileType,
-        url: req.file.path,
-        name: req.file.originalname,
-        size: req.file.size
-      };
-
-      const updatedNote = await this.noteService.addAttachment(id, attachment, userId);
-
-      return ResponseUtil.success(res, 200, updatedNote, 'Attachment uploaded successfully');
+      return ResponseUtil.success(res, 200, updatedNote, 'Note shared successfully');
     } catch (error) {
       if (error instanceof ZodError) {
         return ResponseUtil.error(res, 400, error.errors[0].message);
@@ -173,13 +294,13 @@ export class NoteController {
     }
   }
 
-  async removeAttachment(req: Request, res: Response, next: NextFunction) {
+  static async unshareNote(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = noteIdSchema.parse(req.params);
-      const { url } = req.body;
+      const { userId } = req.body;
 
-      if (!url) {
-        return ResponseUtil.error(res, 400, 'Attachment URL is required');
+      if (!userId) {
+        return ResponseUtil.error(res, 400, 'User ID is required');
       }
 
       // Check if user object exists (should be set by auth middleware)
@@ -187,11 +308,11 @@ export class NoteController {
         return ResponseUtil.error(res, 401, 'Not authenticated');
       }
 
-      const userId = (req.user as any).userId;
+      const currentUserId = (req.user as any).userId;
 
-      const updatedNote = await this.noteService.removeAttachment(id, url, userId);
+      const updatedNote = await this.noteService.unshareNote(id, userId, currentUserId);
 
-      return ResponseUtil.success(res, 200, updatedNote, 'Attachment removed successfully');
+      return ResponseUtil.success(res, 200, updatedNote, 'Note unshared successfully');
     } catch (error) {
       if (error instanceof ZodError) {
         return ResponseUtil.error(res, 400, error.errors[0].message);

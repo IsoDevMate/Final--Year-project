@@ -176,6 +176,37 @@ export class EventService {
     }
   }
 
+  async unregisterAttendee(eventId: string, userId: string): Promise<Event | null> {
+  try {
+    if (!Types.ObjectId.isValid(eventId) || !Types.ObjectId.isValid(userId)) {
+      throw new AppError('Invalid ID', 400);
+    }
+
+    // Check if event exists
+    const event = await Event.findById(eventId);
+    if (!event) {
+      throw new AppError('Event not found', 404);
+    }
+
+    // Check if user is registered
+    if (!event.attendees.some(id => id.toString() === userId)) {
+      throw new AppError('User is not registered for this event', 400);
+    }
+
+    // Remove user from attendees
+    event.attendees = event.attendees.filter(id => id.toString() !== userId);
+    await event.save();
+
+    return event;
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+    throw new AppError('Failed to unregister from event', 500);
+  }
+  }
+
+
   async uploadCoverImage(eventId: string, imageUrl: string): Promise<Event | null> {
     try {
       if (!Types.ObjectId.isValid(eventId)) {

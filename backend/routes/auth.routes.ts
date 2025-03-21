@@ -1,4 +1,3 @@
-import passport from 'passport';
 import { Router } from 'express';
 import{ AuthController } from '../controllers/auth.controller';
 import{ LinkedInController }from '../controllers/linkedin.controller';

@@ -9,7 +9,7 @@ const storage = multer.memoryStorage();
 const upload = multer({
   storage,
   limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB limit
+    fileSize: 20 * 1024 * 1024, // 20 MB limit
   }
 });
 
@@ -47,6 +47,13 @@ router.delete(
   eventController.deleteEvent.bind(eventController)
 );
 
+// Unregister from event
+router.delete(
+  '/register/:id',
+  AuthMiddleware.verifyToken,
+  eventController.unregisterFromEvent.bind(eventController)
+);
+
 // Cover image upload
 router.post(
   '/:id/cover-image',
@@ -54,5 +61,6 @@ router.post(
   upload.single('image'),
   eventController.uploadEventCoverImage.bind(eventController)
 );
+
 
 export default router;
