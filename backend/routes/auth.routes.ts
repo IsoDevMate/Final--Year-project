@@ -9,7 +9,7 @@ const router = Router();
 router.post('/register', AuthController.register);
 router.post('/login', AuthController.login);
 router.post('/refresh-token', AuthController.refreshToken);
-// router.post('/logout', AuthController.logout);
+router.post('/logout', AuthController.logout);
 router.post('/forgot-password', AuthController.requestPasswordReset);
 
 // QR Code for Event Access
@@ -46,4 +46,5 @@ router.get(
 );
 
 export default router;
+
 

@@ -4,11 +4,11 @@ import LoginPage from './pages/auth/login';
 import SignupPage from './pages/auth/signup';
 // import ProtectedRoute from './protected';
 // import { Profile } from './componnents/profile';
-import Dashboard from './components/Common/Dashboard';
 import DashboardLayout from './components/Common/Dashboardlayouts';
 import HomePage from './pages/home';
 import axios from 'axios';
 import LinkedInCallback from './pages/auth/LinkediinCallback';
+import { NotesPage } from './components/Note/notes';
 
 axios.interceptors.request.use(
   (config) => {
@@ -37,21 +37,22 @@ export const App: React.FC = () => {
           <Route path="*" element={<div>404 Not Found</div>} />
         </Route>
 
-
         <Route path="/dashboard/events/:eventId" element={<div>Event Details</div>} />
         <Route path="/dashboard/livestreams/:livestreamId" element={<div>Livestream Details</div>} />
         <Route path="/dashboard/attendees/:attendeeId" element={<div>Attendee Details</div>} />
         <Route path="/dashboard/payments/:paymentId" element={<div>Payment Details</div>} />
         <Route path="/dashboard/settings/:settingId" element={<div>Settings Details</div>} />
         <Route path="/dashboard/notifications" element={<div>Notifications</div>} />
+        <Route path="/dashboard/notes" element={<div> <NotesPage /> </div>} />
+        <Route path="/dashboard/notes/:noteId" element={<div>Note Details</div>} />
         <Route path="/dashboard/profile" element={<div>Profile</div>} />
 
-
         <Route path="/auth/login" element={<LoginPage />} />
+        <Route path="/auth/logout" element={<div>Logout</div>} />
         <Route path="/auth/signup" element={<SignupPage />} />
         <Route path="/auth/linkedin/callback" element={<LinkedInCallback />} />
 
-        
+
         {/* <Route path="/auth/linkedin/callback" element={<LinkedInCallback />} /> */}
         {/* <Route path="/auth/linkedin" element={<LinkedInLogin />} /> */}
         {/* <Route path="/auth/linkedin/callback" element={<LinkedInCallback />} /> */}

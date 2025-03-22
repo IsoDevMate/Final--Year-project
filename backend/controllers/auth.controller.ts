@@ -55,21 +55,21 @@ export class AuthController {
     }
   }
 
-  // async logout(req: Request, res: Response, next: NextFunction) {
-  //   try {
-  //     const { refreshToken } = req.body;
+  static async logout(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { refreshToken } = req.body;
 
-  //     if (!refreshToken) {
-  //       return ResponseUtil.error(res, 400, 'Refresh token is required');
-  //     }
+      if (!refreshToken) {
+        return ResponseUtil.error(res, 400, 'Refresh token is required');
+      }
 
-  //     await authService.logout(refreshToken);
+      await authService.logout(refreshToken);
 
-  //     return ResponseUtil.success(res, 200, null, 'Logout successful');
-  //   } catch (error) {
-  //     next(error);
-  //   }
-  // }
+      return ResponseUtil.success(res, 200, null, 'Logout successful');
+    } catch (error) {
+      next(error);
+    }
+  }
 
  static async generateQRCode(req: Request, res: Response, next: NextFunction) {
     try {
@@ -121,4 +121,5 @@ static  async requestPasswordReset(req: Request, res: Response, next: NextFuncti
 }
 
 export default new AuthController();
+
 

@@ -135,68 +135,7 @@ export class NoteController {
     }
   }
 
-//  static  async uploadAttachment(req: Request, res: Response, next: NextFunction) {
-//     try {
-//       const { id } = noteIdSchema.parse(req.params);
 
-//       if (!req.file) {
-//         return ResponseUtil.error(res, 400, 'No file uploaded');
-//       }
-
-//       // Check if user object exists (should be set by auth middleware)
-//       if (!req.user) {
-//         return ResponseUtil.error(res, 401, 'Not authenticated');
-//       }
-
-//       const userId = (req.user as any).userId;
-
-//       // Determine file type based on MIME type
-//       const fileType = req.file.mimetype.split('/')[0];
-
-//       const attachment = {
-//         type: fileType,
-//         url: req.file.path,
-//         name: req.file.originalname,
-//         size: req.file.size
-//       };
-
-//       const updatedNote = await this.noteService.addMediaAttachment(id, attachment, userId);
-
-//       return ResponseUtil.success(res, 200, updatedNote, 'Attachment uploaded successfully');
-//     } catch (error) {
-//       if (error instanceof ZodError) {
-//         return ResponseUtil.error(res, 400, error.errors[0].message);
-//       }
-//       next(error);
-//     }
-//   }
-
-//  static  async removeAttachment(req: Request, res: Response, next: NextFunction) {
-//     try {
-//       const { id } = noteIdSchema.parse(req.params);
-//       const { url } = req.body;
-
-//       if (!url) {
-//         return ResponseUtil.error(res, 400, 'Attachment URL is required');
-//       }
-
-//       // Check if user object exists (should be set by auth middleware)
-//       if (!req.user) {
-//         return ResponseUtil.error(res, 401, 'Not authenticated');
-//       }
-
-//       const userId = (req.user as any).userId;
-
-//       const updatedNote = await this.noteService.removeAttachment(id, url, userId);
-
-//       return ResponseUtil.success(res, 200, updatedNote, 'Attachment removed successfully');
-//     } catch (error) {
-//       if (error instanceof ZodError) {
-//         return ResponseUtil.error(res, 400, error.errors[0].message);
-//       }
-//       next(error);
-//     }
-  //   }
 
   static async uploadAttachment(req: Request, res: Response, next: NextFunction) {
   try {

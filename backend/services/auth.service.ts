@@ -15,6 +15,7 @@ import {
 import { AppError } from '../utils/errors.utils';
 import config from '../config/config';
 import QRCode from 'qrcode';
+import { ResponseUtil } from '../utils/response.utils';
 const sgMail = require('@sendgrid/mail');
 
 export class AuthService {
@@ -135,7 +136,7 @@ export class AuthService {
 
     if (!user) {
       // Don't reveal if user exists or not
-      return 
+      return
     }
 
     // Generate reset token
@@ -228,20 +229,17 @@ export class AuthService {
     return qrCodeDataUrl;
   }
 
-  //   async logout(refreshToken: string): Promise<void> {
-  //     // Delete refresh token from database
-  //     const tokenDoc = await Token.findOne({ token: refreshToken });
+  async logout(refreshToken: string): Promise<void> {
+    // Delete refresh token from database
+    const tokenDoc = await Token.findOne({ token: refreshToken });
 
-  //     if (tokenDoc) {
-  //       await Token.deleteOne({
-  //         _id: token
-  //       });
-
-  //       // Optionally, you can also delete the token from the database
-  //       // await Token.deleteOne({ _id
-  //       //   tokenDoc._id
-  //       // });
-  //   }
+    if (tokenDoc) {
+      await Token.deleteOne({
+        _id: tokenDoc._id
+      });
+      return;
+    }
+  }
 
   //   async verifyQRCode(qrToken: string): Promise<User> {
   //     try {

@@ -10,7 +10,8 @@ import {
   LogOut,
   Menu,
   X,
-  Bell
+  Bell,
+  FileText as Notes
 } from 'lucide-react';
 import Dashboard from './Dashboard';
 
@@ -29,6 +30,9 @@ const DashboardLayout = () => {
     { title: 'Attendees', path: '/dashboard/attendees', icon: <Users className="w-5 h-5" /> },
     { title: 'Payments', path: '/dashboard/payments', icon: <CreditCard className="w-5 h-5" /> },
     { title: 'Settings', path: '/dashboard/settings', icon: <Settings className="w-5 h-5" /> },
+    { title: 'Notifications', path: '/dashboard/notifications', icon: <Bell className="w-5 h-5" /> },
+    { title: 'Notes', path: '/dashboard/notes', icon: <Notes className="w-5 h-5" /> },
+    { title: 'Profile', path: '/dashboard/profile', icon: <Users className="w-5 h-5" /> },
   ];
 
   const isActive = (path: string) => {
@@ -89,7 +93,7 @@ const DashboardLayout = () => {
 
         <div className="absolute bottom-0 w-full p-4">
           <Link
-            to="/logout"
+            to="auth/logout"
             className="flex items-center px-4 py-3 text-sm rounded-lg text-indigo-100 hover:bg-indigo-800"
           >
             <LogOut className="w-5 h-5" />
@@ -134,6 +138,7 @@ const DashboardLayout = () => {
         <main className="flex-1 overflow-y-auto p-4">
                   <Outlet />
                   <Dashboard />
+
         </main>
       </div>
     </div>
