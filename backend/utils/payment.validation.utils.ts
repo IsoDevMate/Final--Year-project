@@ -1,38 +1,3 @@
-// import { z } from 'zod';
-
-// export const createPaymentIntentSchema = z.object({
-//   eventId: z.string().nonempty('Event ID is required'),
-//   amount: z.number().positive('Amount must be positive'),
-//   currency: z.string().default('usd'),
-//   paymentMethod: z.string().optional(),
-//   description: z.string().optional(),
-//   metadata: z.record(z.any()).optional()
-// });
-
-// export const confirmPaymentSchema = z.object({
-//   paymentId: z.string().nonempty('Payment ID is required'),
-//   paymentIntentId: z.string().nonempty('Payment Intent ID is required')
-// });
-
-// export const paymentQuerySchema = z.object({
-//   page: z.string().optional().transform(val => (val ? parseInt(val) : 1)),
-//   limit: z.string().optional().transform(val => (val ? parseInt(val) : 10)),
-//   userId: z.string().optional(),
-//   eventId: z.string().optional(),
-//   status: z.string().optional(),
-//   startDate: z.string().optional(),
-//   endDate: z.string().optional()
-// });
-
-// export const paymentIdSchema = z.object({
-//   id: z.string().nonempty('Payment ID is required')
-// });
-
-// export type CreatePaymentIntentDto = z.infer<typeof createPaymentIntentSchema>;
-// export type ConfirmPaymentDto = z.infer<typeof confirmPaymentSchema>;
-// export type PaymentQueryDto = z.infer<typeof paymentQuerySchema>;
-
-
 import { z } from 'zod';
 import { PaymentStatus } from '../models/payment.model';
 import { SubscriptionPlan } from '../models/subscription.model';
@@ -96,7 +61,35 @@ export const subscriptionQuerySchema = z.object({
   planType: z.string().optional()
 });
 
-// Types based on Zod schemas
+// In payment.validation.utils.ts
+export const createCheckoutSessionSchema = z.object({
+  mode: z.enum(['payment', 'subscription']),
+  amount: z.number().positive().optional(),
+  currency: z.string().default('usd'),
+  productName: z.string().optional(),
+  description: z.string().optional(),
+  metadata: z.record(z.any()).optional(),
+  eventId: z.string().optional(),
+  subscriptionPlan: z.enum([
+    SubscriptionPlan.BASIC,
+    SubscriptionPlan.PREMIUM,
+    SubscriptionPlan.ENTERPRISE
+  ]).optional()
+}).refine(data => {
+  // Ensure amount is provided for one-time payments
+  if (data.mode === 'payment' && !data.amount) {
+    return false;
+  }
+  // Ensure subscription plan is provided for subscription mode
+  if (data.mode === 'subscription' && !data.subscriptionPlan) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Amount required for one-time payments; subscription plan required for subscriptions"
+});
+
+export type CreateCheckoutDto = z.infer<typeof createCheckoutSessionSchema>;
 export type CreatePaymentIntentDto = z.infer<typeof createPaymentIntentSchema>;
 export type ConfirmPaymentDto = z.infer<typeof confirmPaymentSchema>;
 export type PaymentQueryDto = z.infer<typeof paymentQuerySchema>;

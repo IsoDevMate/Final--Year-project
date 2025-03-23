@@ -38,12 +38,14 @@ router.post(
 router.put(
   '/:id',
   AuthMiddleware.verifyToken,
+  AuthMiddleware.hasRole([UserRole.ORGANIZER, UserRole.ADMIN]),
   eventController.updateEvent.bind(eventController)
 );
 
 router.delete(
   '/:id',
   AuthMiddleware.verifyToken,
+  AuthMiddleware.hasRole([UserRole.ORGANIZER, UserRole.ADMIN]),
   eventController.deleteEvent.bind(eventController)
 );
 
@@ -58,9 +60,9 @@ router.delete(
 router.post(
   '/:id/cover-image',
   AuthMiddleware.verifyToken,
+  AuthMiddleware.hasRole([UserRole.ORGANIZER, UserRole.ADMIN]),
   upload.single('image'),
   eventController.uploadEventCoverImage.bind(eventController)
 );
-
 
 export default router;

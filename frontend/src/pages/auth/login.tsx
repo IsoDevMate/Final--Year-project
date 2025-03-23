@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -6,7 +6,7 @@ import { z } from 'zod';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { Eye, EyeOff, Mail, LogIn } from 'lucide-react';
-
+import { useAuth } from '../../contexts/AuthContext';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -19,39 +19,39 @@ const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+   const { login,isAuthenticated,checkAuthStatus } = useAuth();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard');
+    }
+  }, [isAuthenticated, navigate]);
 
   const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema)
   });
 
-  const onSubmit = async (data: LoginFormData) => {
-    setIsLoading(true);
-    try {
-    //   const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/auth/login`, data);
-        const response = await axios.post(`http://localhost:3000/api/v1/auth//login`,
-            data,
-            {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            }
-        );
-      // Store tokens in localStorage
-      localStorage.setItem('accessToken', response.data.data.tokens.accessToken);
-      localStorage.setItem('refreshToken', response.data.data.tokens.refreshToken);
+const onSubmit = async (data: LoginFormData) => {
+  setIsLoading(true);
+  try {
+    console.log('Attempting login with:', data.email);
+    await login(data.email, data.password);
 
-      // Store user info
-      localStorage.setItem('user', JSON.stringify(response.data.data.user));
-
-      toast.success('Login successful!');
-      navigate('/dashboard');
-    } catch (error: any) {
-      console.error('Login error:', error);
-      toast.error(error.response?.data?.error || 'Login failed. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    // Debug after login
+    console.log('Login completed, checking storage:');
+    console.log('User:', localStorage.getItem('user'));
+    console.log('Access Token:', localStorage.getItem('accessToken'));
+    console.log('isAuthenticated state:', isAuthenticated);
+   await checkAuthStatus();
+    toast.success('Login successful!');
+    navigate('/dashboard');
+  } catch (error: any) {
+    console.error('Login error:', error);
+    toast.error(error.response?.data?.error || 'Login failed. Please try again.');
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const handleLinkedInLogin = () => {
     // Make a request to get LinkedIn authorization URL
@@ -65,6 +65,8 @@ const LoginPage: React.FC = () => {
         toast.error('Failed to initiate LinkedIn login');
       });
   };
+
+
 
   return (
     <div className="flex min-h-screen bg-gradient-to-b from-indigo-700 to-indigo-400">

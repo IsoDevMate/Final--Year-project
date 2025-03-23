@@ -34,6 +34,7 @@ export class LinkedInController {
    * Handle LinkedIn callback
    */
 
+// In linkedin.controller.ts
 static async handleCallback(req: Request, res: Response, next: NextFunction) {
   const { code, state } = req.query;
   try {
@@ -49,6 +50,9 @@ static async handleCallback(req: Request, res: Response, next: NextFunction) {
     const redirectUrl = new URL(`${config.frontendUrl}/auth/linkedin/callback`);
     redirectUrl.searchParams.append('accessToken', result.tokens.accessToken);
     redirectUrl.searchParams.append('refreshToken', result.tokens.refreshToken);
+
+    // Add user data to the redirect URL
+    redirectUrl.searchParams.append('user', JSON.stringify(result.user));
 
     console.log('Redirect URL:', redirectUrl.toString());
     res.redirect(redirectUrl.toString());

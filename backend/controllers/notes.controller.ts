@@ -60,35 +60,56 @@ export class NoteController {
     }
   }
 
+  // static async getNoteById(req: Request, res: Response, next: NextFunction) {
+  //   try {
+  //     const { id } = noteIdSchema.parse(req.params);
+  //     // Check if user object exists (should be set by auth middleware)
+  //     if (!req.user) {
+  //       return ResponseUtil.error(res, 401, 'Not authenticated');
+  //     }
+
+  //     const userId = (req.user as any).userId;
+
+  //     const note = await this.noteService.getNoteById(id, userId);
+
+  //     if (!note) {
+  //       return ResponseUtil.error(res, 404, 'Note not found');
+  //     }
+
+  //     return ResponseUtil.success(res, 200, note, 'Note retrieved successfully');
+  //   } catch (error) {
+  //     if (error instanceof ZodError) {
+  //       return ResponseUtil.error(res, 400, error.errors[0].message);
+  //     }
+  //     next(error);
+  //   }
+  // }
+
   static async getNoteById(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { id } = noteIdSchema.parse(req.params);
+    if (!req.user) {
+      return ResponseUtil.error(res, 401, 'Not authenticated');
+    }
+
+    const userId = (req.user as any).userId;
+
     try {
-      const { id } = noteIdSchema.parse(req.params);
-      // Check if user object exists (should be set by auth middleware)
-      if (!req.user) {
-        return ResponseUtil.error(res, 401, 'Not authenticated');
-      }
-
-      const userId = (req.user as any).userId;
-
       const note = await this.noteService.getNoteById(id, userId);
-
-      if (!note) {
-        return ResponseUtil.error(res, 404, 'Note not found');
-      }
-
-      // Users can only view their own notes or public notes
-      if (note.user.toString() !== userId) {
-        return ResponseUtil.error(res, 403, 'You do not have permission to view this note');
-      }
-
       return ResponseUtil.success(res, 200, note, 'Note retrieved successfully');
     } catch (error) {
-      if (error instanceof ZodError) {
-        return ResponseUtil.error(res, 400, error.errors[0].message);
+      if (error instanceof AppError) {
+        return ResponseUtil.error(res, error.statusCode || 500, error.message);
       }
-      next(error);
+      throw error;
     }
+  } catch (error) {
+    if (error instanceof ZodError) {
+      return ResponseUtil.error(res, 400, error.errors[0].message);
+    }
+    next(error);
   }
+}
 
   static async updateNote(req: Request, res: Response, next: NextFunction) {
     try {

@@ -1,10 +1,8 @@
 import * as admin from 'firebase-admin';
-import * as dotenv from 'dotenv';
-dotenv.config();
-import * as serviceAccount from '../comfybase-348d1-firebase-adminsdk-fbsvc-3a35a942ec.json';
+import * as serviceAccount from '../uploadtimes-2d6d3-firebase-adminsdk-8reyp-86b4c10c24.json';
 import { AppError } from '../utils/errors.utils';
 import { v4 as uuidv4 } from 'uuid';
-
+import  config  from '../config/config';
 const params = {
   type: serviceAccount.type,
   projectId: serviceAccount.project_id,
@@ -15,26 +13,21 @@ const params = {
   authUri: serviceAccount.auth_uri,
   tokenUri: serviceAccount.token_uri,
   authProviderX509CertUrl: serviceAccount.auth_provider_x509_cert_url,
-  clientC509CertUrl: serviceAccount.client_x509_cert_url
+  clientC509CertUrl: serviceAccount.client_x509_cert_url,
+  universeDomain: serviceAccount.universe_domain,
 };
 
 admin.initializeApp({
   credential: admin.credential.cert(params as admin.ServiceAccount),
-  storageBucket: process.env.FIREBASE_STORAGE_BUCKET || 'gs://comfybase-348d1.appspot.com',
+  storageBucket: config.storagebucketnameis,
 });
 
 export class StorageService {
   private bucket: any;
-  private readonly bucketName: string = process.env.FIREBASE_STORAGE_BUCKET || 'gs://comfy......com';
+  private readonly bucketName: string = config.storagebucketnameis;
 
   constructor() {
-    if (!admin.apps.length) {
-      admin.initializeApp({
-        credential: admin.credential.applicationDefault(),
-        storageBucket: this.bucketName
-      });
-    }
-    this.bucket = admin.storage().bucket();
+    this.bucket = admin.storage().bucket(this.bucketName);
   }
 
   async uploadFile(

@@ -1,5 +1,3 @@
-import * as admin from 'firebase-admin';
-import * as serviceAccount from './comfybase-348d1-firebase-adminsdk-fbsvc-3a35a942ec.json';
 import router from "./routes/routes"
 import express from "express"
 const app = express();
@@ -13,13 +11,12 @@ import { setupPassport } from './config/passport';
 import passport from 'passport';
 import session from 'express-session';
 import config from './config/config';
-// import cookieParser from 'cookie-parser';
 
 const corsOptions = {
   origin: "*"
 
 }
-// app.use(cookieParser());
+
 
 app.use(session({
   secret: config.sessionSecret || 'defaultSecret',

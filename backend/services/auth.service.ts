@@ -128,7 +128,7 @@ export class AuthService {
       expiresAt: refreshExpiry
     });
 
-    return { accessToken, refreshToken };
+    return { accessToken, refreshToken, expiresIn: config.jwt.accessTokenExpiration };
   }
 
   async forgotPassword(data: ForgotPasswordDto): Promise<void> {
@@ -241,25 +241,7 @@ export class AuthService {
     }
   }
 
-  //   async verifyQRCode(qrToken: string): Promise<User> {
-  //     try {
-  //       const decoded = jwt.verify(qrToken, config.jwt.accessTokenSecret as string) as { userId: string };
 
-  //       const user = await User.findById(decoded.userId);
-
-  //       if (!user) {
-  //         throw new AppError('User not found', 404);
-  //       }
-
-  //       // Remove password from response
-  //       const userObject = user.toObject();
-
-  //       return userObject as User;
-  //     } catch (error) {
-  //       throw new AppError('Invalid QR code', 401);
-  //     }
-  //   }
-  // }
 
   async verifyQRCode(qrToken: string): Promise<{ userId: string, eventId: string }> {
     try {

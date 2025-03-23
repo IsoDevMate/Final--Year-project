@@ -29,10 +29,7 @@ router.post(
 router.get('/linkedin', LinkedInController.getAuthUrl);
 router.get('/linkedin/callback', LinkedInController.handleCallback);
 
-// // Social auth routes (protected - user must be authenticated first)
-// router.post('/social/link', AuthGuard.verifyToken, authController.socialLogin);
 
-// Test protected route
 router.get(
   '/me',
   AuthMiddleware.verifyToken,

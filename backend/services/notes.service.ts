@@ -121,14 +121,17 @@ export class NoteService {
         throw new AppError('Note not found', 404);
       }
 
-      // Check if user has access to this note
-      const isOwner = note.user.toString() === userId;
-      const isSharedWithUser = note.sharedWith?.some(id => id.toString() === userId);
-      const isPublic = !note.isPrivate;
 
-      if (!isOwner && !isSharedWithUser && !isPublic) {
-        throw new AppError('You do not have permission to view this note', 403);
-      }
+       const isOwner = note.user.toString() === userId;
+       const isSharedWithUser = note.sharedWith?.some(id => id.toString() === userId);
+       const isPublic = !note.isPrivate;
+
+       console.log({ isOwner, isSharedWithUser, isPublic });
+
+       // User can view if ANY of these conditions are true
+       if (!(isOwner || isSharedWithUser || isPublic)) {
+         throw new AppError('You do not have permission to view this note', 403);
+       }
 
       return note;
     } catch (error) {

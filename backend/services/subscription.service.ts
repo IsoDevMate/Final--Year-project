@@ -198,34 +198,141 @@ export class SubscriptionService {
     }
   }
 
-  async cancelSubscription(subscriptionId: string, userId: string): Promise<Subscription> {
-    try {
-      if (!Types.ObjectId.isValid(subscriptionId)) {
-        throw new AppError('Invalid subscription ID', 400);
-      }
+  // async cancelSubscription(subscriptionId: string, userId: string): Promise<Subscription> {
+  //   try {
+  //     if (!Types.ObjectId.isValid(subscriptionId)) {
+  //       throw new AppError('Invalid subscription ID', 400);
+  //     }
 
-      const subscription = await Subscription.findById(subscriptionId);
-      if (!subscription) {
-        throw new AppError('Subscription not found', 404);
-      }
+  //     const subscription = await Subscription.findById(subscriptionId);
+  //     if (!subscription) {
+  //       throw new AppError('Subscription not found', 404);
+  //     }
 
-      // Verify the user owns the subscription
-      if (subscription.userId.toString() !== userId) {
-        throw new AppError('You do not have permission to cancel this subscription', 403);
-      }
+  //     // Verify the user owns the subscription
+  //     if (subscription.userId.toString() !== userId) {
+  //       throw new AppError('You do not have permission to cancel this subscription', 403);
+  //     }
 
-      // Update subscription status
+  //     // Update subscription status
+  //     subscription.status = SubscriptionStatus.CANCELED;
+  //     await subscription.save();
+
+  //     return subscription;
+  //   } catch (error) {
+  //     if (error instanceof Error) {
+  //       throw new AppError(error.message, 400);
+  //     }
+  //     throw new AppError('Failed to cancel subscription', 500);
+  //   }
+  // }
+
+
+
+async createSubscriptionFromStripe(
+  userId: string,
+  stripeSubscription: Stripe.Subscription,
+  paymentId: Types.ObjectId
+): Promise<Subscription> {
+  try {
+    // Extract metadata
+    const metadata = stripeSubscription.metadata || {};
+    const planType = metadata.subscriptionPlan as SubscriptionPlan;
+
+    if (!planType) {
+      throw new AppError('Subscription plan type not found in metadata', 400);
+    }
+
+    // Get plan config
+    const planConfig = SUBSCRIPTION_CONFIGS[planType];
+
+    // Calculate subscription dates based on Stripe data
+    const startDate = new Date(stripeSubscription.current_period_start * 1000);
+    const endDate = new Date(stripeSubscription.current_period_end * 1000);
+
+    // Get price info from Stripe
+    const priceItem = stripeSubscription.items.data[0];
+    const price = priceItem.price;
+
+    // Create subscription record
+    const subscription = new Subscription({
+      userId,
+      planType,
+      status: this.mapStripeStatusToLocal(stripeSubscription.status),
+      startDate,
+      endDate,
+      stripeSubscriptionId: stripeSubscription.id,
+      price: price.unit_amount ? price.unit_amount / 100 : planConfig.price,
+      currency: price.currency,
+      paymentId,
+      features: planConfig.features
+    });
+
+    await subscription.save();
+    return subscription;
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+    throw new AppError('Failed to create subscription from Stripe data', 500);
+  }
+}
+
+// Map Stripe subscription status to your local status
+private mapStripeStatusToLocal(stripeStatus: string): SubscriptionStatus {
+  switch (stripeStatus) {
+    case 'active':
+    case 'trialing':
+      return SubscriptionStatus.ACTIVE;
+    case 'canceled':
+      return SubscriptionStatus.CANCELED;
+    case 'incomplete':
+    case 'incomplete_expired':
+    case 'past_due':
+    case 'unpaid':
+      return SubscriptionStatus.INACTIVE;
+    default:
+      return SubscriptionStatus.INACTIVE;
+  }
+}
+
+// Cancel subscription through Stripe
+async cancelSubscription(subscriptionId: string, userId: string): Promise<Subscription> {
+  try {
+    if (!Types.ObjectId.isValid(subscriptionId)) {
+      throw new AppError('Invalid subscription ID', 400);
+    }
+
+    const subscription = await Subscription.findById(subscriptionId);
+    if (!subscription) {
+      throw new AppError('Subscription not found', 404);
+    }
+
+    // Verify the user owns the subscription
+    if (subscription.userId.toString() !== userId) {
+      throw new AppError('You do not have permission to cancel this subscription', 403);
+    }
+
+    // Only cancel in Stripe if there's a Stripe subscription ID
+    if (subscription.stripeSubscriptionId) {
+      // Cancel the subscription in Stripe
+      await this.stripe.subscriptions.cancel(subscription.stripeSubscriptionId);
+      // Webhook will update our database
+    } else {
+      // If no Stripe ID (rare case), update locally
       subscription.status = SubscriptionStatus.CANCELED;
       await subscription.save();
-
-      return subscription;
-    } catch (error) {
-      if (error instanceof Error) {
-        throw new AppError(error.message, 400);
-      }
-      throw new AppError('Failed to cancel subscription', 500);
     }
+
+    return subscription;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new AppError(error.message, 400);
+    }
+    throw new AppError('Failed to cancel subscription', 500);
   }
+  }
+
 }
 
 export const subscriptionService = new SubscriptionService();

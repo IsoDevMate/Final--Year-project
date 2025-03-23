@@ -93,7 +93,7 @@ const DashboardLayout = () => {
 
         <div className="absolute bottom-0 w-full p-4">
           <Link
-            to="auth/logout"
+            to="/auth/logout"
             className="flex items-center px-4 py-3 text-sm rounded-lg text-indigo-100 hover:bg-indigo-800"
           >
             <LogOut className="w-5 h-5" />

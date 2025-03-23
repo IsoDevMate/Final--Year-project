@@ -41,6 +41,30 @@ export class PaymentController {
     }
   }
 
+  // In payment.controller.ts
+async createCheckoutSession(req: Request, res: Response, next: NextFunction) {
+  try {
+    const validatedData = createCheckoutSessionSchema.parse(req.body);
+
+    // Check if user object exists (should be set by auth middleware)
+    if (!req.user) {
+      return ResponseUtil.error(res, 401, 'Not authenticated');
+    }
+
+    // Get user ID from request (set by auth middleware)
+    const userId = (req.user as any).userId;
+
+    const checkoutUrl = await this.paymentService.createCheckoutSession(userId, validatedData);
+
+    return ResponseUtil.success(res, 201, { url: checkoutUrl }, 'Checkout session created successfully');
+  } catch (error) {
+    if (error instanceof ZodError) {
+      return ResponseUtil.error(res, 400, error.errors[0].message);
+    }
+    next(error);
+  }
+}
+
   async confirmPayment(req: Request, res: Response, next: NextFunction) {
     try {
       const validatedData = confirmPaymentSchema.parse(req.body);

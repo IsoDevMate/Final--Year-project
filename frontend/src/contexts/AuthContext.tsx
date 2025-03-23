@@ -1,6 +1,6 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
-
 
 interface User {
   id: string;
@@ -18,77 +18,150 @@ interface AuthContextType {
   loginWithLinkedIn: () => Promise<void>;
   logout: () => Promise<void>;
   register: (email: string, password: string, name: string) => Promise<void>;
+  checkAuthStatus: () => Promise<void>; // Added this function
 }
 
-
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Check if user is logged in on mount
-  useEffect(() => {
-    checkAuthStatus();
-  }, []);
+  const isTokenValid = () => {
+    const token = localStorage.getItem('accessToken');
 
-const isTokenValid = () => {
-  const token = localStorage.getItem('accessToken');
+    if (!token) {
+      return false;
+    }
 
-  if (!token) {
-    return false;
-  }
+    // Optional: Add JWT expiration check if your tokens include expiry
+    try {
+      // Simple check - in production you might want to decode and check exp claim
+      return !!token && token.length > 20; // Basic validation
+    } catch (error) {
+      console.error('Token validation error:', error);
+      return false;
+    }
+  };
 
-  // Optional: Add JWT expiration check if your tokens include expiry
-  try {
-    // Simple check - in production you might want to decode and check exp claim
-    return !!token && token.length > 20; // Basic validation
-  } catch (error) {
-    console.error('Token validation error:', error);
-    return false;
-  }
-};
 
-// Then update your checkAuthStatus function
+  // const checkAuthStatus = async () => {
+  //   setIsLoading(true);
+  //   try {
+  //     if (isTokenValid()) {
+  //       const token = localStorage.getItem('accessToken');
+  //       // First check if we already have user data in localStorage
+  //       const user = localStorage.getItem('user');
+  //       if (user) {
+  //         setUser(JSON.parse(user));
+  //         setIsLoading(false);
+  //         return;
+  //       }
+
+  //       // If no stored user but valid token, fetch from API
+  //       const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/v1/auth/me`, {
+  //         headers: { Authorization: `Bearer ${token}` }
+  //       });
+
+  //       setUser(response.data.user);
+  //       // Store user in localStorage for future use
+  //       localStorage.setItem('user', JSON.stringify(response.data.user));
+  //     } else {
+  //       setUser(null);
+  //       localStorage.removeItem('user');
+  //     }
+  //   } catch (error) {
+  //     console.error('Auth status check failed:', error);
+  //     // Clear invalid tokens
+  //     localStorage.removeItem('accessToken');
+  //     localStorage.removeItem('refreshToken');
+  //     localStorage.removeItem('user');
+  //     setUser(null);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
+  // In AuthContext.tsx, modify the checkAuthStatus function:
+
 const checkAuthStatus = async () => {
+  setIsLoading(true);
   try {
     if (isTokenValid()) {
       const token = localStorage.getItem('accessToken');
+      // First check if we already have user data in localStorage
+      const userString = localStorage.getItem('user');
+
+      if (userString) {
+        try {
+          const userData = JSON.parse(userString);
+          setUser(userData);
+          setIsLoading(false);
+          return;
+        } catch (parseError) {
+          console.error('Failed to parse user data:', parseError);
+          // Invalid user JSON, continue to fetch from API
+        }
+      }
+
+      // If no stored user but valid token, fetch from API
       const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/v1/auth/me`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setUser(response.data.user);
+
+      // Handle different response formats
+      const userData = response.data.data || response.data.user || response.data;
+
+      if (userData) {
+        setUser(userData);
+        // Store user in localStorage for future use
+        localStorage.setItem('user', JSON.stringify(userData));
+      } else {
+        throw new Error('Invalid user data format');
+      }
     } else {
       setUser(null);
+      localStorage.removeItem('user');
     }
   } catch (error) {
     console.error('Auth status check failed:', error);
     // Clear invalid tokens
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
+    localStorage.removeItem('user');
     setUser(null);
   } finally {
     setIsLoading(false);
   }
 };
 
-  const login = async (email: string, password: string) => {
-    try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/auth/login`, {
-        email,
-        password
-      });
+  // Check if user is logged in on mount
+  useEffect(() => {
+    checkAuthStatus();
+  }, []);
 
-      const { accessToken, refreshToken, user } = response.data;
-      localStorage.setItem('accessToken', accessToken);
-      localStorage.setItem('refreshToken', refreshToken);
-      setUser(user);
-    } catch (error) {
-      console.error('Login failed:', error);
-      throw error;
-    }
-  };
+ const login = async (email: string, password: string) => {
+  try {
+    const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/auth/login`, {
+      email,
+      password
+    });
+
+    // Extract data based on the actual response structure
+    const { tokens, user } = response.data.data;
+
+    // Store tokens and user
+    localStorage.setItem('accessToken', tokens.accessToken);
+    localStorage.setItem('refreshToken', tokens.refreshToken);
+    localStorage.setItem('user', JSON.stringify(user));
+
+    // Update state
+    setUser(user);
+  } catch (error) {
+    console.error('Login failed:', error);
+    throw error;
+  }
+};
 
   const loginWithLinkedIn = async () => {
     try {
@@ -105,9 +178,15 @@ const checkAuthStatus = async () => {
       await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/auth/logout`);
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
+      localStorage.removeItem('user');
       setUser(null);
     } catch (error) {
       console.error('Logout failed:', error);
+      // Even if the API call fails, clear local storage
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('user');
+      setUser(null);
       throw error;
     }
   };
@@ -123,6 +202,7 @@ const checkAuthStatus = async () => {
       const { accessToken, refreshToken, user } = response.data;
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
+      localStorage.setItem('user', JSON.stringify(user));
       setUser(user);
     } catch (error) {
       console.error('Registration failed:', error);
@@ -138,6 +218,7 @@ const checkAuthStatus = async () => {
     loginWithLinkedIn,
     logout,
     register,
+    checkAuthStatus, // Expose the function
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

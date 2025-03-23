@@ -1,9 +1,21 @@
+
+
 import { Types } from 'mongoose';
 import { Event } from '../models/event.model';
 import { AppError } from '../utils/errors.utils';
 import { CreateEventDto, UpdateEventDto, EventQueryDto } from '../interfaces/event.interface';
+import { QRCodeService } from './qrcode.service';
+import { EmailService } from './email.service';
 
 export class EventService {
+  private qrCodeService: QRCodeService;
+  private emailService: EmailService;
+
+  constructor() {
+    this.qrCodeService = new QRCodeService();
+    this.emailService = new EmailService();
+  }
+
   async createEvent(eventData: CreateEventDto): Promise<Event> {
     try {
       const event = new Event(eventData);
@@ -141,7 +153,7 @@ export class EventService {
     }
   }
 
-  async registerAttendee(eventId: string, userId: string): Promise<Event | null> {
+  async registerAttendee(eventId: string, userId: string): Promise<{ event: Event | null, qrCodeUrl: string }> {
     try {
       if (!Types.ObjectId.isValid(eventId) || !Types.ObjectId.isValid(userId)) {
         throw new AppError('Invalid ID', 400);
@@ -149,6 +161,7 @@ export class EventService {
 
       // Check if event exists
       const event = await Event.findById(eventId);
+
       if (!event) {
         throw new AppError('Event not found', 404);
       }
@@ -167,7 +180,40 @@ export class EventService {
       event.attendees.push(new Types.ObjectId(userId));
       await event.save();
 
-      return event;
+      // Generate QR code token and QR code
+      const token = this.qrCodeService.generateTokenForEventAttendee(eventId, userId);
+      const qrCodeUrl = await this.qrCodeService.generateQRCode(token);
+
+       // Get user details for sending email
+       const populatedEvent = await Event.findById(eventId)
+   .populate({
+    path: 'attendees',
+    match: { _id: userId },
+    select: 'email firstName lastName'
+         });
+
+       if (!populatedEvent) {
+         throw new AppError('Event not found after population', 404);
+       }
+
+       // Find the specific attendee in the populated attendees array
+       const attendee = populatedEvent.attendees.find(a => a._id.toString() === userId) as unknown as { email: string, firstName: string, lastName: string };
+
+       // Send email with QR code if we have user's email
+       if (attendee) {
+         await EmailService.sendEventRegistrationEmail(
+           attendee.email,
+           {
+             eventName: event.title,
+             eventDate: event.startDate.toDateString(),
+             eventLocation: `${event.location.name}, ${event.location.city}`,
+             qrCodeUrl,
+             attendeeName: `${attendee.firstName} ${attendee.lastName}`
+           }
+         );
+       }
+
+      return { event, qrCodeUrl };
     } catch (error) {
       if (error instanceof AppError) {
         throw error;
@@ -177,35 +223,37 @@ export class EventService {
   }
 
   async unregisterAttendee(eventId: string, userId: string): Promise<Event | null> {
-  try {
-    if (!Types.ObjectId.isValid(eventId) || !Types.ObjectId.isValid(userId)) {
-      throw new AppError('Invalid ID', 400);
-    }
+    try {
+      if (!Types.ObjectId.isValid(eventId) || !Types.ObjectId.isValid(userId)) {
+        throw new AppError('Invalid ID', 400);
+      }
 
-    // Check if event exists
-    const event = await Event.findById(eventId);
-    if (!event) {
-      throw new AppError('Event not found', 404);
-    }
+      // Check if event exists
+      const event = await Event.findById(eventId);
+      if (!event) {
+        throw new AppError('Event not found', 404);
+      }
 
-    // Check if user is registered
-    if (!event.attendees.some(id => id.toString() === userId)) {
-      throw new AppError('User is not registered for this event', 400);
-    }
+      // Check if user is registered
+      if (!event.attendees.some(id => id.toString() === userId)) {
+        throw new AppError('User is not registered for this event', 400);
+      }
 
-    // Remove user from attendees
-    event.attendees = event.attendees.filter(id => id.toString() !== userId);
-    await event.save();
+      // Remove user from attendees
+      event.attendees = event.attendees.filter(id => id.toString() !== userId);
+      await event.save();
 
-    return event;
-  } catch (error) {
-    if (error instanceof AppError) {
-      throw error;
+      // Note: QR code is now invalid because it won't match any registration
+      // No need to explicitly invalidate it as the user is no longer in attendees list
+
+      return event;
+    } catch (error) {
+      if (error instanceof AppError) {
+        throw error;
+      }
+      throw new AppError('Failed to unregister from event', 500);
     }
-    throw new AppError('Failed to unregister from event', 500);
   }
-  }
-
 
   async uploadCoverImage(eventId: string, imageUrl: string): Promise<Event | null> {
     try {
@@ -229,6 +277,53 @@ export class EventService {
         throw error;
       }
       throw new AppError('Failed to upload cover image', 500);
+    }
+  }
+
+  async verifyEventAttendee(qrCodeToken: string): Promise<{ isValid: boolean; eventDetails?: any; attendeeDetails?: any }> {
+    try {
+      // Verify the token from QR code
+      const decodedToken = this.qrCodeService.verifyToken(qrCodeToken);
+
+      if (!decodedToken) {
+        return { isValid: false };
+      }
+
+      // Check if user is still registered for the event
+      const event = await Event.findById(decodedToken.eventId)
+        .populate('organizer', 'firstName lastName email')
+        .select('title startDate endDate location status type');
+
+      if (!event) {
+        return { isValid: false };
+      }
+
+      // Check if user is in attendees list
+      const isAttending = event.attendees.some(
+        id => id.toString() === decodedToken.userId
+      );
+
+      if (!isAttending) {
+        return { isValid: false };
+      }
+
+      // Get attendee details
+      const attendee = await import('../models/user.model').then(module => {
+        const User = module.User;
+        return User.findById(decodedToken.userId).select('firstName lastName email');
+      });
+
+      if (!attendee) {
+        return { isValid: false };
+      }
+
+      return {
+        isValid: true,
+        eventDetails: event,
+        attendeeDetails: attendee
+      };
+    } catch (error) {
+      return { isValid: false };
     }
   }
 }

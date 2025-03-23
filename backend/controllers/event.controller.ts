@@ -181,54 +181,6 @@ export class EventController {
     }
   }
 
-//   async uploadEventCoverImage(req: Request, res: Response, next: NextFunction) {
-//   try {
-//     const { id } = eventIdSchema.parse(req.params);
-
-//     if (!req.file) {
-//       return ResponseUtil.error(res, 400, 'No file uploaded');
-//     }
-
-//     // Check if user object exists (should be set by auth middleware)
-//     if (!req.user) {
-//       return ResponseUtil.error(res, 401, 'Not authenticated');
-//     }
-
-//     const userId = (req.user as any).userId;
-//     const userRole = (req.user as any).role;
-
-//     // Get the event to check ownership
-//     const event = await this.eventService.getEventById(id);
-
-//     if (!event) {
-//       return ResponseUtil.error(res, 404, 'Event not found');
-//     }
-
-//     // Check if user is the organizer or an admin
-//     if (event.organizer.toString() !== userId && userRole !== UserRole.ADMIN) {
-//       return ResponseUtil.error(res, 403, 'You do not have permission to update this event');
-//     }
-
-//     // Use the storage service to upload the file
-//     const uploadResult = await this.storageService.uploadFile(
-//       req.file.buffer,
-//       req.file.originalname,
-//       userId,
-//       'image'
-//     );
-
-//     // Update the event with the new cover image URL
-//     const updatedEvent = await this.eventService.uploadCoverImage(id, uploadResult.url);
-
-//     return ResponseUtil.success(res, 200, updatedEvent, 'Event cover image uploaded successfully');
-//   } catch (error) {
-//     if (error instanceof ZodError) {
-//       return ResponseUtil.error(res, 400, error.errors[0].message);
-//     }
-//     next(error);
-//   }
-// }
-
 
 async unregisterFromEvent(req: Request, res: Response, next: NextFunction) {
   try {
@@ -258,7 +210,7 @@ async unregisterFromEvent(req: Request, res: Response, next: NextFunction) {
   async uploadEventCoverImage(req: Request, res: Response, next: NextFunction) {
   try {
     const { id } = eventIdSchema.parse(req.params);
-    console.log(`Processing upload for event ID: ${id}`); // Add logging
+    console.log(`Processing upload for event ID: ${id}`);
 
     if (!req.file) {
       return ResponseUtil.error(res, 400, 'No file uploaded');
@@ -272,7 +224,7 @@ async unregisterFromEvent(req: Request, res: Response, next: NextFunction) {
     const userId = (req.user as any).userId;
     const userRole = (req.user as any).role;
 
-    console.log(`User attempting upload: ${userId}, role: ${userRole}`); // Add logging
+    console.log(`User attempting upload: ${userId}, role: ${userRole}`);
 
     // Get the event to check ownership
     try {
@@ -283,7 +235,7 @@ async unregisterFromEvent(req: Request, res: Response, next: NextFunction) {
       }
 
       // Check if user is the organizer or an admin
-      if (event.organizer.toString() !== userId && userRole !== UserRole.ADMIN) {
+      if (event.organizer.toString() !== userId && userRole !== UserRole.ADMIN && userRole !== UserRole.ORGANIZER) {
         return ResponseUtil.error(res, 403, 'You do not have permission to update this event');
       }
 
@@ -295,12 +247,18 @@ async unregisterFromEvent(req: Request, res: Response, next: NextFunction) {
         'image'
       );
 
+      console.log(`File uploaded successfully: ${uploadResult.url}`);
+
       // Update the event with the new cover image URL
       const updatedEvent = await this.eventService.uploadCoverImage(id, uploadResult.url);
-
+      if (updatedEvent) {
+        console.log(`Event updated with new cover image: ${updatedEvent.coverImage}`);
+      } else {
+        console.log('Event update failed, updatedEvent is null');
+      }
       return ResponseUtil.success(res, 200, updatedEvent, 'Event cover image uploaded successfully');
     } catch (error) {
-      console.error('Error retrieving event:', error); // Add error logging
+      console.error('Error retrieving event:', error);
       throw error;
     }
   } catch (error) {
@@ -312,189 +270,6 @@ async unregisterFromEvent(req: Request, res: Response, next: NextFunction) {
   }
 }
 
-  // async unregisterFromEvent(req: Request, res: Response, next: NextFunction) {
-  //   try {
-  //     const { id } = eventIdSchema.parse(req.params);
 
-  //     // Check if user object exists (should be set by auth middleware)
-  //     if (!req.user) {
-  //       return ResponseUtil.error(res, 401, 'Not authenticated');
-  //     }
-
-  //     const userId = (req.user as any).userId;
-
-  //     const unregistrationResult = await this.eventService.unregisterAttendee(id, userId);
-
-  //     return ResponseUtil.success(res, 200, unregistrationResult, 'Unregistered from event successfully');
-  //   } catch (error) {
-  //     if (error instanceof ZodError) {
-  //       return ResponseUtil.error(res, 400, error.errors[0].message);
-  //     }
-  //     if (error instanceof AppError) {
-  //       return ResponseUtil.error(res, error.statusCode, error.message);
-  //     }
-  //     next(error);
-  //   }
-  // }
-
-  //   async uploadEventCoverImage(req: Request, res: Response, next: NextFunction) {
-  //   try {
-  //     const { id } = eventIdSchema.parse(req.params);
-
-  //     if (!req.file) {
-  //       return ResponseUtil.error(res, 400, 'No file uploaded');
-  //     }
-
-  //     // Check if user object exists (should be set by auth middleware)
-  //     if (!req.user) {
-  //       return ResponseUtil.error(res, 401, 'Not authenticated');
-  //     }
-
-  //     const userId = (req.user as any).userId;
-  //     const userRole = (req.user as any).role;
-
-  //     // Get the event to check ownership
-  //     const event = await this.eventService.getEventById(id);
-
-  //     if (!event) {
-  //       return ResponseUtil.error(res, 404, 'Event not found');
-  //     }
-
-  //     // Check if user is the organizer or an admin
-  //     if (event.organizer.toString() !== userId && userRole !== UserRole.ADMIN) {
-  //       return ResponseUtil.error(res, 403, 'You do not have permission to update this event');
-  //     }
-
-  //     // Assume the file path is stored in req.file.path
-  //     const imageUrl = req.file.path;
-
-  //     const updatedEvent = await this.eventService.uploadCoverImage(id, imageUrl);
-
-  //     return ResponseUtil.success(res, 200, updatedEvent, 'Event cover image uploaded successfully');
-  //   } catch (error) {
-  //     if (error instanceof ZodError) {
-  //       return ResponseUtil.error(res, 400, error.errors[0].message);
-  //     }
-  //     next(error);
-  //   }
-  // }
-
-
-  // async uploadEventDocument(req: Request, res: Response, next: NextFunction) {
-  //   try {
-  //     // Check if user object exists (should be set by auth middleware)
-  //     if (!req.user) {
-  //       return ResponseUtil.error(res, 401, 'Not authenticated');
-  //     }
-
-  //     const userId = (req.user as any).userId;
-
-  //     // Check if file is provided
-  //     if (!req.file) {
-  //       return ResponseUtil.error(res, 400, 'No file uploaded');
-  //     }
-
-  //     const file = req.file.buffer;
-  //     const fileName = req.file.originalname;
-  //     const fileType = req.file.mimetype;
-
-  //     const uploadResult = await this.eventService.uploadEventDocument(userId, file, fileName, fileType);
-
-  //     return ResponseUtil.success(res, 200, uploadResult, 'File uploaded successfully');
-  //   } catch (error) {
-  //     if (error instanceof AppError) {
-  //       return ResponseUtil.error(res, error.statusCode, error.message);
-  //     }
-  //     next(error);
-  //   }
-  // }
-
-  // async uploadEventVideo(req: Request, res: Response, next: NextFunction) {
-  //   try {
-  //     // Check if user object exists (should be set by auth middleware)
-  //     if (!req.user) {
-  //       return ResponseUtil.error(res, 401, 'Not authenticated');
-  //     }
-
-  //     const userId = (req.user as any).userId;
-
-  //     // Check if file is provided
-  //     if (!req.file) {
-  //       return ResponseUtil.error(res, 400, 'No file uploaded');
-  //     }
-
-  //     const file = req.file.buffer;
-  //     const fileName = req.file.originalname;
-  //     const fileType = req.file.mimetype;
-
-  //     const uploadResult = await this.eventService.uploadEventVideo(userId, file, fileName, fileType);
-
-  //     return ResponseUtil.success(res, 200, uploadResult, 'File uploaded successfully');
-  //   } catch (error) {
-  //     if (error instanceof AppError) {
-  //       return ResponseUtil.error(res, error.statusCode, error.message);
-  //     }
-  //     next(error);
-  //   }
-  // }
-
-
-  // async uploadEventAudio(req: Request, res: Response, next: NextFunction) {
-  //   try {
-  //     // Check if user object exists (should be set by auth middleware)
-  //     if (!req.user) {
-  //       return ResponseUtil.error(res, 401, 'Not authenticated');
-  //     }
-
-  //     const userId = (req.user as any).userId;
-
-  //     // Check if file is provided
-  //     if (!req.file) {
-  //       return ResponseUtil.error(res, 400, 'No file uploaded');
-  //     }
-
-  //     const file = req.file.buffer;
-  //     const fileName = req.file.originalname;
-  //     const fileType = req.file.mimetype;
-
-  //     const uploadResult = await this.eventService.uploadEventAudio(userId, file, fileName, fileType);
-
-  //     return ResponseUtil.success(res, 200, uploadResult, 'File uploaded successfully');
-  //   } catch (error) {
-  //     if (error instanceof AppError) {
-  //       return ResponseUtil.error(res, error.statusCode, error.message);
-  //     }
-  //     next(error);
-  //   }
-  // }
-
-  // async uploadEventImage(req: Request, res: Response, next: NextFunction) {
-  //   try {
-  //     // Check if user object exists (should be set by auth middleware)
-  //     if (!req.user) {
-  //       return ResponseUtil.error(res, 401, 'Not authenticated');
-  //     }
-
-  //     const userId = (req.user as any).userId;
-
-  //     // Check if file is provided
-  //     if (!req.file) {
-  //       return ResponseUtil.error(res, 400, 'No file uploaded');
-  //     }
-
-  //     const file = req.file.buffer;
-  //     const fileName = req.file.originalname;
-  //     const fileType = req.file.mimetype;
-
-  //     const uploadResult = await this.eventService.uploadEventImage(userId, file, fileName, fileType);
-
-  //     return ResponseUtil.success(res, 200, uploadResult, 'File uploaded successfully');
-  //   } catch (error) {
-  //     if (error instanceof AppError) {
-  //       return ResponseUtil.error(res, error.statusCode, error.message);
-  //     }
-  //     next(error);
-  //   }
-  // }
 
 }
