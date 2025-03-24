@@ -23,7 +23,7 @@ static  async sendEventRegistrationEmail(
   ): Promise<boolean> {
     try {
       const msg = {
-        to,
+        to: to,
         from: config.sendgrid.fromEmail,
         subject: `Registration Confirmed: ${data.eventName}`,
         html: `

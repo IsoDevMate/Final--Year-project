@@ -1,16 +1,26 @@
-import { Routes, Route, BrowserRouter, Navigate } from 'react-router-dom';
-import LoginPage from './pages/auth/login';
-import SignupPage from './pages/auth/signup';
-import DashboardLayout from './components/Common/Dashboardlayouts';
-import HomePage from './pages/home';
+import { Routes, Route, BrowserRouter } from 'react-router-dom';
+import { Suspense, lazy } from 'react';
+import { motion } from 'framer-motion';
 import axios from 'axios';
-import LinkedInCallback from './pages/auth/LinkediinCallback';
-import { NotesPage } from './components/Note/notes';
-import { AuthProvider } from './contexts/AuthContext';
+import ErrorBoundary from './ErroBoundary';
 import ProtectedRoute from './config/protectedroute';
 import PublicRoute from './config/publicroute';
-import LogoutPage from './pages/auth/logout';
+import LoadingSpinner from './config/loadingSpinner';
 
+const LoginPage = lazy(() => import('./pages/auth/login'));
+const SignupPage = lazy(() => import('./pages/auth/signup'));
+const DashboardLayout = lazy(() => import('./components/Common/Dashboardlayouts'));
+const HomePage = lazy(() => import('./pages/home'));
+const LinkedInCallback = lazy(() => import('./pages/auth/LinkediinCallback'));
+const NotesPage = lazy(() => import('./components/Note/notes'));
+const LogoutPage = lazy(() => import('./pages/auth/logout'));
+const ResetPasswordPage = lazy(() => import('./pages/auth/resetpassword'));
+const ForgotPasswordPage = lazy(() => import('./pages/auth/forgotpassword'));
+const ProfilePage = lazy(() => import('./pages/user/profile'));
+const SettingsPage = lazy(() => import('./pages/user/settings'));
+const EventsPage = lazy(() => import('./components/Event/events'));
+const SessionsPage = lazy(() => import('./components/Session/session'));
+const NotFoundPage = lazy(() => import('./config/notfound'));
 
 axios.interceptors.response.use(
   (response) => response,
@@ -25,54 +35,193 @@ axios.interceptors.response.use(
   }
 );
 
+const pageTransition = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -20 },
+};
+
 export const App: React.FC = () => {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          {/* Public home page - accessible to all */}
-          <Route path="/" element={<HomePage />} />
+    <BrowserRouter>
+      <ErrorBoundary>
+        <Suspense fallback={<LoadingSpinner />}>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <motion.div {...pageTransition}>
+                  <HomePage />
+                </motion.div>
+              }
+            />
 
-          {/* Auth routes - redirect to dashboard if already logged in */}
-          <Route element={<PublicRoute redirectPath="/dashboard" />}>
-            <Route path="/auth/login" element={<LoginPage />} />
-            <Route path="/auth/signup" element={<SignupPage />} />
-          </Route>
-
-          {/* Auth callback route - special case, not protected */}
-          <Route path="/auth/linkedin/callback" element={<LinkedInCallback />} />
-
-          {/* Protected dashboard routes - require authentication */}
-          <Route element={<ProtectedRoute redirectPath="/auth/login" />}>
-            {/* Dashboard layout with nested routes */}
-            <Route path="/dashboard" element={<DashboardLayout />}>
-              <Route index element={<div>Dashboard Home</div>} />
-              <Route path="events" element={<div>Events</div>} />
-              <Route path="livestreams" element={<div>Livestreams</div>} />
-              <Route path="attendees" element={<div>Attendees</div>} />
-              <Route path="payments" element={<div>Payments</div>} />
-              <Route path="settings" element={<div>Settings</div>} />
-              <Route path="*" element={<div>404 Not Found</div>} />
+            <Route element={<PublicRoute redirectPath="/dashboard" />}>
+              <Route
+                path="/auth/login"
+                element={
+                  <motion.div {...pageTransition}>
+                    <LoginPage />
+                  </motion.div>
+                }
+              />
+              <Route
+                path="/auth/signup"
+                element={
+                  <motion.div {...pageTransition}>
+                    <SignupPage />
+                  </motion.div>
+                }
+              />
+              <Route
+                path="/auth/reset-password"
+                element={
+                  <motion.div {...pageTransition}>
+                    <ResetPasswordPage />
+                  </motion.div>
+                }
+              />
+              <Route
+                path="/auth/forgot-password"
+                element={
+                  <motion.div {...pageTransition}>
+                    <ForgotPasswordPage />
+                  </motion.div>
+                }
+              />
             </Route>
 
-            {/* Other protected routes outside the dashboard layout */}
-            <Route path="/dashboard/events/:eventId" element={<div>Event Details</div>} />
-            <Route path="/dashboard/livestreams/:livestreamId" element={<div>Livestream Details</div>} />
-            <Route path="/dashboard/attendees/:attendeeId" element={<div>Attendee Details</div>} />
-            <Route path="/dashboard/payments/:paymentId" element={<div>Payment Details</div>} />
-            <Route path="/dashboard/settings/:settingId" element={<div>Settings Details</div>} />
-            <Route path="/dashboard/notifications" element={<div>Notifications</div>} />
-            <Route path="/dashboard/notes" element={<NotesPage />} />
-            <Route path="/dashboard/notes/:noteId" element={<div>Note Details</div>} />
-            <Route path="/dashboard/profile" element={<div>Profile</div>} />
-          </Route>
+            <Route
+              path="/auth/linkedin/callback"
+              element={
+                <motion.div {...pageTransition}>
+                  <LinkedInCallback />
+                </motion.div>
+              }
+            />
 
-          {/* Logout route with automatic redirection */}
-          <Route path="/auth/logout" element={<LogoutPage />} />
-          {/* Catch-all route for 404 */}
-          <Route path="*" element={<div>404 Page Not Found</div>} />
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+            <Route element={<ProtectedRoute redirectPath="/auth/login" />}>
+              <Route
+                path="/dashboard"
+                element={
+                  <motion.div {...pageTransition}>
+                    <DashboardLayout />
+                  </motion.div>
+                }
+              >
+
+                <Route index element={<div>Dashboard Home</div>} />
+                <Route
+                  path="events"
+                  element={
+                    <motion.div {...pageTransition}>
+                      <EventsPage />
+                    </motion.div>
+                  }
+                />
+                <Route path="livestreams" element={<div>Livestreams</div>} />
+                <Route
+                  path="sessions"
+                  element={
+                    <motion.div {...pageTransition}>
+                      <SessionsPage />
+                    </motion.div>
+                  }
+                />
+                <Route path="payments" element={<div>Payments</div>} />
+                <Route
+                  path="settings"
+                  element={
+                    <motion.div {...pageTransition}>
+                      <SettingsPage />
+                    </motion.div>
+                  }
+                />
+                <Route
+                  path="notes"
+                  element={
+                    <motion.div {...pageTransition}>
+                      <NotesPage />
+                    </motion.div>
+                  }
+                />
+                <Route path="*" element={<div>404 Not Found</div>} />
+                <Route
+                  path="profile"
+                  element={
+                    <motion.div {...pageTransition}>
+                      <ProfilePage />
+                    </motion.div>
+                  }
+                />
+              </Route>
+
+               {/* Routes for event and session details */}
+              {/* <Route path="events/:eventId/sessions" element={<SessionsPage />} /> */}
+              {/* <Route path="events/:eventId" element={<EventDetails />} />
+              <Route path="events/:eventId/sessions/create" element={<CreateSession /      >} />
+              <Route path="sessions/:sessionId" element={<SessionDetails />} />
+              <Route path="sessions/:sessionId/edit" element={<EditSession />} /> */}
+
+              <Route
+                path="/dashboard/events/:eventId/sessions"
+                element={<SessionsPage />}
+              />
+              <Route
+                path="/dashboard/livestreams/:livestreamId"
+                element={<div>Livestream Details</div>}
+              />
+              <Route
+                path="/dashboard/attendees/:attendeeId"
+                element={<div>Attendee Details</div>}
+              />
+              <Route
+                path="/dashboard/payments/:paymentId"
+                element={<div>Payment Details</div>}
+              />
+              <Route
+                path="/dashboard/settings/:settingId"
+                element={<div>Settings Details</div>}
+              />
+              <Route
+                path="/dashboard/notifications"
+                element={<div>Notifications</div>}
+              />
+              <Route
+                path="/dashboard/notes"
+                element={
+                  <motion.div {...pageTransition}>
+                    <NotesPage />
+                  </motion.div>
+                }
+              />
+              <Route
+                path="/dashboard/notes/:noteId"
+                element={<div>Note Details</div>}
+              />
+              <Route
+                path="/dashboard/profile"
+                element={<div>Profile</div>}
+              />
+            </Route>
+
+            <Route
+              path="/auth/logout"
+              element={
+                <motion.div {...pageTransition}>
+                  <LogoutPage />
+                </motion.div>
+              }
+            />
+            <Route path="*" element={
+              <motion.div {...pageTransition}>
+                <NotFoundPage />
+              </motion.div>
+            } />
+
+          </Routes>
+        </Suspense>
+      </ErrorBoundary>
+    </BrowserRouter>
   );
 };

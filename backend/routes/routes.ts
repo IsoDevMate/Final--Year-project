@@ -21,4 +21,3 @@ router.use(`${API_PREFIX}/sessions`, sessionroutes);
 router.use(`${API_PREFIX}/linkedin`, linkedInSharingRoutes);
 
 export default router;
-

@@ -32,8 +32,8 @@ frontendUrl: process.env.FRONTEND_URL,
     origin: process.env.CORS_ORIGIN || 'http://localhost:3000'
     },
   sendgrid: {
-    apiKey: process.env.SENDGRID_API_KEY || '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',
-    fromEmail: process.env.SENDGRID_FROM_EMAIL || "oumabarack1047@gmail.com",
+    apiKey: process.env.SENDGRID_API_KEY || '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',
+    fromEmail: process.env.SENDGRID_SENDER_EMAIL || "oumabarack1047@gmail.com",
   },
 };
 

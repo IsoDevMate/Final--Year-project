@@ -168,7 +168,7 @@ export class EventController {
       const userId = (req.user as any).userId;
 
       const registrationResult = await this.eventService.registerAttendee(id, userId);
-
+      console.log(`Registration result: ${JSON.stringify(registrationResult)}`);
       return ResponseUtil.success(res, 200, registrationResult, 'Registered for event successfully');
     } catch (error) {
       if (error instanceof ZodError) {

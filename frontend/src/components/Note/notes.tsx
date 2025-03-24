@@ -7,7 +7,6 @@ import {
 } from 'lucide-react';
 import * as fabric from 'fabric';
 import { useAuth } from '../../contexts/AuthContext';
-import axios from 'axios';
 
 interface Note {
   _id: string;
@@ -46,7 +45,7 @@ interface MediaAttachment {
   storageRef?: string;
 }
 
-export const NotesPage: React.FC = () => {
+ const NotesPage: React.FC = () => {
   const { noteId, eventId } = useParams();
   const navigate = useNavigate();
     const [note, setNote] = useState<Note | null>(null);
@@ -768,3 +767,5 @@ useEffect(() => {
     </div>
   );
 };
+
+export default NotesPage;
