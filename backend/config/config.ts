@@ -22,7 +22,7 @@ const config = {
     scope: 'openid profile email'
   },
   storagebucketnameis: process.env.STORAGE_BUCKET_NAME || 'gs://uploadtimes-2d6d3.appspot.com',
-
+  firebaseserviceacc: process.env.FIREBASE_CONFIG,
   stripe: {
     secretKey: process.env.STRIPE_SECRET_KEY,
     publishableKey: process.env.STRIPE_PUBLISHABLE_KEY,

@@ -1,24 +1,37 @@
 import * as admin from 'firebase-admin';
-import * as serviceAccount from '../uploadtimes-2d6d3-firebase-adminsdk-8reyp-86b4c10c24.json';
 import { AppError } from '../utils/errors.utils';
 import { v4 as uuidv4 } from 'uuid';
-import  config  from '../config/config';
-const params = {
-  type: serviceAccount.type,
-  projectId: serviceAccount.project_id,
-  privateKeyId: serviceAccount.private_key_id,
-  privateKey: serviceAccount.private_key,
-  clientEmail: serviceAccount.client_email,
-  clientId: serviceAccount.client_id,
-  authUri: serviceAccount.auth_uri,
-  tokenUri: serviceAccount.token_uri,
-  authProviderX509CertUrl: serviceAccount.auth_provider_x509_cert_url,
-  clientC509CertUrl: serviceAccount.client_x509_cert_url,
-  universeDomain: serviceAccount.universe_domain,
+import config from '../config/config';
+
+const firebaseConfig = JSON.parse(Buffer.from(process.env.FIREBASE_CONFIG!, 'base64').toString('utf-8'));
+
+if (!firebaseConfig) {
+  throw new AppError('Firebase configuration is missing', 500);
+}
+
+const serviceAccountConfig = firebaseConfig;
+
+if (!serviceAccountConfig) {
+  throw new AppError('Service account configuration is missing', 500);
+}
+
+const serviceAccounting = {
+  type: serviceAccountConfig.type,
+  project_id: serviceAccountConfig.project_id,
+  private_key_id: serviceAccountConfig.private_key_id,
+  private_key: serviceAccountConfig.private_key.replace(/\\n/g, '\n'),
+  client_email: serviceAccountConfig.client_email,
+  client_id: serviceAccountConfig.client_id,
+  auth_uri: serviceAccountConfig.auth_uri,
+  token_uri: serviceAccountConfig.token_uri,
+  auth_provider_x509_cert_url: serviceAccountConfig.auth_provider_x509_cert_url,
+  client_x509_cert_url: serviceAccountConfig.client_x509_cert_url,
+  universe_domain: serviceAccountConfig.universe_domain
 };
 
+
 admin.initializeApp({
-  credential: admin.credential.cert(params as admin.ServiceAccount),
+  credential: admin.credential.cert(serviceAccounting as admin.ServiceAccount),
   storageBucket: config.storagebucketnameis,
 });
 
