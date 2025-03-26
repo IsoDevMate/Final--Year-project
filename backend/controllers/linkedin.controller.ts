@@ -4,6 +4,7 @@ import {LinkedInService } from '../services/linkedin.auth.service';
 import { ResponseUtil } from '../utils/response.utils';
 import config from '../config/config';
 import crypto from 'crypto';
+import { User } from '../models/user.model';
 
 
 export class LinkedInController {
@@ -50,6 +51,7 @@ static async handleCallback(req: Request, res: Response, next: NextFunction) {
     const redirectUrl = new URL(`${config.frontendUrl}/auth/linkedin/callback`);
     redirectUrl.searchParams.append('accessToken', result.tokens.accessToken);
     redirectUrl.searchParams.append('refreshToken', result.tokens.refreshToken);
+    redirectUrl.searchParams.append('linkedinConnected', 'true');
 
     // Add user data to the redirect URL
     redirectUrl.searchParams.append('user', JSON.stringify(result.user));
@@ -64,7 +66,45 @@ static async handleCallback(req: Request, res: Response, next: NextFunction) {
     loginUrl.searchParams.append('error', 'LinkedIn authentication failed');
     res.redirect(loginUrl.toString());
   }
-}
+  }
+
+ /**
+   * Disconnect LinkedIn account
+   */
+
+  static async disconnectLinkedIn(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = (req.user as any)?.userId;
+
+      if (!userId) {
+        return ResponseUtil.error(res, 401, 'User not authenticated');
+      }
+
+      // Find the user and remove LinkedIn-related information
+      const user = await User.findByIdAndUpdate(
+        userId,
+        {
+          $unset: {
+            'socialLinks.linkedin': 1,
+            'socialLinks.linkedinAccessToken': 1,
+            'socialLinks.linkedinRefreshToken': 1,
+            'socialLinks.linkedinTokenExpiry': 1
+          }
+        },
+        { new: true }
+      );
+
+      if (!user) {
+        return ResponseUtil.error(res, 404, 'User not found');
+      }
+
+      return ResponseUtil.success(res, 200, {
+        hasLinkedInConnection: false
+      }, 'LinkedIn account disconnected successfully');
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default new LinkedInController();

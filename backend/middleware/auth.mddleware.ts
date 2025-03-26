@@ -38,7 +38,7 @@ export class AuthMiddleware {
           return ResponseUtil.error(res, 401, 'Invalid user role');
         }
 
-        console.log('user from auth middleware:', user);
+        // console.log('user from auth middleware:', user);
         // Attach user info to request
         req.user = {
           userId: decoded.userId,

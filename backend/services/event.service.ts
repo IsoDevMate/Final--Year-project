@@ -186,10 +186,10 @@ export class EventService {
 
        // Get user details for sending email
        const populatedEvent = await Event.findById(eventId)
-   .populate({
-    path: 'attendees',
-    match: { _id: userId },
-    select: 'email firstName lastName'
+       .populate({
+        path: 'attendees',
+        match: { _id: userId },
+        select: 'email firstName lastName'
          });
 
        if (!populatedEvent) {
@@ -324,6 +324,50 @@ export class EventService {
       };
     } catch (error) {
       return { isValid: false };
+    }
+  }
+
+  async getEventsihvaeRegisteredasauser(userId: string): Promise<Event[]> {
+    try {
+      if (!Types.ObjectId.isValid(userId)) {
+        throw new AppError('Invalid user ID', 400);
+      }
+
+      const events = await Event.find({ attendees: userId })
+        .populate('organizer', 'firstName lastName email')
+        .populate('sessions')
+        .populate('attendees', 'firstName lastName email');
+
+      return events;
+    } catch (error) {
+      if (error instanceof AppError) {
+        throw error;
+      }
+      throw new AppError('Failed to retrieve registered events', 500);
+    }
+  }
+  
+
+  async getEventSessions(eventId: string): Promise<any[]> {
+    try {
+      if (!Types.ObjectId.isValid(eventId)) {
+        throw new AppError('Invalid event ID', 400);
+      }
+
+      const event = await Event.findById(eventId)
+        .populate('sessions')
+        .select('sessions');
+
+      if (!event) {
+        throw new AppError('Event not found', 404);
+      }
+
+      return event.sessions;
+    } catch (error) {
+      if (error instanceof AppError) {
+        throw error;
+      }
+      throw new AppError('Failed to retrieve event sessions', 500);
     }
   }
 }

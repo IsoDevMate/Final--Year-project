@@ -243,7 +243,8 @@ static async removeAttachment(req: Request, res: Response, next: NextFunction) {
 
       const currentUserId = (req.user as any).userId;
 
-      const updatedNote = await this.noteService.shareNote(id, userId, currentUserId);
+      // const updatedNote = await this.noteService.shareNote(id, userId, currentUserId);
+      const updatedNote = await this.noteService.shareNote(id, [userId], currentUserId);
 
       return ResponseUtil.success(res, 200, updatedNote, 'Note shared successfully');
     } catch (error) {

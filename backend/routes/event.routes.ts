@@ -35,6 +35,13 @@ router.post(
   eventController.createEvent.bind(eventController)
 );
 
+router.get(
+  '/registered',
+  AuthMiddleware.verifyToken,
+  eventController.getEventsihvaeRegisteredasaused.bind(eventController)
+);
+
+
 router.put(
   '/:id',
   AuthMiddleware.verifyToken,

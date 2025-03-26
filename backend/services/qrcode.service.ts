@@ -1,10 +1,16 @@
-import { Types } from 'mongoose';
 import * as QRCode from 'qrcode';
 import jwt from 'jsonwebtoken';
 import config from '../config/config';
 import { AppError } from '../utils/errors.utils';
-
+import { StorageService } from './upload.service';
 export class QRCodeService {
+
+  private storageService: StorageService;
+
+  constructor() {
+    this.storageService = new StorageService();
+  }
+
   /**
    * Generate a JWT token with event and user information
    */
@@ -35,15 +41,23 @@ export class QRCodeService {
    */
   async generateQRCode(token: string): Promise<string> {
     try {
-      // Generate QR code
-      return await QRCode.toDataURL(token, {
-        width: 300,
-        margin: 2,
-        color: {
-          dark: '#000000',
-          light: '#ffffff'
-        }
-      });
+
+      // Generate QR code as buffer
+      const qrCodeBuffer = await QRCode.toBuffer(token);
+
+      // Create a unique filename
+      const fileName = `qrcode-${Date.now()}.png`;
+
+      // Upload to Firebase Storage using your existing StorageService
+      const uploadResult = await this.storageService.uploadFile(
+        qrCodeBuffer,
+        fileName,
+        'system',
+        'image'
+      );
+
+      // Return the public URL
+      return uploadResult.url;
     } catch (error) {
       if (error instanceof Error) {
         throw new AppError(`Error generating QR code: ${error.message}`, 500);

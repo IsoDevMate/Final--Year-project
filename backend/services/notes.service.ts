@@ -1,6 +1,6 @@
 
 
-import { Types } from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import { Note } from '../models/note.model';
 import { AppError } from '../utils/errors.utils';
 import { StorageService } from './upload.service';
@@ -106,41 +106,51 @@ export class NoteService {
     }
   }
 
-  async getNoteById(noteId: string, userId: string): Promise<Note | null> {
-    try {
-      if (!Types.ObjectId.isValid(noteId)) {
-        throw new AppError('Invalid note ID', 400);
-      }
 
-      const note = await Note.findById(noteId)
-        .populate('user', 'firstName lastName email')
-        .populate('event', 'title')
-        .populate('session', 'title');
-
-      if (!note) {
-        throw new AppError('Note not found', 404);
-      }
-
-
-       const isOwner = note.user.toString() === userId;
-       const isSharedWithUser = note.sharedWith?.some(id => id.toString() === userId);
-       const isPublic = !note.isPrivate;
-
-       console.log({ isOwner, isSharedWithUser, isPublic });
-
-       // User can view if ANY of these conditions are true
-       if (!(isOwner || isSharedWithUser || isPublic)) {
-         throw new AppError('You do not have permission to view this note', 403);
-       }
-
-      return note;
-    } catch (error) {
-      if (error instanceof AppError) {
-        throw error;
-      }
-      throw new AppError('Failed to retrieve note', 500);
+async getNoteById(noteId: string, userId: string): Promise<Note | null> {
+  try {
+    if (!Types.ObjectId.isValid(noteId)) {
+      throw new AppError('Invalid note ID', 400);
     }
+
+    const note = await Note.findById(noteId)
+      .populate('user', 'firstName lastName email')
+      .populate('event', 'title')
+      .populate('session', 'title');
+
+    if (!note) {
+      throw new AppError('Note not found', 404);
+    }
+
+    // Ensure we're comparing string representations of ObjectIds
+    const noteUserIdString = note.user instanceof mongoose.Types.ObjectId
+      ? note.user.toString()
+      : (note.user && typeof note.user === 'object' && '_id' in note.user) ? (note.user as { _id: Types.ObjectId })._id.toString() : String(note.user);
+
+    console.log('Detailed Debug:', {
+      noteId,
+      userId,
+      noteUserIdString,
+      isPrivate: note.isPrivate,
+      exactComparison: noteUserIdString === userId
+    });
+
+    const isOwner = noteUserIdString === userId;
+    const isSharedWithUser = note.sharedWith?.some(id => id.toString() === userId);
+    const isPublic = !note.isPrivate;
+
+    if (!(isOwner || isSharedWithUser || isPublic)) {
+      throw new AppError('You do not have permission to view this note', 403);
+    }
+
+    return note;
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+    throw new AppError('Failed to retrieve note', 500);
   }
+}
 
   async updateNote(noteId: string, updateData: UpdateNoteDto, userId: string): Promise<Note | null> {
     try {

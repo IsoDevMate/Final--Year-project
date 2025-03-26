@@ -25,6 +25,12 @@ const config = {
 
   stripe: {
     secretKey: process.env.STRIPE_SECRET_KEY,
+    publishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
+    priceIds: {
+      basic: process.env.STRIPE_PRICE_ID_BASIC,
+      premium: process.env.STRIPE_PRICE_ID_PREMIUM,
+      enterprise: process.env.STRIPE_PRICE_ID_ENTERPRISE,
+    },
     webhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
   },
 frontendUrl: process.env.FRONTEND_URL,
@@ -32,8 +38,8 @@ frontendUrl: process.env.FRONTEND_URL,
     origin: process.env.CORS_ORIGIN || 'http://localhost:3000'
     },
   sendgrid: {
-    apiKey: process.env.SENDGRID_API_KEY || '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',
-    fromEmail: process.env.SENDGRID_SENDER_EMAIL || "oumabarack1047@gmail.com",
+    apiKey: process.env.SENDGRID_API_KEY || 'SG.......VkaY....KYU',
+    fromEmail: process.env.SENDGRID_SENDER_EMAIL || "oum.....m",
   },
 };
 

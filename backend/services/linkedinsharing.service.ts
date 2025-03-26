@@ -2,61 +2,83 @@ import axios from 'axios';
 import { User } from '../models/user.model';
 import { Note } from '../models/note.model';
 import { AppError } from '../utils/errors.utils';
-import config from '../config/config';
-
+import { LinkedInService } from './linkedin.auth.service';
 export class LinkedInSharingService {
+
   /**
    * Check if a user has a linked LinkedIn account
    */
   static async hasLinkedInAccount(userId: string): Promise<boolean> {
     const user = await User.findById(userId);
-    return !!(user?.socialLinks?.linkedin);
+    return !!(user?.socialLinks?.linkedinId);
   }
 
   /**
    * Share a note to LinkedIn
    */
-  static async shareNote(noteId: string, userId: string): Promise<{ success: boolean, shareUrl?: string }> {
-    try {
-      // Verify user has LinkedIn account
-      const hasAccount = await this.hasLinkedInAccount(userId);
-      if (!hasAccount) {
-        throw new AppError('LinkedIn account not connected', 400);
-      }
+ static async shareNote(noteId: string, userId: string,customMessage?: string): Promise<{ success: boolean, shareUrl?: string }> {
+  try {
+    // Log incoming parameters for debugging
+    console.log('Sharing Note - NoteID:', noteId);
+    console.log('Sharing Note - UserID:', userId);
 
-      // Get the note
-      const note = await Note.findById(noteId)
-        .populate('user', 'firstName lastName');
-
-      if (!note) {
-        throw new AppError('Note not found', 404);
-      }
-
-      // Verify the user owns the note
-      if (note.user._id.toString() !== userId) {
-        throw new AppError('You can only share your own notes', 403);
-      }
-
-      // Get the user to get LinkedIn access token
-      const user = await User.findById(userId);
-      if (!user) {
-        throw new AppError('User not found', 404);
-      }
-
-      // Prepare the content based on note type and media
-      return await this.shareContent(note, user);
-    } catch (error) {
-      if (error instanceof AppError) {
-        throw error;
-      }
-      throw new AppError('Failed to share to LinkedIn', 500);
+    // Verify user has LinkedIn account
+    const hasAccount = await this.hasLinkedInAccount(userId);
+    if (!hasAccount) {
+      throw new AppError('LinkedIn account not connected', 400);
     }
+
+    // Get the note
+    const note = await Note.findById(noteId)
+      .populate('user', 'firstName lastName');
+
+    // Add more detailed logging
+    if (!note) {
+      console.error('Note not found with ID:', noteId);
+      throw new AppError('Note not found', 404);
+    }
+
+    console.log('Note found:', note);
+    console.log('Note User:', note.user);
+
+    // Verify the user owns the note
+    if (!note.user || note.user._id.toString() !== userId) {
+      console.error('Note ownership verification failed', {
+        noteUserId: note.user?._id.toString(),
+        requestUserId: userId
+      });
+      throw new AppError('You can only share your own notes', 403);
+    }
+
+    // Get the user to get LinkedIn access token
+    const user = await User.findById(userId);
+    if (!user) {
+      console.error('User not found with ID:', userId);
+      throw new AppError('User not found', 404);
+    }
+
+  const postContent = customMessage
+      ? `${customMessage}\n\n${note.title}\n\n${note.content.substring(0, 800)}${note.content.length > 800 ? '...' : ''}`
+      : `${note.title}\n\n${note.content.substring(0, 800)}${note.content.length > 800 ? '...' : ''}`;
+
+    // Use existing sharing logic with modified content
+    return await this.shareContent({
+      ...note,
+      content: postContent
+    }, user);
+  } catch (error) {
+    console.error('Full share note error:', error);
+    if (error instanceof AppError) {
+      throw error;
+    }
+    throw new AppError('Failed to share to LinkedIn', 500);
   }
+}
 
   /**
    * Share content to LinkedIn based on content type
    */
-  private static async shareContent(note: any, user: any): Promise<{ success: boolean, shareUrl?: string }> {
+   static async shareContent(note: any, user: any): Promise<{ success: boolean, shareUrl?: string }> {
     try {
       // Determine the type of post to create based on note content and media
       const hasMedia = note.mediaAttachments && note.mediaAttachments.length > 0;
@@ -86,11 +108,11 @@ export class LinkedInSharingService {
   /**
    * Share a text post to LinkedIn
    */
-  private static async shareTextPost(note: any, user: any): Promise<{ success: boolean, shareUrl?: string }> {
+   static async shareTextPost(note: any, user: any): Promise<{ success: boolean, shareUrl?: string }> {
     try {
       // Prepare the content for LinkedIn's UGC Post API
       const postData = {
-        author: `urn:li:person:${user.socialLinks.linkedin}`,
+        author: `urn:li:person:${user?.socialLinks?.linkedinId}`,
         lifecycleState: 'PUBLISHED',
         specificContent: {
           'com.linkedin.ugc.ShareContent': {
@@ -103,7 +125,7 @@ export class LinkedInSharingService {
         visibility: {
           'com.linkedin.ugc.MemberNetworkVisibility': 'PUBLIC'
         }
-      };
+      }
 
       // Make API call to LinkedIn
       const response = await axios.post(
@@ -131,7 +153,7 @@ export class LinkedInSharingService {
   /**
    * Share an image post to LinkedIn
    */
-  private static async shareImagePost(note: any, user: any): Promise<{ success: boolean, shareUrl?: string }> {
+   static async shareImagePost(note: any, user: any): Promise<{ success: boolean, shareUrl?: string }> {
     try {
       // Get the image URL from the note
       const imageUrl = note.mediaAttachments[0].url;
@@ -142,7 +164,7 @@ export class LinkedInSharingService {
         {
           registerUploadRequest: {
             recipes: ['urn:li:digitalmediaRecipe:feedshare-image'],
-            owner: `urn:li:person:${user.socialLinks.linkedin}`,
+            owner: `urn:li:person:${user?.socialLinks?.linkedinId}`,
             serviceRelationships: [
               {
                 relationshipType: 'OWNER',
@@ -182,7 +204,7 @@ export class LinkedInSharingService {
 
       // Step 3: Share the post with the uploaded image
       const postData = {
-        author: `urn:li:person:${user.socialLinks.linkedin}`,
+        author: `urn:li:person:${user?.socialLinks?.linkedinId}`,
         lifecycleState: 'PUBLISHED',
         specificContent: {
           'com.linkedin.ugc.ShareContent': {
@@ -234,7 +256,7 @@ export class LinkedInSharingService {
   /**
    * Share a video post to LinkedIn
    */
-  private static async shareVideoPost(note: any, user: any): Promise<{ success: boolean, shareUrl?: string }> {
+   static async shareVideoPost(note: any, user: any): Promise<{ success: boolean, shareUrl?: string }> {
     try {
       // Get the video URL from the note
       const videoUrl = note.mediaAttachments[0].url;
@@ -245,7 +267,7 @@ export class LinkedInSharingService {
         {
           registerUploadRequest: {
             recipes: ['urn:li:digitalmediaRecipe:feedshare-video'],
-            owner: `urn:li:person:${user.socialLinks.linkedin}`,
+            owner: `urn:li:person:${user?.socialLinks?.linkedinId}`,
             serviceRelationships: [
               {
                 relationshipType: 'OWNER',
@@ -285,7 +307,7 @@ export class LinkedInSharingService {
 
       // Step 3: Share the post with the uploaded video
       const postData = {
-        author: `urn:li:person:${user.socialLinks.linkedin}`,
+        author: `urn:li:person:${user?.socialLinks?.linkedinId}`,
         lifecycleState: 'PUBLISHED',
         specificContent: {
           'com.linkedin.ugc.ShareContent': {
@@ -337,14 +359,14 @@ export class LinkedInSharingService {
   /**
    * Share a document/article to LinkedIn
    */
-  private static async shareArticlePost(note: any, user: any): Promise<{ success: boolean, shareUrl?: string }> {
+   static async shareArticlePost(note: any, user: any): Promise<{ success: boolean, shareUrl?: string }> {
     try {
       // For articles, we'll create a post with a link to the document
       const documentUrl = note.mediaAttachments[0].url;
 
       // Create a LinkedIn article post
       const postData = {
-        author: `urn:li:person:${user.socialLinks.linkedin}`,
+        author: `urn:li:person:${user?.socialLinks?.linkedinId}`,
         lifecycleState: 'PUBLISHED',
         specificContent: {
           'com.linkedin.ugc.ShareContent': {
@@ -396,35 +418,13 @@ export class LinkedInSharingService {
   /**
    * Helper method to get a fresh access token for the user
    */
-  private static async getAccessToken(user: any): Promise<string> {
+   static async getAccessToken(user: any): Promise<string> {
     try {
-      // You'll need to implement a token refresh mechanism here
-      // This will depend on how you're storing LinkedIn tokens
-
-      // For now, we'll assume we have a refresh token stored in the user document
-      // In a real implementation, you'd store this securely and refresh as needed
-
-      // Placeholder for token refresh logic
-      const response = await axios.post(
-        'https://www.linkedin.com/oauth/v2/accessToken',
-        null,
-        {
-          params: {
-            grant_type: 'refresh_token',
-            refresh_token: user.socialLinks.linkedinRefreshToken,
-            client_id: config.linkedin.clientId,
-            client_secret: config.linkedin.clientSecret
-          },
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          }
-        }
-      );
-
-      return response.data.access_token;
+      // Use the new method from LinkedInService to get a valid access token
+      return await LinkedInService.getValidAccessToken(user);
     } catch (error) {
-      console.error('LinkedIn token refresh error:', error);
-      throw new AppError('Failed to refresh LinkedIn access token', 401);
+      console.error('LinkedIn token retrieval error:', error);
+      throw new AppError('Failed to get LinkedIn access token', 401);
     }
   }
 }

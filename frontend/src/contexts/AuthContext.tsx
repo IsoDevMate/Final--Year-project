@@ -4,10 +4,18 @@ import axios from 'axios';
 
 interface User {
   id: string;
+  role: string;
+  userId: string;
   email: string;
   name: string;
-  avatar?: string;
-  provider?: 'email' | 'linkedin';
+  phoneNumber?: string;
+  firstName: string;
+  lastName: string;
+  profileImage?: string;
+  bio?: string;
+  socialLinks?: {
+    linkedinId?: string;
+  };
 }
 
 interface AuthContextType {

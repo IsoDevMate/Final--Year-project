@@ -60,12 +60,12 @@ const SignupPage: React.FC = () => {
       {/* Left side */}
       <div className="hidden md:flex md:w-1/2 flex-col items-center justify-center p-12 text-white">
         <div className="mb-12">
-          <span className="flex items-center text-3xl font-bold">
-            <div className="bg-white rounded-full p-2 mr-2">
-              <span className="text-indigo-600 text-xl font-bold">C</span>
-            </div>
-            comfybase
-          </span>
+           <Link to="/" className="flex items-center text-3xl font-bold">
+                      <div className="bg-white rounded-full p-2 mr-2">
+                        <span className="text-indigo-600 text-xl font-bold">C</span>
+                      </div>
+                      comfybase
+                    </Link>
         </div>
         <div className="mt-auto">
           <h1 className="text-5xl font-bold mb-6">

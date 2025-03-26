@@ -7,7 +7,9 @@ import {
 } from 'lucide-react';
 import * as fabric from 'fabric';
 import { useAuth } from '../../contexts/AuthContext';
-
+import { EventSelector } from '../Event/eventselector';
+import LinkedInShareModal from './linkedinmodal';
+import toast from 'react-hot-toast';
 interface Note {
   _id: string;
   title: string;
@@ -62,6 +64,9 @@ interface MediaAttachment {
   const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
   const [selectedAttachment, setSelectedAttachment] = useState<MediaAttachment | null>(null);
   const [showMediaPreview, setShowMediaPreview] = useState(false);
+  const [selectedEventId, setSelectedEventId] = useState<string | undefined>();
+  const [selectedSessionId, setSelectedSessionId] = useState<string | undefined>();
+
 
 
   const editorRef = useRef<HTMLDivElement>(null);
@@ -78,13 +83,13 @@ interface MediaAttachment {
   };
 
 useEffect(() => {
-    if (!isAuthenticated) {
+    if (!user) {
       navigate('/auth/login');
       return;
     }
 
     fetchNoteData();
-  }, [noteId, isAuthenticated, navigate]);
+  }, [noteId, user, navigate]);
 
   // Fetch note data or initialize a new note
    const fetchNoteData = async () => {
@@ -113,12 +118,17 @@ useEffect(() => {
         setContent(data.data.content);
         setTags(data.data.tags || []);
         setIsPrivate(data.data.isPrivate);
+         setSelectedEventId(data.data.event?._id);
+        setSelectedSessionId(data.data.session?._id);
       } else {
         // Initialize new note
         setTitle('');
         setContent('');
         setTags([]);
         setIsPrivate(true);
+        setSelectedEventId(undefined);
+        setSelectedSessionId(undefined);
+        setNote(null);
       }
     } catch (error) {
       console.error('Error fetching note:', error);
@@ -152,61 +162,74 @@ useEffect(() => {
     };
   }, [showCanvasEditor]);
 
-   const handleSave = async () => {
-    if (!title.trim()) {
-      alert('Please enter a note title');
-      return;
-    }
-
-    if (!isAuthenticated) {
-      navigate('/auth/login');
-      return;
-    }
-
-    setIsSaving(true);
-    try {
-      const noteData = {
-        title,
-        content,
-        tags,
-        isPrivate,
-        event: eventId || (note?.event?._id || '')
-      };
-
-      let response;
-      if (noteId && noteId !== 'new') {
-        // Update existing note
-        response = await fetch(`${API_BASE_URL}/api/v1/notes/${noteId}`, {
-          method: 'PUT',
-          headers: getAuthHeaders(),
-          body: JSON.stringify(noteData)
-        });
-      } else {
-        // Create new note
-        response = await fetch(`${API_BASE_URL}/api/v1/notes`, {
-          method: 'POST',
-          headers: getAuthHeaders(),
-          body: JSON.stringify(noteData)
-        });
-      }
-
-      if (!response.ok) throw new Error('Failed to save note');
-
-      const savedNote = await response.json();
-
-      if (noteId === 'new') {
-        // Redirect to the newly created note
-        navigate(`/dashboard/notes/${savedNote.data._id}`);
-      } else {
-        setNote(savedNote.data);
-      }
-    } catch (error) {
-      console.error('Error saving note:', error);
-      alert('Failed to save note');
-    } finally {
-      setIsSaving(false);
-    }
+  const handleEventSelect = (eventId: string) => {
+    setSelectedEventId(eventId);
   };
+
+const handleSave = async () => {
+  // Validate user and token
+  if (!user || !isAuthenticated) {
+    alert('Please log in to save notes');
+    navigate('/auth/login');
+    return;
+  }
+
+  // Additional input validation
+  if (!title.trim()) {
+    alert('Please enter a note title');
+    return;
+  }
+
+  if (!selectedEventId) {
+      alert('Please select an event for this note');
+      return;
+    }
+
+  setIsSaving(true);
+  try {
+    const noteData = {
+      title,
+      content,
+      tags,
+      isPrivate,
+      event: selectedEventId,
+      session: selectedSessionId,
+    };
+
+    const response = await fetch(`${API_BASE_URL}/api/v1/notes${noteId && noteId !== 'new' ? `/${noteId}` : ''}`, {
+      method: noteId && noteId !== 'new' ? 'PUT' : 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(noteData)
+    });
+
+    // Enhanced error handling
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to save note');
+    }
+
+    const savedNote = await response.json();
+
+    // Navigate or update state based on save type
+    if (noteId === 'new') {
+      navigate(`/dashboard/notes/${savedNote.data._id}`);
+    } else {
+      setNote(savedNote.data);
+    }
+
+    // Optional: Show success message
+    alert('Note saved successfully');
+  } catch (error) {
+    console.error('Error saving note:', error);
+    if (error instanceof Error) {
+      alert(error.message || 'Failed to save note');
+    } else {
+      alert('Failed to save note');
+    }
+  } finally {
+    setIsSaving(false);
+  }
+};
 
   const addTag = () => {
     if (currentTag.trim() && !tags.includes(currentTag.trim())) {
@@ -236,7 +259,48 @@ useEffect(() => {
     // Clear and hide canvas
     fabricCanvasRef.current.clear();
     setShowCanvasEditor(false);
-  };
+   };
+
+   // Add this method to your NotesPage component
+const handleLinkedInShare = async (customMessage?: string) => {
+  if (!note) return;
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/v1/linkedin/share/note/${note._id}`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({
+        customMessage,
+        // You can pass additional metadata if needed
+        noteMetadata: {
+          title: note.title,
+          content: note.content,
+          event: note.event?.title,
+          session: note.session?.title
+        }
+      })
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        navigate('/auth/login');
+        return;
+      }
+      throw new Error('Failed to share to LinkedIn');
+    }
+
+    const result = await response.json();
+    alert('Successfully shared to LinkedIn!');
+
+    // Optionally open the shared post
+    if (result.data.shareUrl) {
+      window.open(result.data.shareUrl, '_blank');
+    }
+  } catch (error) {
+    console.error('LinkedIn sharing error:', error);
+    alert('Failed to share to LinkedIn');
+  }
+};
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>, fileType: 'image' | 'audio' | 'video' | 'document') => {
     const file = event.target.files?.[0];
@@ -268,6 +332,7 @@ useEffect(() => {
 
       const result = await response.json();
       setNote(result.data);
+      toast.success('File uploaded successfully!');
     } catch (error) {
       console.error('Error uploading file:', error);
       alert('Failed to upload file');
@@ -361,6 +426,14 @@ useEffect(() => {
         </div>
 
         <div className="flex space-x-3">
+
+              {note && note._id  && (
+               <LinkedInShareModal
+                 note={note}
+                 onShare={handleLinkedInShare}
+               />
+          )}
+          
           <button
             onClick={() => navigate('/dashboard/notes')}
             className="bg-gray-200 text-gray-800 py-2 px-4 rounded-lg hover:bg-gray-300 transition duration-200 flex items-center"
@@ -387,9 +460,19 @@ useEffect(() => {
         </div>
       </div>
 
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Note Editor */}
         <div className="lg:col-span-2 space-y-6">
+           <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Select Event
+        </label>
+        <EventSelector
+          onEventSelect={handleEventSelect}
+          selectedEventId={selectedEventId}
+        />
+      </div>
           {/* Title Input */}
           <div className="bg-white rounded-xl shadow-sm p-6">
             <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
@@ -482,16 +565,16 @@ useEffect(() => {
             </div>
 
             {/* Delete Note Button (for existing notes) */}
-    {note && note._id && (
-      <div className="bg-white rounded-xl shadow-sm p-6">
-        <button
-          onClick={handleDeleteNote}
-          className="w-full flex items-center justify-center py-2 px-4 border border-red-300 text-red-600 rounded-md hover:bg-red-50"
-        >
-          <Trash2 className="h-4 w-4 mr-2" /> Delete Note
-        </button>
-      </div>
-    )}
+                {note && note._id && (
+                  <div className="bg-white rounded-xl shadow-sm p-6">
+                    <button
+                      onClick={handleDeleteNote}
+                      className="w-full flex items-center justify-center py-2 px-4 border border-red-300 text-red-600 rounded-md hover:bg-red-50"
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" /> Delete Note
+                    </button>
+                  </div>
+                )}
             {/* Tags */}
             <div className="mb-6">
               <label htmlFor="tags" className="block text-sm font-medium text-gray-700 mb-2">
@@ -534,6 +617,8 @@ useEffect(() => {
                 ))}
               </div>
             </div>
+
+
 
             {/* Media Uploads */}
             <div>
@@ -764,6 +849,7 @@ useEffect(() => {
           </div>
         </div>
       )}
+
     </div>
   );
 };

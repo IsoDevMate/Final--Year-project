@@ -270,6 +270,23 @@ async unregisterFromEvent(req: Request, res: Response, next: NextFunction) {
   }
 }
 
+  async getEventsihvaeRegisteredasaused(req: Request, res: Response, next: NextFunction) {
+    try {
+      // Check if user object exists (should be set by auth middleware)
+      if (!req.user) {
+        return ResponseUtil.error(res, 401, 'Not authenticated');
+      }
 
+      const userId = (req.user as any).userId;
 
+      const events = await this.eventService.getEventsihvaeRegisteredasauser(userId);
+
+      return ResponseUtil.success(res, 200, events, 'Events retrieved successfully');
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return ResponseUtil.error(res, 400, error.errors[0].message);
+      }
+      next(error);
+    }
+  }
 }

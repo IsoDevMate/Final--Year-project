@@ -1,3 +1,5 @@
+
+
 import React, { useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import {
@@ -13,31 +15,37 @@ import {
   Bell,
   FileText as Notes
 } from 'lucide-react';
-import Dashboard from './Dashboard';
+// import Dashboard from './Dashboard';
+import {useAuth} from '../../contexts/AuthContext';
 
 const DashboardLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
+  const { user } = useAuth();
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
+  };
+
+
+  const isActive = (path: string) => {
+    return location.pathname === path;
   };
 
   const navLinks = [
     { title: 'Dashboard', path: '/dashboard', icon: <Home className="w-5 h-5" /> },
     { title: 'Events', path: '/dashboard/events', icon: <Calendar className="w-5 h-5" /> },
     { title: 'Livestreams', path: '/dashboard/livestreams', icon: <Video className="w-5 h-5" /> },
-    { title: 'Sessions', path: '/dashboard/sessions', icon: <Users className="w-5 h-5" /> },
     { title: 'Payments', path: '/dashboard/payments', icon: <CreditCard className="w-5 h-5" /> },
     { title: 'Settings', path: '/dashboard/settings', icon: <Settings className="w-5 h-5" /> },
-    { title: 'Notifications', path: '/dashboard/notifications', icon: <Bell className="w-5 h-5" /> },
     { title: 'Notes', path: '/dashboard/notes', icon: <Notes className="w-5 h-5" /> },
     { title: 'Profile', path: '/dashboard/profile', icon: <Users className="w-5 h-5" /> },
   ];
 
-  const isActive = (path: string) => {
-    return location.pathname === path;
-  };
+  const navigateToWebsite = () => {
+    window.open('/', '_blank');
+  }
+
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -56,13 +64,12 @@ const DashboardLayout = () => {
         }`}
       >
         <div className="flex items-center justify-between p-4 text-white">
-          <div className="flex items-center">
+          <div className="flex items-center cursor-pointer" onClick={navigateToWebsite}>
             <div className="bg-white rounded-full p-2 mr-2">
               <span className="text-indigo-700 text-xl font-bold">C</span>
             </div>
             <span className="text-2xl font-bold">comfybase</span>
-          </div>
-          <button
+          </div>    <button
             onClick={toggleSidebar}
             className="lg:hidden focus:outline-none"
           >
@@ -122,11 +129,15 @@ const DashboardLayout = () => {
 
               <div className="relative">
                 <button className="flex items-center focus:outline-none">
-                  <div className="w-8 h-8 rounded-full bg-indigo-200 flex items-center justify-center">
-                    <span className="text-indigo-700 font-bold">U</span>
-                  </div>
+                  {/* <div className="w-8 h-8 rounded-full bg-indigo-200 flex items-center justify-center">
+                    <span className="text-indigo-700 font-bold">
+
+                      {user ? user.email.toUpperCase() : 'U'}
+                    </span>
+                  </div> */}
                   <span className="ml-2 text-sm font-medium text-gray-700 hidden md:block">
-                    User Name
+                    {/* Display full name or 'User Name' if no user */}
+                    {user ? user.firstName || user.email : 'User Name'}
                   </span>
                 </button>
               </div>
@@ -137,7 +148,7 @@ const DashboardLayout = () => {
         {/* Main content */}
         <main className="flex-1 overflow-y-auto p-4">
                   <Outlet />
-                  <Dashboard />
+
         </main>
       </div>
     </div>

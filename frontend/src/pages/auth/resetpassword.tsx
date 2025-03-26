@@ -1,18 +1,21 @@
 import React, { useState, useEffect, FormEvent } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
-import { Lock, Check, ArrowLeft } from 'lucide-react';
+import { Lock, Check, ArrowLeft, EyeOff, Eye } from 'lucide-react';
 
 const ResetPasswordPage: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const [token, setToken] = useState<string>('');
-    const [newPassword, setNewPassword] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
     const [confirmPassword, setConfirmPassword] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
     const [success, setSuccess] = useState<boolean>(false);
     const [error, setError] = useState<string>('');
     const [tokenError, setTokenError] = useState<boolean>(false);
+    const [showPassword, setShowPassword] = useState<boolean>(false);
+
+
 
     useEffect(() => {
         // Extract token from URL
@@ -30,13 +33,13 @@ const ResetPasswordPage: React.FC = () => {
         e.preventDefault();
 
         // Validate passwords match
-        if (newPassword !== confirmPassword) {
+        if (password !== confirmPassword) {
             setError('Passwords do not match');
             return;
         }
 
         // Validate password length
-        if (newPassword.length < 8) {
+        if (password.length < 8) {
             setError('Password must be at least 8 characters');
             return;
         }
@@ -45,9 +48,9 @@ const ResetPasswordPage: React.FC = () => {
         setError('');
 
         try {
-            const response = await axios.post('/api/v1/auth/reset-password', {
+            const response = await axios.post('http://localhost:3000/api/v1/auth/reset-password', {
                 token,
-                newPassword
+                password
             });
 
             if (response.data.success) {
@@ -148,19 +151,27 @@ const ResetPasswordPage: React.FC = () => {
                             <label htmlFor="new-password" className="block text-sm font-medium text-gray-700">
                                 New Password
                             </label>
-                            <div className="mt-1">
+                            <div className="mt-1 relative">
                                 <input
                                     id="new-password"
                                     name="new-password"
-                                    type="password"
+                                    type={showPassword ? 'text' : 'password'}
                                     required
-                                    value={newPassword}
-                                    onChange={(e) => setNewPassword(e.target.value)}
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
                                     className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                 />
+                                <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="text-gray-400 hover:text-gray-500 focus:outline-none"
+                                    >
+                                        {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                                    </button>
+                                </div>
                             </div>
                         </div>
-
                         <div>
                             <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700">
                                 Confirm New Password

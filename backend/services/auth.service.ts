@@ -15,7 +15,6 @@ import {
 import { AppError } from '../utils/errors.utils';
 import config from '../config/config';
 import QRCode from 'qrcode';
-import { ResponseUtil } from '../utils/response.utils';
 const sgMail = require('@sendgrid/mail');
 
 export class AuthService {
@@ -102,7 +101,12 @@ export class AuthService {
     const payload: TokenPayload = {
       userId: (user._id as string).toString(),
       email: user.email,
-      role: user.role
+      role: user.role,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      phoneNumber: user.phoneNumber,
+      bio: user.bio,
+      profileImage: user.profileImage,
     };
 
     const accessToken = jwt.sign(
@@ -159,7 +163,7 @@ export class AuthService {
     // In a real application, send email with reset link
     sgMail.setApiKey(config.sendgrid.apiKey);
 
-    const resetUrl = `${config.frontendUrl}/reset-password?token=${resetToken}`;
+    const resetUrl = `${config.frontendUrl}/auth/reset-password?token=${resetToken}`;
 
     const msg = {
       to: user.email,
@@ -190,14 +194,16 @@ export class AuthService {
     }
 
     const user = await User.findById(tokenDoc.userId);
-
+    console.log("user",user)
     if (!user) {
       throw new AppError('User not found', 404);
     }
 
     // Update password
     user.password = data.newPassword;
-    await user.save();
+    const saveduser = await user.save();
+
+    console.log("saveduser",saveduser)
 
     // Delete token
     await Token.deleteOne({ _id: tokenDoc._id });
@@ -206,15 +212,41 @@ export class AuthService {
     sgMail.setApiKey(config.sendgrid.apiKey);
 
     const msg = {
-      to: user.email,
+        to: user.email,
       from: config.sendgrid.fromEmail,
       subject: 'Password Reset Confirmation',
-      text: 'Your password has been successfully reset.',
-      html: '<strong>Your password has been successfully reset.</strong>',
+      text: 'Your password has been successfully reset. If you did not request this change, please contact our support team immediately.',
+      html: `
+      <p>Dear ${user.firstName},</p>
+      <p>Your password has been successfully reset. If you did not request this change, please contact our support team immediately.</p>
+      <p>Thank you,</p>
+      <p>The Comfybase Team</p>
+      `,
     };
 
     await sgMail.send(msg);
   }
+
+  async updateProfile(userId: string, updateData: Partial<Omit<User, 'email'>>): Promise<User> {
+    const user = await User.findById(userId);
+
+    if (!user) {
+      throw new AppError('User not found', 404);
+    }
+
+    // Update user fields except email
+    Object.assign(user, updateData);
+
+    await user.save();
+
+    // Remove password from response
+    const userObject = user.toObject();
+
+    return userObject as User;
+  }
+
+
+
 
   async generateQRCode(userId: string,eventId:string): Promise<string> {
     // Generate unique token for QR code

@@ -23,7 +23,15 @@ export interface AuthTokens {
 export interface TokenPayload {
   userId: string;
   email: string;
-   role: string;
+  role: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber?: string;
+  bio?: string;
+  profileImage?: string;
+  socialLinks?: {
+    linkedinId?: string;
+  };
 }
 
 export interface ResetPasswordDto {

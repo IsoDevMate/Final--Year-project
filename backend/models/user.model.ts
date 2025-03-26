@@ -15,8 +15,13 @@ export interface User extends Document {
   profileImage?: string;
   bio?: string;
   socialLinks?: {
-    linkedin?: string;
+    linkedinId?: string;
+    linkedinAccessToken?: string;
+    linkedinRefreshToken?: string;
+    linkedinTokenExpiry?: Date;
   };
+  phoneNumber?: string;
+  isVerified?: boolean;
   createdAt: Date;
   updatedAt: Date;
  // comparePassword(candidatePassword: string): Promise<boolean>;
@@ -62,6 +67,24 @@ const userSchema = new Schema<User>(
         unique: true,
         sparse: true
       },
+       linkedinAccessToken: {
+        type: String
+      },
+      linkedinRefreshToken: {
+        type: String
+      },
+      linkedinTokenExpiry: {
+        type: Date
+      }
+    },
+    phoneNumber: {
+      type: String,
+      unique: true,
+      sparse: true
+    },
+    isVerified: {
+      type: Boolean,
+      default: false
     }
   },
   {

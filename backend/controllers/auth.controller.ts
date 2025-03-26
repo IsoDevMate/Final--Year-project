@@ -9,7 +9,6 @@ import {
   passwordResetConfirmSchema
 } from '../utils/auth.validation.utils';
 import { ResponseUtil } from '../utils/response.utils';
-import { AppError } from '../utils/errors.utils';
 export class AuthController {
 
  static  async register(req: Request, res: Response, next: NextFunction) {
@@ -70,6 +69,40 @@ export class AuthController {
       next(error);
     }
   }
+
+  static async resetPassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      const validatedData = passwordResetConfirmSchema.parse(req.body);
+      await authService.resetPassword({ token: validatedData.token, newPassword: validatedData.password });
+
+      return ResponseUtil.success(res, 200, null, 'Password reset successfully');
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return ResponseUtil.error(res, 400, error.errors[0].message);
+      }
+      next(error);
+    }
+  }
+
+//  static async updateProfile(req: Request, res: Response, next: NextFunction) {
+//     try {
+
+//       const userId = req.user?.id; // Assuming user ID is stored in req.user after authentication
+
+//       if (!userId) {
+//         return ResponseUtil.error(res, 401, 'Unauthorized: User not found');
+//       }
+
+//       const updateData = req.body;
+
+//       const updatedUser = await authService.updateProfile(userId, updateData);
+
+//       return ResponseUtil.success(res, 200, updatedUser, 'Profile updated successfully');
+//     } catch (error) {
+//       next(error);
+//     }
+//   }
+
 
  static async generateQRCode(req: Request, res: Response, next: NextFunction) {
     try {

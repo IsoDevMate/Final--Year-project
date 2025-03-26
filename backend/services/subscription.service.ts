@@ -4,6 +4,7 @@ import { User } from '../models/user.model';
 import { Payment, PaymentStatus } from '../models/payment.model';
 import { AppError } from '../utils/errors.utils';
 import { CreateSubscriptionDto, SubscriptionQueryDto } from '../utils/payment.validation.utils';
+import Stripe from 'stripe';
 
 // Subscription plan configurations
 const SUBSCRIPTION_CONFIGS = {
@@ -40,6 +41,13 @@ const SUBSCRIPTION_CONFIGS = {
 };
 
 export class SubscriptionService {
+  private stripe: Stripe;
+
+  constructor() {
+    this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
+      apiVersion: '2023-10-16',
+    });
+  }
   async createSubscription(userId: string, subscriptionData: CreateSubscriptionDto): Promise<Subscription> {
     try {
       // Validate user exists

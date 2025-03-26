@@ -1,5 +1,4 @@
 import mongoose, { Document, Schema } from 'mongoose';
-import { User } from './user.model';
 
 export enum EventType {
   CONFERENCE = 'conference',

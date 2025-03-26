@@ -5,6 +5,7 @@ import { App } from './App.tsx'
 import { AuthProvider } from './contexts/AuthContext.tsx'
 import { EventProvider } from './contexts/EventContext.tsx'
 import { SessionProvider } from './contexts/SessionContext.tsx'
+import { Toaster } from 'react-hot-toast'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -12,6 +13,7 @@ createRoot(document.getElementById('root')!).render(
       <EventProvider>
         <SessionProvider>
           <App />
+           <Toaster />
         </SessionProvider>
       </EventProvider>
     </AuthProvider>

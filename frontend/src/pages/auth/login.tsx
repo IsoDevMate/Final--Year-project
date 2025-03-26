@@ -67,18 +67,17 @@ const onSubmit = async (data: LoginFormData) => {
   };
 
 
-
   return (
     <div className="flex min-h-screen bg-gradient-to-b from-indigo-700 to-indigo-400">
       {/* Left side */}
       <div className="hidden md:flex md:w-1/2 flex-col items-center justify-center p-12 text-white">
         <div className="mb-12">
-          <span className="flex items-center text-3xl font-bold">
+          <Link to="/" className="flex items-center text-3xl font-bold">
             <div className="bg-white rounded-full p-2 mr-2">
               <span className="text-indigo-600 text-xl font-bold">C</span>
             </div>
             comfybase
-          </span>
+          </Link>
         </div>
         <div className="mt-auto">
           <h1 className="text-5xl font-bold mb-6">
@@ -178,7 +177,7 @@ const onSubmit = async (data: LoginFormData) => {
             <p className="text-sm text-gray-600">
               Don't have an account? <Link to="/auth/signup" className="text-indigo-600 hover:text-indigo-800 font-medium">Sign Up</Link>
             </p>
-            <Link to="/forgot-password" className="text-sm text-indigo-600 hover:text-indigo-800 font-medium">
+            <Link to="/auth/forgot-password" className="text-sm text-indigo-600 hover:text-indigo-800 font-medium">
               Forgot Password
             </Link>
           </div>

@@ -5,6 +5,7 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "strict": true,
+    "typeRoots": ["./node_modules/@types", "./types"],
      "resolveJsonModule": true,               // json imports
         "esModuleInterop": true,                 // import common modules as ES6 Modules
         "allowSyntheticDefaultImports": true,

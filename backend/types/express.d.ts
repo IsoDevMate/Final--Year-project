@@ -6,13 +6,17 @@ declare global {
       userId: string;
       email: string;
       role: UserRole;
+      id?: string;
+        [key: string]: any;
     }
 
     interface Request {
       user?: {
-         userId: string;
+        userId: string;
         email: string;
         role: UserRole;
+        id?: string;
+        [key: string]: any;
       };
     }
   }

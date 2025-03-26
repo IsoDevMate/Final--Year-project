@@ -11,6 +11,8 @@ router.post('/login', AuthController.login);
 router.post('/refresh-token', AuthController.refreshToken);
 router.post('/logout', AuthController.logout);
 router.post('/forgot-password', AuthController.requestPasswordReset);
+router.post('/reset-password', AuthController.resetPassword);
+// router.post('/profile-update', AuthController.updateProfile);
 
 // QR Code for Event Access
 router.post(
@@ -43,5 +45,3 @@ router.get(
 );
 
 export default router;
-
-

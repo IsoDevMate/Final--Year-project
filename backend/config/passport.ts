@@ -32,11 +32,11 @@ export const setupPassport = () => {
             linkedin: profile.id
           }
         });
-      } else if (!user.socialLinks?.linkedin) {
+      } else if (!user.socialLinks?.linkedinId) {
         // Update existing user with LinkedIn ID if not set
         user.socialLinks = {
             ...user.socialLinks,
-            linkedin: profile.id
+            linkedinId: profile.id
           };
         user.firstName = profile.name.givenName;
           user.lastName = profile.name.familyName;

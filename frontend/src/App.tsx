@@ -6,6 +6,9 @@ import ErrorBoundary from './ErroBoundary';
 import ProtectedRoute from './config/protectedroute';
 import PublicRoute from './config/publicroute';
 import LoadingSpinner from './config/loadingSpinner';
+import RegistrationSuccessPage from './components/Event/eventsuccespage';
+import CreateEventPage from './components/Event/createEvent';
+import RequestDemoPage from './pages/requestdemo';
 
 const LoginPage = lazy(() => import('./pages/auth/login'));
 const SignupPage = lazy(() => import('./pages/auth/signup'));
@@ -92,6 +95,15 @@ export const App: React.FC = () => {
             </Route>
 
             <Route
+              path="/demo"
+              element={
+                <motion.div {...pageTransition}>
+                  <RequestDemoPage  />
+                </motion.div>
+              }
+            />
+
+            <Route
               path="/auth/linkedin/callback"
               element={
                 <motion.div {...pageTransition}>
@@ -120,14 +132,7 @@ export const App: React.FC = () => {
                   }
                 />
                 <Route path="livestreams" element={<div>Livestreams</div>} />
-                <Route
-                  path="sessions"
-                  element={
-                    <motion.div {...pageTransition}>
-                      <SessionsPage />
-                    </motion.div>
-                  }
-                />
+
                 <Route path="payments" element={<div>Payments</div>} />
                 <Route
                   path="settings"
@@ -167,6 +172,17 @@ export const App: React.FC = () => {
                 path="/dashboard/events/:eventId/sessions"
                 element={<SessionsPage />}
               />
+
+              <Route
+                path="/dashboard/events/:eventId/success"
+                element={<RegistrationSuccessPage />}
+              />
+
+              <Route
+                path="/dashboard/events/create"
+                element={<CreateEventPage />}
+              />
+
               <Route
                 path="/dashboard/livestreams/:livestreamId"
                 element={<div>Livestream Details</div>}
