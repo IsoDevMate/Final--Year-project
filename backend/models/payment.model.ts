@@ -9,7 +9,7 @@ export enum PaymentStatus {
 
 export interface Payment extends Document {
   userId: mongoose.Types.ObjectId;
-  eventId: mongoose.Types.ObjectId;
+  eventId?: mongoose.Types.ObjectId;
   amount: number;
   currency: string;
   status: PaymentStatus;
@@ -33,7 +33,7 @@ const paymentSchema = new Schema<Payment>(
     eventId: {
       type: Schema.Types.ObjectId,
       ref: 'Event',
-      required: true
+      required: false
     },
     amount: {
       type: Number,
@@ -76,7 +76,6 @@ const paymentSchema = new Schema<Payment>(
 
 // Indexes for efficient queries
 paymentSchema.index({ userId: 1 });
-paymentSchema.index({ eventId: 1 });
 paymentSchema.index({ status: 1 });
 paymentSchema.index({ createdAt: 1 });
 

@@ -6,7 +6,6 @@ import {
   subscriptionQuerySchema
 } from '../utils/payment.validation.utils';
 import { ResponseUtil } from '../utils/response.utils';
-import { AppError } from '../utils/errors.utils';
 import { UserRole } from '../models/user.model';
 
 export class SubscriptionController {
@@ -16,28 +15,6 @@ export class SubscriptionController {
     this.subscriptionService = new SubscriptionService();
   }
 
-  async createSubscription(req: Request, res: Response, next: NextFunction) {
-    try {
-      const validatedData = createSubscriptionSchema.parse(req.body);
-
-      // Check if user object exists (should be set by auth middleware)
-      if (!req.user) {
-        return ResponseUtil.error(res, 401, 'Not authenticated');
-      }
-
-      // Get user ID from request (set by auth middleware)
-      const userId = (req.user as any).userId;
-
-      const subscription = await this.subscriptionService.createSubscription(userId, validatedData);
-
-      return ResponseUtil.success(res, 201, subscription, 'Subscription created successfully');
-    } catch (error) {
-      if (error instanceof ZodError) {
-        return ResponseUtil.error(res, 400, error.errors[0].message);
-      }
-      next(error);
-    }
-  }
 
   async getSubscriptions(req: Request, res: Response, next: NextFunction) {
     try {

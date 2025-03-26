@@ -8,9 +8,9 @@ export enum SubscriptionStatus {
 }
 
 export enum SubscriptionPlan {
-  BASIC = 'basic',
-  PREMIUM = 'premium',
-  ENTERPRISE = 'enterprise'
+  BASIC = 'BASIC',
+  PREMIUM = 'PREMIUM',
+  ENTERPRISE = 'ENTERPRISE'
 }
 
 export interface Subscription extends Document {
