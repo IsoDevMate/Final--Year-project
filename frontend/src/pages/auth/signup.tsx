@@ -12,7 +12,10 @@ const registerSchema = z.object({
   firstName: z.string().min(2, 'First name must be at least 2 characters'),
   lastName: z.string().min(2, 'Last name must be at least 2 characters'),
   email: z.string().email('Invalid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters')
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+    role: z.enum(['attendee', 'organizer'], {
+    errorMap: () => ({ message: 'Please select a role' })
+  })
 });
 
 type RegisterFormData = z.infer<typeof registerSchema>;
@@ -23,7 +26,10 @@ const SignupPage: React.FC = () => {
   const navigate = useNavigate();
 
   const { register, handleSubmit, formState: { errors } } = useForm<RegisterFormData>({
-    resolver: zodResolver(registerSchema)
+    resolver: zodResolver(registerSchema),
+     defaultValues: {
+      role: 'attendee' // Default to attendee
+    }
   });
 
   const onSubmit = async (data: RegisterFormData) => {
@@ -152,6 +158,35 @@ const SignupPage: React.FC = () => {
               </div>
               {errors.email && (
                 <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+              )}
+            </div>
+
+                  <div className="mb-4">
+              <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-1">
+                Select Your Role
+              </label>
+              <div className="flex space-x-4">
+                <label className="inline-flex items-center">
+                  <input
+                    type="radio"
+                    value="attendee"
+                    {...register('role')}
+                    className="form-radio text-indigo-600"
+                  />
+                  <span className="ml-2">Attendee</span>
+                </label>
+                <label className="inline-flex items-center">
+                  <input
+                    type="radio"
+                    value="organizer"
+                    {...register('role')}
+                    className="form-radio text-indigo-600"
+                  />
+                  <span className="ml-2">Organizer</span>
+                </label>
+              </div>
+              {errors.role && (
+                <p className="mt-1 text-sm text-red-600">{errors.role.message}</p>
               )}
             </div>
 

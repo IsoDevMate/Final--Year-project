@@ -10,6 +10,8 @@ import { useAuth } from '../../contexts/AuthContext';
 import { EventSelector } from '../Event/eventselector';
 import LinkedInShareModal from './linkedinmodal';
 import toast from 'react-hot-toast';
+import MultimediaShareModal from './sharemulti';
+import axios from 'axios';
 interface Note {
   _id: string;
   title: string;
@@ -52,7 +54,9 @@ interface MediaAttachment {
   const navigate = useNavigate();
     const [note, setNote] = useState<Note | null>(null);
     const { user ,isAuthenticated } = useAuth();
-  const [title, setTitle] = useState('');
+   const [title, setTitle] = useState('');
+   const [brushWidth, setBrushWidth] = useState(5);
+  const [brushColor, setBrushColor] = useState('#000000');
   const [content, setContent] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [isPrivate, setIsPrivate] = useState(true);
@@ -66,8 +70,6 @@ interface MediaAttachment {
   const [showMediaPreview, setShowMediaPreview] = useState(false);
   const [selectedEventId, setSelectedEventId] = useState<string | undefined>();
   const [selectedSessionId, setSelectedSessionId] = useState<string | undefined>();
-
-
 
   const editorRef = useRef<HTMLDivElement>(null);
   // const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -118,7 +120,7 @@ useEffect(() => {
         setContent(data.data.content);
         setTags(data.data.tags || []);
         setIsPrivate(data.data.isPrivate);
-         setSelectedEventId(data.data.event?._id);
+        setSelectedEventId(data.data.event?._id);
         setSelectedSessionId(data.data.session?._id);
       } else {
         // Initialize new note
@@ -138,21 +140,31 @@ useEffect(() => {
   };
 
   // Initialize fabric.js canvas when showing canvas editor
-  useEffect(() => {
-    if (showCanvasEditor && canvasRef.current && !fabricCanvasRef.current) {
-      fabricCanvasRef.current = new fabric.Canvas(canvasRef.current, {
-        width: canvasRef.current.offsetWidth,
-        height: 400,
-        backgroundColor: '#fff'
-      });
+useEffect(() => {
+  if (showCanvasEditor && canvasRef.current && !fabricCanvasRef.current) {
+    fabricCanvasRef.current = new fabric.Canvas(canvasRef.current, {
+      width: canvasRef.current.offsetWidth,
+      height: 400,
+      backgroundColor: '#fff'
+    });
 
-      // Add basic drawing functionality
-      fabricCanvasRef.current.isDrawingMode = true;
-      if (fabricCanvasRef.current.freeDrawingBrush) {
-        fabricCanvasRef.current.freeDrawingBrush.width = 3;
-        fabricCanvasRef.current.freeDrawingBrush.color = '#000';
-      }
+    // Enhanced drawing configuration
+    fabricCanvasRef.current.isDrawingMode = true;
+    if (fabricCanvasRef.current.freeDrawingBrush) {
+      fabricCanvasRef.current.freeDrawingBrush.width = 5;
+      fabricCanvasRef.current.freeDrawingBrush.color = '#000';
     }
+
+    // Add color and brush size controls
+    const updateBrush = () => {
+      if (fabricCanvasRef.current) {
+        fabricCanvasRef.current.freeDrawingBrush.width = brushWidth;
+        fabricCanvasRef.current.freeDrawingBrush.color = brushColor;
+      }
+    };
+
+    // Call updateBrush when brushWidth or brushColor changes
+    updateBrush();
 
     return () => {
       if (fabricCanvasRef.current) {
@@ -160,76 +172,77 @@ useEffect(() => {
         fabricCanvasRef.current = null;
       }
     };
-  }, [showCanvasEditor]);
+  }
+}, [showCanvasEditor]);
 
   const handleEventSelect = (eventId: string) => {
     setSelectedEventId(eventId);
   };
 
-const handleSave = async () => {
-  // Validate user and token
-  if (!user || !isAuthenticated) {
-    alert('Please log in to save notes');
-    navigate('/auth/login');
-    return;
-  }
+// const handleSave = async () => {
+//   // Validate user and token
+//   if (!user || !isAuthenticated) {
+//     alert('Please log in to save notes');
+//     navigate('/auth/login');
+//     return;
+//   }
 
-  // Additional input validation
-  if (!title.trim()) {
-    alert('Please enter a note title');
-    return;
-  }
+//   // Additional input validation
+//   if (!title.trim()) {
+//     alert('Please enter a note title');
+//     return;
+//   }
 
-  if (!selectedEventId) {
-      alert('Please select an event for this note');
-      return;
-    }
+//   if (!selectedEventId) {
+//       alert('Please select an event for this note');
+//       return;
+//     }
 
-  setIsSaving(true);
-  try {
-    const noteData = {
-      title,
-      content,
-      tags,
-      isPrivate,
-      event: selectedEventId,
-      session: selectedSessionId,
-    };
+//   setIsSaving(true);
+//   try {
+//     const noteData = {
+//       title,
+//       content,
+//       tags,
+//       isPrivate,
+//       event: selectedEventId,
+//       session: selectedSessionId,
+//     };
 
-    const response = await fetch(`${API_BASE_URL}/api/v1/notes${noteId && noteId !== 'new' ? `/${noteId}` : ''}`, {
-      method: noteId && noteId !== 'new' ? 'PUT' : 'POST',
-      headers: getAuthHeaders(),
-      body: JSON.stringify(noteData)
-    });
+//     const response = await fetch(`${API_BASE_URL}/api/v1/notes${noteId && noteId !== 'new' ? `/${noteId}` : ''}`, {
+//       method: noteId && noteId !== 'new' ? 'PUT' : 'POST',
+//       headers: getAuthHeaders(),
+//       body: JSON.stringify(noteData)
+//     });
 
-    // Enhanced error handling
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to save note');
-    }
+//     // Enhanced error handling
+//     if (!response.ok) {
+//       const errorData = await response.json();
+//       throw new Error(errorData.message || 'Failed to save note');
+//     }
 
-    const savedNote = await response.json();
+//     const savedNote = await response.json();
 
-    // Navigate or update state based on save type
-    if (noteId === 'new') {
-      navigate(`/dashboard/notes/${savedNote.data._id}`);
-    } else {
-      setNote(savedNote.data);
-    }
+//     // Navigate or update state based on save type
+//     if (noteId === 'new') {
+//       navigate(`/dashboard/notes/${savedNote.data._id}`);
+//     } else {
+//       setNote(savedNote.data);
+//     }
 
-    // Optional: Show success message
-    alert('Note saved successfully');
-  } catch (error) {
-    console.error('Error saving note:', error);
-    if (error instanceof Error) {
-      alert(error.message || 'Failed to save note');
-    } else {
-      alert('Failed to save note');
-    }
-  } finally {
-    setIsSaving(false);
-  }
-};
+//     // Optional: Show success message
+//     alert('Note saved successfully');
+//   } catch (error) {
+//     console.error('Error saving note:', error);
+//     if (error instanceof Error) {
+//       alert(error.message || 'Failed to save note');
+//     } else {
+//       alert('Failed to save note');
+//     }
+//   } finally {
+//     setIsSaving(false);
+//   }
+// };
 
   const addTag = () => {
     if (currentTag.trim() && !tags.includes(currentTag.trim())) {
@@ -300,11 +313,103 @@ const handleLinkedInShare = async (customMessage?: string) => {
     console.error('LinkedIn sharing error:', error);
     alert('Failed to share to LinkedIn');
   }
-};
+   };
+
+  const handleSave = async () => {
+    console.group('Save Note');
+    console.log('Save Note Started');
+    console.log('Current User:', user);
+    console.log('Is Authenticated:', isAuthenticated);
+
+    // Validate user and token
+    if (!user || !isAuthenticated) {
+      console.warn('User not authenticated - cannot save');
+      toast.error('Please log in to save notes');
+      navigate('/auth/login');
+      return;
+    }
+
+    // Additional input validation
+    if (!title.trim()) {
+      console.warn('Note title is empty');
+      toast.error('Please enter a note title');
+      return;
+    }
+
+    if (!selectedEventId) {
+      console.warn('No event selected');
+      toast.error('Please select an event for this note');
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const noteData = {
+        title,
+        content,
+        tags,
+        isPrivate,
+        event: selectedEventId,
+        session: selectedSessionId,
+      };
+
+      console.log('Note Data to Save:', noteData);
+
+      const response = await fetch(
+        `${API_BASE_URL}/api/v1/notes${noteId && noteId !== 'new' ? `/${noteId}` : ''}`,
+        {
+          method: noteId && noteId !== 'new' ? 'PUT' : 'POST',
+          headers: getAuthHeaders(),
+          body: JSON.stringify(noteData)
+        }
+      );
+
+      console.log('Save Response Status:', response.status);
+
+      // Enhanced error handling
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Save Error:', errorData);
+        throw new Error(errorData.message || 'Failed to save note');
+      }
+
+      const savedNote = await response.json();
+      console.log('Saved Note Response:', savedNote);
+
+      // Navigate or update state based on save type
+      if (noteId === 'new') {
+        console.log('New note created, navigating to note page');
+        navigate(`/dashboard/notes/${savedNote.data._id}`);
+      } else {
+        console.log('Existing note updated');
+        setNote(savedNote.data);
+      }
+
+      toast.success('Note saved successfully');
+    } catch (error) {
+      console.error('Error saving note:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to save note');
+    } finally {
+      setIsSaving(false);
+      console.groupEnd();
+    }
+  };
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>, fileType: 'image' | 'audio' | 'video' | 'document') => {
+    console.group('File Upload');
+    console.log('File Upload Started');
+    console.log('File Type:', fileType);
+
     const file = event.target.files?.[0];
-    if (!file || !noteId || noteId === 'new') return;
+
+    console.log('Selected File:', file);
+
+    if (!file || !noteId || noteId === 'new') {
+      console.warn('Invalid file or note context');
+      toast.error('Cannot upload file');
+      console.groupEnd();
+      return;
+    }
 
     // Create FormData
     const formData = new FormData();
@@ -312,6 +417,7 @@ const handleLinkedInShare = async (customMessage?: string) => {
     formData.append('fileType', fileType);
 
     const token = localStorage.getItem('accessToken');
+    console.log('Access Token Present:', !!token);
 
     try {
       const response = await fetch(`${API_BASE_URL}/api/v1/notes/${noteId}/media`, {
@@ -322,8 +428,11 @@ const handleLinkedInShare = async (customMessage?: string) => {
         body: formData
       });
 
+      console.log('Upload Response Status:', response.status);
+
       if (!response.ok) {
         if (response.status === 401) {
+          console.error('Unauthorized - redirecting to login');
           navigate('/auth/login');
           return;
         }
@@ -331,13 +440,54 @@ const handleLinkedInShare = async (customMessage?: string) => {
       }
 
       const result = await response.json();
+      console.log('Upload Result:', result);
+
       setNote(result.data);
       toast.success('File uploaded successfully!');
     } catch (error) {
       console.error('Error uploading file:', error);
-      alert('Failed to upload file');
+      toast.error('Failed to upload file');
+    } finally {
+      console.groupEnd();
     }
-  };
+   };
+
+  // const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>, fileType: 'image' | 'audio' | 'video' | 'document') => {
+  //   const file = event.target.files?.[0];
+  //   if (!file || !noteId || noteId === 'new') return;
+
+  //   // Create FormData
+  //   const formData = new FormData();
+  //   formData.append('file', file);
+  //   formData.append('fileType', fileType);
+
+  //   const token = localStorage.getItem('accessToken');
+
+  //   try {
+  //     const response = await fetch(`${API_BASE_URL}/api/v1/notes/${noteId}/media`, {
+  //       method: 'POST',
+  //       headers: {
+  //         'Authorization': `Bearer ${token}`
+  //       },
+  //       body: formData
+  //     });
+
+  //     if (!response.ok) {
+  //       if (response.status === 401) {
+  //         navigate('/auth/login');
+  //         return;
+  //       }
+  //       throw new Error('Failed to upload file');
+  //     }
+
+  //     const result = await response.json();
+  //     setNote(result.data);
+  //     toast.success('File uploaded successfully!');
+  //   } catch (error) {
+  //     console.error('Error uploading file:', error);
+  //     alert('Failed to upload file');
+  //   }
+  // };
 
   const handleDeleteAttachment = async (attachmentId: string) => {
     if (!noteId || !attachmentId) return;
@@ -395,10 +545,11 @@ const handleLinkedInShare = async (customMessage?: string) => {
   };
 
 
-  const openMediaPreview = (attachment: MediaAttachment) => {
-    setSelectedAttachment(attachment);
-    setShowMediaPreview(true);
-  };
+const openMediaPreview = (attachment: MediaAttachment) => {
+  console.log('Opening preview for:', attachment);
+  setSelectedAttachment(attachment);
+  setShowMediaPreview(true);
+};
 
 
   if (isLoading) {
@@ -433,7 +584,7 @@ const handleLinkedInShare = async (customMessage?: string) => {
                  onShare={handleLinkedInShare}
                />
           )}
-          
+
           <button
             onClick={() => navigate('/dashboard/notes')}
             className="bg-gray-200 text-gray-800 py-2 px-4 rounded-lg hover:bg-gray-300 transition duration-200 flex items-center"
@@ -672,42 +823,69 @@ const handleLinkedInShare = async (customMessage?: string) => {
               </div>
 
               {/* List of Attachments */}
-              {note?.mediaAttachments && note.mediaAttachments.length > 0 ? (
-                <div className="space-y-2">
-                  {note.mediaAttachments.map((attachment) => (
-                    <div
-                      key={attachment._id}
-                      className="flex items-center justify-between p-2 bg-gray-50 rounded-md hover:bg-gray-100 cursor-pointer"
-                      onClick={() => openMediaPreview(attachment)}
-                    >
-                      <div className="flex items-center">
-                        {attachment.type === 'image' && <Image className="h-4 w-4 mr-2 text-blue-600" />}
-                        {attachment.type === 'audio' && <Mic className="h-4 w-4 mr-2 text-green-600" />}
-                        {attachment.type === 'video' && <Video className="h-4 w-4 mr-2 text-purple-600" />}
-                        {attachment.type === 'document' && <File className="h-4 w-4 mr-2 text-orange-600" />}
+   {note?.mediaAttachments && note.mediaAttachments.length > 0 && (
+  <div>
+    <h4 className="text-sm font-medium text-gray-700 mb-2">Uploaded Files</h4>
+    {note.mediaAttachments.map((attachment) => (
+      <div
+        key={attachment._id}
+        className="flex items-center justify-between mb-2 p-2 border rounded-md cursor-pointer hover:bg-gray-50"
+        onClick={() => openMediaPreview(attachment)}
+      >
+        <div className="flex items-center space-x-2">
+          {attachment.type === 'image' && <Image className="h-5 w-5 text-blue-500" />}
+          {attachment.type === 'document' && <File className="h-5 w-5 text-green-500" />}
+          {attachment.type === 'audio' && <Mic className="h-5 w-5 text-purple-500" />}
+          {attachment.type === 'video' && <Video className="h-5 w-5 text-red-500" />}
+          <span className="text-sm">{attachment.fileName}</span>
+        </div>
+        <div className="flex items-center space-x-2">
+               <MultimediaShareModal
+                 attachment={attachment}
+                 onShare={async (customMessage) => {
 
-                        <div className="truncate max-w-[150px]">
-                          <span className="text-xs font-medium">{attachment.fileName}</span>
-                        </div>
-                      </div>
+                 // Implement sharing logic based on attachment type
+                 const sharingEndpoint = (() => {
+                   switch (attachment.type) {
+                     case 'image':
+                       return 'http://localhost:3000/api/v1/linkedin/share/image';
+                     case 'video':
+                       return 'http://localhost:3000/api/v1/linkedin/share/video';
+                     case 'document':
+                       return 'http://localhost:3000/api/v1/linkedin/share/article';
+                     default:
+                       return 'http://localhost:3000/api/v1/linkedin/share/content';
+                   }
+                 })();
 
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteAttachment(attachment._id);
-                        }}
-                        className="text-red-600 hover:text-red-800"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-3 bg-gray-50 rounded-md">
-                  <span className="text-sm text-gray-500">No attachments yet</span>
-                </div>
-              )}
+                   const response = await axios.post(sharingEndpoint, {
+
+                      attachmentId: attachment._id,
+                      customMessage,
+                      noteMetadata: {
+                        title: note.title,
+                        content: note.content,
+                        event: note.event?.title,
+                        session: note.session?.title
+                      }
+                    }, {
+                      headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                      }
+                   });
+
+                 if (response.status < 200 || response.status >= 300) {
+                   throw new Error('Failed to share');
+                 }
+
+                 return response.data;
+               }}
+             />
+           </div>
+               </div>
+             ))}
+            </div>
+          )}
             </div>
           </div>
 
@@ -759,7 +937,7 @@ const handleLinkedInShare = async (customMessage?: string) => {
                 onClick={async () => {
                   if (window.confirm('Are you sure you want to delete this note? This action cannot be undone.')) {
                     try {
-                      const response = await fetch(`/api/v1/notes/${note._id}`, {
+                      const response = await fetch(`http:localhost:3000/api/v1/notes/${note._id}`, {
                         method: 'DELETE'
                       });
 
@@ -783,72 +961,56 @@ const handleLinkedInShare = async (customMessage?: string) => {
 
       {/* Media Preview Modal */}
       {showMediaPreview && selectedAttachment && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-70 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
-            <div className="p-4 border-b flex justify-between items-center">
-              <h3 className="text-lg font-medium">{selectedAttachment.fileName}</h3>
-              <button
-                onClick={() => setShowMediaPreview(false)}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                <X className="h-6 w-6" />
-              </button>
-            </div>
+         <div className="fixed inset-0 z-50 overflow-y-auto bg-black        bg-opacity-70 flex items-center justify-center p-4">
+    <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+      <div className="p-4 border-b flex justify-between items-center">
+        <h3 className="text-lg font-medium">{selectedAttachment.fileName}</h3>
+        <button
+          onClick={() => setShowMediaPreview(false)}
+          className="text-gray-500 hover:text-gray-700"
+        >
+          <X className="h-6 w-6" />
+        </button>
+      </div>
 
-            <div className="flex-1 overflow-auto p-4 flex items-center justify-center">
-              {selectedAttachment.type === 'image' && (
-                <img
-                  src={selectedAttachment.url}
-                  alt={selectedAttachment.fileName}
-                  className="max-w-full max-h-[70vh] object-contain"
-                />
-              )}
-              {selectedAttachment.type === 'audio' && (
-                <audio controls className="w-full">
-                  <source src={selectedAttachment.url} />
-                  Your browser does not support the audio element.
-                </audio>
-              )}
-              {selectedAttachment.type === 'video' && (
-                <video controls className="max-w-full max-h-[70vh]">
-                  <source src={selectedAttachment.url} />
-                  Your browser does not support the video element.
-                </video>
-              )}
-              {selectedAttachment.type === 'document' && (
-                <div className="text-center">
-                  <File className="h-24 w-24 mx-auto text-gray-400" />
-                  <p className="mt-4 text-gray-600">Document preview not available</p>
-                </div>
-              )}
-            </div>
-
-            <div className="p-4 border-t flex justify-between">
-              <div>
-                <span className="text-sm text-gray-500">
-                  {(selectedAttachment.fileSize / 1024).toFixed(1)} KB •
-                  Added on {new Date(selectedAttachment.createdAt).toLocaleDateString()}
-                </span>
-              </div>
-              <div className="flex space-x-3">
-                <a
-                  href={selectedAttachment.url}
-                  download={selectedAttachment.fileName}
-                  className="text-indigo-600 hover:text-indigo-800 flex items-center"
-                >
-                  <Download className="h-4 w-4 mr-1" /> Download
-                </a>
-                <button
-                  onClick={() => handleDeleteAttachment(selectedAttachment._id)}
-                  className="text-red-600 hover:text-red-800 flex items-center"
-                >
-                  <Trash2 className="h-4 w-4 mr-1" /> Delete
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <div className="flex-1 overflow-auto p-4 flex items-center justify-center">
+        {selectedAttachment.type === 'image' && (
+          <img
+            src={selectedAttachment.url}
+            alt={selectedAttachment.fileName}
+            className="max-w-full max-h-[70vh] object-contain"
+            onError={(e) => {
+              // Fallback if image fails to load
+              e.currentTarget.src = '/path/to/fallback/image.png';
+            }}
+          />
+        )}
+        {selectedAttachment.type === 'audio' && (
+          <audio controls className="w-full">
+            <source src={selectedAttachment.url} />
+            Your browser does not support the audio element.
+          </audio>
+        )}
+        {selectedAttachment.type === 'video' && (
+          <video controls className="max-w-full max-h-[70vh]">
+            <source src={selectedAttachment.url} />
+            Your browser does not support the video element.
+          </video>
+        )}
+        {selectedAttachment.type === 'document' && (
+          <iframe
+            src={selectedAttachment.url}
+            width="100%"
+            height="600px"
+            className="border-none"
+          >
+            Document preview not available
+          </iframe>
+        )}
+      </div>
+    </div>
+         </div>
+       )}
 
     </div>
   );

@@ -29,7 +29,6 @@ const serviceAccounting = {
   universe_domain: serviceAccountConfig.universe_domain
 };
 
-
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccounting as admin.ServiceAccount),
   storageBucket: config.storagebucketnameis,

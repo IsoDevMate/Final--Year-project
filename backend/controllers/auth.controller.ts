@@ -9,6 +9,7 @@ import {
   passwordResetConfirmSchema
 } from '../utils/auth.validation.utils';
 import { ResponseUtil } from '../utils/response.utils';
+import { User } from '../models/user.model';
 export class AuthController {
 
  static  async register(req: Request, res: Response, next: NextFunction) {
@@ -84,24 +85,24 @@ export class AuthController {
     }
   }
 
-//  static async updateProfile(req: Request, res: Response, next: NextFunction) {
-//     try {
+ static async updateProfile(req: Request, res: Response, next: NextFunction) {
+    try {
 
-//       const userId = req.user?.id; // Assuming user ID is stored in req.user after authentication
+      const userId = (req.user as any).id;
 
-//       if (!userId) {
-//         return ResponseUtil.error(res, 401, 'Unauthorized: User not found');
-//       }
+      if (!userId) {
+        return ResponseUtil.error(res, 401, 'Unauthorized: User not found');
+      }
 
-//       const updateData = req.body;
+      const updateData = req.body;
 
-//       const updatedUser = await authService.updateProfile(userId, updateData);
+      const updatedUser = await authService.updateProfile(userId, updateData);
 
-//       return ResponseUtil.success(res, 200, updatedUser, 'Profile updated successfully');
-//     } catch (error) {
-//       next(error);
-//     }
-//   }
+      return ResponseUtil.success(res, 200, updatedUser, 'Profile updated successfully');
+    } catch (error) {
+      next(error);
+    }
+  }
 
 
  static async generateQRCode(req: Request, res: Response, next: NextFunction) {
@@ -151,6 +152,23 @@ static  async requestPasswordReset(req: Request, res: Response, next: NextFuncti
       next(error);
     }
   }
+
+  static async getUserProfile(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = (req.user as any).id;
+
+      if (!userId) {
+        return ResponseUtil.error(res, 401, 'Unauthorized: User not found');
+      }
+
+      const userProfile = await authService.getUserProfile(userId);
+
+      return ResponseUtil.success(res, 200, userProfile, 'User profile retrieved successfully');
+    } catch (error) {
+      next(error);
+    }
+  }
+
 }
 
 export default new AuthController();

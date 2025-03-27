@@ -30,12 +30,11 @@ const LogoutPage: React.FC = () => {
                     await new Promise(resolve => setTimeout(resolve, 1200));
                     await logout();
                     toast.success('You have been logged out successfully');
-
                     // Allow toast to be visible and progress bar to complete
                     setTimeout(() => navigate('/auth/login'), 800);
                 } catch (error) {
                     console.error('Logout error:', error);
-                    toast.error('There was an error logging out');
+                    // toast.error('There was an error logging out');
 
                     // Even on error, redirect after a delay
                     setTimeout(() => navigate('/auth/login'), 800);

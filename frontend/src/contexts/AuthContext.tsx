@@ -53,44 +53,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
 
-  // const checkAuthStatus = async () => {
-  //   setIsLoading(true);
-  //   try {
-  //     if (isTokenValid()) {
-  //       const token = localStorage.getItem('accessToken');
-  //       // First check if we already have user data in localStorage
-  //       const user = localStorage.getItem('user');
-  //       if (user) {
-  //         setUser(JSON.parse(user));
-  //         setIsLoading(false);
-  //         return;
-  //       }
-
-  //       // If no stored user but valid token, fetch from API
-  //       const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/v1/auth/me`, {
-  //         headers: { Authorization: `Bearer ${token}` }
-  //       });
-
-  //       setUser(response.data.user);
-  //       // Store user in localStorage for future use
-  //       localStorage.setItem('user', JSON.stringify(response.data.user));
-  //     } else {
-  //       setUser(null);
-  //       localStorage.removeItem('user');
-  //     }
-  //   } catch (error) {
-  //     console.error('Auth status check failed:', error);
-  //     // Clear invalid tokens
-  //     localStorage.removeItem('accessToken');
-  //     localStorage.removeItem('refreshToken');
-  //     localStorage.removeItem('user');
-  //     setUser(null);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
-
-  // In AuthContext.tsx, modify the checkAuthStatus function:
 
 const checkAuthStatus = async () => {
   setIsLoading(true);

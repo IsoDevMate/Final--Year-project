@@ -7,7 +7,6 @@ declare global {
       email: string;
       role: UserRole;
       id?: string;
-        [key: string]: any;
     }
 
     interface Request {
@@ -16,7 +15,6 @@ declare global {
         email: string;
         role: UserRole;
         id?: string;
-        [key: string]: any;
       };
     }
   }

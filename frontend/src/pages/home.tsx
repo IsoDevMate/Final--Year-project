@@ -289,11 +289,11 @@ const HomePage = () => {
                 title="Interactive Notes"
                 description="Take multimedia-enhanced notes during sessions and attach images, audio clips, and sticky notes for better information retention."
               />
-              <FeatureCard
+              {/* <FeatureCard
                 icon={<Video className="h-6 w-6 text-indigo-600" />}
                 title="Live Streaming"
                 description="Access live streams of sessions, workshops and keynotes with real-time interaction capabilities for remote attendees."
-              />
+              /> */}
               <FeatureCard
                 icon={<QrCode className="h-6 w-6 text-indigo-600" />}
                 title="QR Code Access"
@@ -304,11 +304,11 @@ const HomePage = () => {
                 title="LinkedIn Integration"
                 description="Share your event insights, notes, and networking connections directly to LinkedIn with one-click posting."
               />
-              <FeatureCard
+              {/* <FeatureCard
                 icon={<Camera className="h-6 w-6 text-indigo-600" />}
                 title="Flashback Stories"
                 description="Capture event moments that transform into personalized flashback memories in the days following your event."
-              />
+              /> */}
               <FeatureCard
                 icon={<BookOpen className="h-6 w-6 text-indigo-600" />}
                 title="Multimedia Library"
@@ -374,22 +374,22 @@ const HomePage = () => {
               image={qr}
             />
 
-            <div className="border-t border-gray-200 my-16"></div>
+            {/* <div className="border-t border-gray-200 my-16"></div>
 
             <ShowcaseFeature
               title="Live Streaming for Remote Attendees"
               description="Extend your event's reach globally with our premium live streaming feature. Remote attendees get an immersive experience with interactive Q&A, polling, and access to speaker materials - all synchronized with the live event."
               image=""
               reverse={true}
-            />
+            /> */}
 
-            <div className="border-t border-gray-200 my-16"></div>
+            {/* <div className="border-t border-gray-200 my-16"></div>
 
             <ShowcaseFeature
               title="Flashback Stories & Memories"
               description="Photos and moments captured during the event transform into personalized 'flashback stories' in the days following. These curated memories help extend engagement and reinforce connections made during your event."
               image="/"
-            />
+            /> */}
 
             <div className="border-t border-gray-200 my-16"></div>
 
@@ -497,7 +497,7 @@ const HomePage = () => {
               </div>
               <div className="md:w-1/2 md:pl-10">
                 <img
-                  src="/api/placeholder/500/400"
+                  src={chooseus}
                   alt="ComfyBase in action"
                   className="rounded-xl shadow-lg"
                 />
@@ -527,11 +527,11 @@ const HomePage = () => {
                 name="Michael Brown"
                 role="Event Manager"
               />
-              <Testimonial
+              {/* <Testimonial
                 quote="The live streaming feature allowed us to reach a wider audience. Highly recommend ComfyBase!"
                 name="Emily Davis"
                 role="Marketing Specialist"
-              />
+              /> */}
             </div>
           </div>
         </section>

@@ -25,9 +25,10 @@ export class PaymentController {
       // Get user ID from request (set by auth middleware)
       const userId = (req.user as any).userId;
 
-      const checkoutUrl = await this.paymentService.createCheckoutSession(userId, validatedData);
+      const checkoutResult = await this.paymentService.createCheckoutSession(userId, validatedData);
 
-      return ResponseUtil.success(res, 201, { url: checkoutUrl }, 'Checkout session created successfully');
+      return ResponseUtil.success(res, 201, checkoutResult, 'Checkout session created successfully');
+
     } catch (error) {
       if (error instanceof ZodError) {
         return ResponseUtil.error(res, 400, error.errors[0].message);

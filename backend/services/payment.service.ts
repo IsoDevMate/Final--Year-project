@@ -16,7 +16,7 @@ export class PaymentService {
     });
   }
 
-  async createCheckoutSession(userId: string, checkoutData: CreateCheckoutDto): Promise<string> {
+  async createCheckoutSession(userId: string, checkoutData: CreateCheckoutDto): Promise<any> {
     try {
       // Validate user exists
       if (!Types.ObjectId.isValid(userId)) {
@@ -30,7 +30,10 @@ export class PaymentService {
 
       // Get or create Stripe customer
       let stripeCustomerId = await this.getOrCreateStripeCustomer(user);
-
+      if (!stripeCustomerId) {
+        throw new AppError('Failed to create Stripe customer', 500);
+      }
+      console.log('Stripe customer ID:', stripeCustomerId);
       // Set up checkout session parameters for subscription
       const params: Stripe.Checkout.SessionCreateParams = {
         customer: stripeCustomerId,
@@ -52,6 +55,11 @@ export class PaymentService {
       // Create checkout session
       const session = await this.stripe.checkout.sessions.create(params);
 
+      if (!session.url) {
+        throw new AppError('Failed to create checkout session', 500);
+      }
+      console.log('Checkout session created:', session.id);
+
       // Store record in database
       const payment = new Payment({
         userId: user._id,
@@ -70,7 +78,10 @@ export class PaymentService {
 
       await payment.save();
 
-      return session.url as string;
+      return {
+        url: session.url as string,
+        sessionId: session.id
+      };
     } catch (error) {
       if (error instanceof Error) {
         throw new AppError(error.message, 400);

@@ -245,10 +245,22 @@ export class AuthService {
     return userObject as User;
   }
 
+  async getUserProfile(userId: string): Promise<User> {
+    const user = await User.findById(userId);
 
+    if (!user) {
+      throw new AppError('User not found', 404);
+    }
 
+    // Remove password from response
+    const userObject = user.toObject();
 
-  async generateQRCode(userId: string,eventId:string): Promise<string> {
+    console.log("userObject",userObject)
+
+    return userObject as User;
+  }
+
+  async generateQRCode(userId: string, eventId: string): Promise<string> {
     // Generate unique token for QR code
     const qrToken = jwt.sign(
       { userId, eventId },

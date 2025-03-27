@@ -9,6 +9,10 @@ import LoadingSpinner from './config/loadingSpinner';
 import RegistrationSuccessPage from './components/Event/eventsuccespage';
 import CreateEventPage from './components/Event/createEvent';
 import RequestDemoPage from './pages/requestdemo';
+import PaymentSuccessPage from './components/Payment/success';
+import PaymentFailurePage from './components/Payment/failed';
+import CreatePaymentPage from './components/Payment/createpayment';
+import CreateSessionPage from './components/Session/createsession';
 
 const LoginPage = lazy(() => import('./pages/auth/login'));
 const SignupPage = lazy(() => import('./pages/auth/signup'));
@@ -95,6 +99,26 @@ export const App: React.FC = () => {
             </Route>
 
             <Route
+              path="/subscription/success"
+              element={
+                <motion.div {...pageTransition}>
+                  <PaymentSuccessPage />
+                </motion.div>
+              }
+            />
+
+            <Route
+              path="/subscription/cancel"
+              element={
+                <motion.div {...pageTransition}>
+                  <PaymentFailurePage />
+                </motion.div>
+              }
+            />
+
+
+
+            <Route
               path="/demo"
               element={
                 <motion.div {...pageTransition}>
@@ -122,8 +146,9 @@ export const App: React.FC = () => {
                 }
               >
 
-                <Route index element={<div>Dashboard Home</div>} />
+                <Route  element={<div>Dashboard Home</div>} />
                 <Route
+                  index
                   path="events"
                   element={
                     <motion.div {...pageTransition}>
@@ -131,9 +156,12 @@ export const App: React.FC = () => {
                     </motion.div>
                   }
                 />
+
                 <Route path="livestreams" element={<div>Livestreams</div>} />
 
-                <Route path="payments" element={<div>Payments</div>} />
+                <Route path="payments" element={<CreatePaymentPage />}
+                />
+
                 <Route
                   path="settings"
                   element={
@@ -176,6 +204,11 @@ export const App: React.FC = () => {
               <Route
                 path="/dashboard/events/:eventId/success"
                 element={<RegistrationSuccessPage />}
+              />
+
+              <Route
+                path="/dashboard/events/:eventId/sessions/create"
+                element={<CreateSessionPage />}
               />
 
               <Route

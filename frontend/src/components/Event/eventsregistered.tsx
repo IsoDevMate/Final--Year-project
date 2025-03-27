@@ -214,7 +214,7 @@ const MyEventsPage = () => {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">My Registered Events</h1>
         <Link
-          to="/events"
+          to="/dashboard/events"
           className="flex items-center text-indigo-600 hover:text-indigo-800"
         >
           <Calendar className="h-5 w-5 mr-2" />

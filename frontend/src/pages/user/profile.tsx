@@ -12,6 +12,7 @@ interface FormData {
 
 const ProfilePage: React.FC = () => {
     const { user } = useAuth();
+    const [userData, setUserData] = useState<any>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [success, setSuccess] = useState<boolean>(false);
     const [error, setError] = useState<string>('');
@@ -49,14 +50,14 @@ const ProfilePage: React.FC = () => {
 
         try {
             const token = localStorage.getItem('accessToken');
-            const response = await axios.put('http://localhost/api/v1/users/profile', formData, {
+            const response = await axios.put('http://localhost:3000/api/v1/auth/update-profile', formData, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
 
             if (response.data.success) {
-                setUser({ ...user, ...formData });
+                setUserData({ ...user, ...formData });
                 setSuccess(true);
                 setTimeout(() => setSuccess(false), 3000);
             }

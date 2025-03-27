@@ -3,39 +3,102 @@ import { useNavigate } from 'react-router-dom';
 import { Calendar, MapPin, Users, DollarSign, FileText, Loader } from 'lucide-react';
 import axios from 'axios';
 import { useAuth } from '../../contexts/AuthContext';
-import toast from 'react-hot-toast';
+import toast from 'react-hot-toast'
 
-// Event type options matching backend
-const eventTypes = ['conference', 'workshop', 'meetup', 'webinar', 'training', 'expo', 'other'];
 
 const CreateEventPage: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
-  const [eventData, setEventData] = useState({
-    title: '',
-    description: '',
-    type: '',
-    startDate: '',
-    endDate: '',
-    location: {
-      name: '',
-      address: '',
-      city: '',
-      postalCode: '',
-      country: ''
-    },
-    capacity: 0,
-    isPublic: true,
-    price: 0
-  });
+ const [eventData, setEventData] = useState({
+  title: '',
+  description: '',
+  type: '', // Change to match exact backend enum
+  status: 'draft', // Add status with default value
+  startDate: '',
+  endDate: '',
+  location: {
+    name: '',
+    address: '',
+    city: '',
+    country: '', // Add country (required by backend)
+    coordinates: { // Optional, but add structure
+      latitude: 0,
+      longitude: 0
+    }
+  },
+  capacity: 0,
+  ticketPrice: 0 // Change from price to ticketPrice
+});
+
+// Update event types to match backend enum
+const eventTypes = [
+  'conference',
+  'seminar',
+  'workshop',
+  'expo',
+  'other'
+];
+
+// Modify handleSubmit to format dates
+// const handleSubmit = async (e: React.FormEvent) => {
+//   e.preventDefault();
+
+//   // Validate and format dates to ISO string
+//   const formattedEventData = {
+//     ...eventData,
+//     startDate: new Date(eventData.startDate).toISOString(),
+//     endDate: new Date(eventData.endDate).toISOString(),
+//     // Optional: Add coordinates if needed
+//     location: {
+//       ...eventData.location,
+//       coordinates: eventData.location.coordinates || undefined
+//     }
+//   };
+
+//   try {
+//     const token = localStorage.getItem('accessToken');
+//     const response = await axios.post('http://localhost:3000/api/v1/events', formattedEventData, {
+//       headers: {
+//         'Authorization': `Bearer ${token}`,
+//         'Content-Type': 'application/json'
+//       }
+//     });
+
+//     // Rest of the code remains the same
+//   } catch (error: any) {
+//     console.error('Event creation error:', error.response?.data);
+//     toast.error(error.response?.data?.message || 'An error occurred while creating the event');
+//   }
+// };
 
   // Check if user has permission to create event
   const canCreateEvent = user &&
-    (user.role === 'ORGANIZER' || user.role === 'ADMIN');
+    (user.role === 'organizer' || user.role === 'admin');
 
   // Handle input changes
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  // const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  //   const { name, value } = e.target;
+
+  //   // Handle nested location fields
+  //   if (name.startsWith('location.')) {
+  //     const locationField = name.split('.')[1];
+  //     setEventData(prev => ({
+  //       ...prev,
+  //       location: {
+  //         ...prev.location,
+  //         [locationField]: value
+  //       }
+  //     }));
+  //   } else {
+  //     setEventData(prev => ({
+  //       ...prev,
+  //       [name]: value
+  //     }));
+  //   }
+  // };
+
+   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
 
     // Handle nested location fields
@@ -49,28 +112,36 @@ const CreateEventPage: React.FC = () => {
         }
       }));
     } else {
+      // Convert numeric inputs to numbers
+      const numericFields = ['capacity', 'ticketPrice'];
+      const processedValue = numericFields.includes(name)
+        ? (value === '' ? 0 : Number(value))
+        : value;
+
       setEventData(prev => ({
         ...prev,
-        [name]: value
+        [name]: processedValue
       }));
     }
   };
 
-  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Check permissions
-    if (!canCreateEvent) {
-      toast.error('You do not have permission to create events');
-      return;
-    }
-
-    setIsLoading(true);
+    // Validate and format dates to ISO string
+    const formattedEventData = {
+      ...eventData,
+      startDate: new Date(eventData.startDate).toISOString(),
+      endDate: new Date(eventData.endDate).toISOString(),
+      location: {
+        ...eventData.location,
+        coordinates: eventData.location.coordinates || undefined
+      }
+    };
 
     try {
       const token = localStorage.getItem('accessToken');
-      const response = await axios.post('http://localhost:3000/api/v1/events', eventData, {
+      const response = await axios.post('http://localhost:3000/api/v1/events', formattedEventData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -79,17 +150,52 @@ const CreateEventPage: React.FC = () => {
 
       if (response.data.success) {
         toast.success('Event created successfully!');
-        navigate('/dashboard/events'); // Redirect to events list
+        navigate('/dashboard/events');
       } else {
         toast.error(response.data.message || 'Failed to create event');
       }
     } catch (error: any) {
-      console.error('Event creation error:', error);
+      console.error('Event creation error:', error.response?.data);
       toast.error(error.response?.data?.message || 'An error occurred while creating the event');
-    } finally {
-      setIsLoading(false);
     }
   };
+
+
+  // Handle form submission
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+
+  //   // Check permissions
+  //   if (!canCreateEvent) {
+  //     toast.error('You do not have permission to create events');
+  //     return;
+  //   }
+
+  //   setIsLoading(true);
+
+  //   console.log('Event data:', eventData);
+  //   try {
+  //     const token = localStorage.getItem('accessToken');
+  //     const response = await axios.post('http://localhost:3000/api/v1/events', eventData, {
+  //       headers: {
+  //         'Authorization': `Bearer ${token}`,
+  //         'Content-Type': 'application/json'
+  //       }
+  //     });
+
+  //     if (response.data.success) {
+  //       toast.success('Event created successfully!');
+  //       navigate('/dashboard/events');
+  //     } else {
+  //       toast.error(response.data.message || 'Failed to create event');
+  //     }
+  //   } catch (error: any) {
+  //     console.error('Event creation error:', error);
+  //     toast.error(error.response?.data?.message || 'An error occurred while creating the event');
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   // If user doesn't have permission, show unauthorized message
   if (!canCreateEvent) {
@@ -290,17 +396,19 @@ const CreateEventPage: React.FC = () => {
             <label htmlFor="price" className="block mb-2 font-semibold">
               <DollarSign className="inline-block mr-2" /> Ticket Price
             </label>
-            <input
-              type="number"
-              id="price"
-              name="price"
-              min="0"
-              step="0.01"
-              className="w-full p-2 border rounded"
-              value={eventData.price}
-              onChange={handleChange}
-              placeholder="Ticket price (optional)"
-            />
+
+
+      <input
+        type="number"
+        id="ticketPrice"  // Changed from 'price' to 'ticketPrice'
+        name="ticketPrice"  // Changed from 'price' to 'ticketPrice'
+        min="0"
+        step="0.01"
+        className="w-full p-2 border rounded"
+        value={eventData.ticketPrice}
+        onChange={handleChange}
+        placeholder="Ticket price (optional)"
+      />
           </div>
         </div>
 
@@ -326,7 +434,7 @@ const CreateEventPage: React.FC = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="bg-purple-600 text-white px-6 py-2 rounded hover:bg-purple-700 transition-colors flex items-center"
+            className="bg-indigo-500 text-white px-6 py-2 rounded hover:bg-indigo-500 transition-colors flex items-center"
           >
             {isLoading ? (
               <>

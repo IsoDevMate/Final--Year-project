@@ -76,25 +76,7 @@ export class LinkedInSharingController {
     }
   }
 
-  /**
-   * Share a note to LinkedIn
-   */
-  // static async shareNote(req: Request, res: Response, next: NextFunction) {
-  //   try {
-  //     const { noteId } = req.params;
-  //     const userId = (req.user as any)?.userId;
 
-  //     if (!userId) {
-  //       return ResponseUtil.error(res, 401, 'User not authenticated');
-  //     }
-
-  //     const result = await LinkedInSharingService.shareNote(noteId, userId);
-
-  //     return ResponseUtil.success(res, 200, result, 'Note successfully shared to LinkedIn');
-  //   } catch (error) {
-  //     next(error);
-  //   }
-  // }
 
   static async shareNote(req: Request, res: Response, next: NextFunction) {
   try {
@@ -113,7 +95,7 @@ export class LinkedInSharingController {
     next(error);
   }
   }
-  
+
   /**
    * Share content to LinkedIn based on content type
    */
