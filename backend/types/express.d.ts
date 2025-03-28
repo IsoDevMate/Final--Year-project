@@ -3,19 +3,16 @@ import { UserRole } from '../models/user.model';
 declare global {
   namespace Express {
     interface User {
-      userId: string;
+      id: string;
+      userId?: string;
       email: string;
       role: UserRole;
-      id?: string;
+      firstName?: string;
+      lastName?: string;
     }
 
     interface Request {
-      user?: {
-        userId: string;
-        email: string;
-        role: UserRole;
-        id?: string;
-      };
+      user?: User;
     }
   }
 }

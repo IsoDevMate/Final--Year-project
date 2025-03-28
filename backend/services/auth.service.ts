@@ -18,7 +18,30 @@ import QRCode from 'qrcode';
 const sgMail = require('@sendgrid/mail');
 
 export class AuthService {
+  // async register(userData: RegisterUserDto): Promise<User> {
+  //   const existingUser = await User.findOne({ email: userData.email });
+
+  //   if (existingUser) {
+  //     throw new AppError('Email already in use', 400);
+  //   }
+
+  //   const newUser = new User(userData);
+
+  //   // Hash the password before saving
+  //   const saltRounds = 10;
+  //   const salt = await bcrypt.genSalt(saltRounds);
+  //   newUser.password = await bcrypt.hash(newUser.password, salt);
+
+  //   await newUser.save();
+
+  //   // Remove password from response
+  //   const userObject = newUser.toObject();
+
+  //   return userObject as User;
+  // }
+
   async register(userData: RegisterUserDto): Promise<User> {
+  try {
     const existingUser = await User.findOne({ email: userData.email });
 
     if (existingUser) {
@@ -37,10 +60,27 @@ export class AuthService {
     // Remove password from response
     const userObject = newUser.toObject();
 
+    // Send welcome email
+    // sgMail.setApiKey(config.sendgrid.apiKey);
+    // const msg = {
+    //   to: newUser.email,
+    //   from: config.sendgrid.fromEmail,
+    //   subject: 'Welcome to Comfybase',
+    //   text: `Hello ${newUser.firstName},\n\nWelcome to Comfybase! We're excited to have you on board.\n\nBest regards,\nThe Comfybase Team`,
+    //   html: `<p>Hello ${newUser.firstName},</p><p>Welcome to Comfybase! We're excited to have you on board.</p><p>Best regards,<br>The Comfybase Team</p>`,
+    // };
+
+
     return userObject as User;
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    console.error('Registration error:', error);
+    throw new AppError('Registration failed', 500);
   }
+}
 
   async login(loginData: LoginUserDto): Promise<{ user: User, tokens: AuthTokens }> {
+    try{
     const user = await User.findOne({ email: loginData.email });
 
     if (!user) {
@@ -59,7 +99,12 @@ export class AuthService {
     // Remove password from response
     const userObject = user.toObject();
 
-    return { user: userObject as User, tokens };
+      return { user: userObject as User, tokens };
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      console.error('Login error:', error);
+      throw new AppError('Login failed', 500);
+    }
   }
 
   async refreshToken(refreshToken: string): Promise<AuthTokens> {

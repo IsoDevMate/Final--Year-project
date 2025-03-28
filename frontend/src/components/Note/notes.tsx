@@ -420,17 +420,16 @@ const handleLinkedInShare = async (customMessage?: string) => {
     console.log('Access Token Present:', !!token);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/v1/notes/${noteId}/media`, {
-        method: 'POST',
+      const response = await axios.post(`${API_BASE_URL}/api/v1/notes/${noteId}/media`, formData, {
         headers: {
-          'Authorization': `Bearer ${token}`
-        },
-        body: formData
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        }
       });
 
       console.log('Upload Response Status:', response.status);
 
-      if (!response.ok) {
+      if (response.status !== 200) {
         if (response.status === 401) {
           console.error('Unauthorized - redirecting to login');
           navigate('/auth/login');
@@ -439,7 +438,7 @@ const handleLinkedInShare = async (customMessage?: string) => {
         throw new Error('Failed to upload file');
       }
 
-      const result = await response.json();
+      const result = response.data;
       console.log('Upload Result:', result);
 
       setNote(result.data);

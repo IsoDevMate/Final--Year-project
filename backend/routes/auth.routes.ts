@@ -12,8 +12,12 @@ router.post('/refresh-token', AuthController.refreshToken);
 router.post('/logout', AuthController.logout);
 router.post('/forgot-password', AuthController.requestPasswordReset);
 router.post('/reset-password', AuthController.resetPassword);
-router.put('/update-profile', AuthController.updateProfile);
-router.post('/profile', AuthController.getUserProfile);
+router.put('/update-profile',
+  AuthMiddleware.verifyToken,
+  AuthController.updateProfile);
+router.get('/profile',
+  AuthMiddleware.verifyToken,
+  AuthController.getUserProfile);
 
 // QR Code for Event Access
 router.post(

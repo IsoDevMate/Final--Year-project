@@ -5,7 +5,7 @@ import config from '../config/config';
 import { User, UserRole } from '../models/user.model';
 
 export class AuthMiddleware {
-  static async verifyToken(req: Request, res: Response, next: NextFunction) {
+static async verifyToken(req: Request, res: Response, next: NextFunction) {
     try {
       const authHeader = req.headers.authorization;
 
@@ -24,6 +24,8 @@ export class AuthMiddleware {
           userId: string;
           email: string;
           role: UserRole;
+          firstName: string;
+          lastName: string;
         };
 
         // Check if user still exists
@@ -32,18 +34,15 @@ export class AuthMiddleware {
         if (!user) {
           return ResponseUtil.error(res, 401, 'User no longer exists');
         }
-        const userRole = user.role as UserRole;
-        // Check if user role is valid
-        if (!Object.values(UserRole).includes(userRole)) {
-          return ResponseUtil.error(res, 401, 'Invalid user role');
-        }
 
-        // console.log('user from auth middleware:', user);
         // Attach user info to request
         req.user = {
+          id: decoded.userId,
           userId: decoded.userId,
           email: decoded.email,
-          role: decoded.role
+          role: decoded.role,
+          firstName: decoded.firstName,
+          lastName: decoded.lastName
         };
 
         next();
@@ -55,7 +54,7 @@ export class AuthMiddleware {
     }
   }
 
-  // Check if user has required role
+
  // Check if user has required role
 static hasRole(roles: string[]) {
   return (req: Request, res: Response, next: NextFunction) => {
