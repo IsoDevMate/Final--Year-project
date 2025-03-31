@@ -1,33 +1,22 @@
 import router from "./routes/routes"
 import express from "express"
 const app = express();
-import dotenv from "dotenv"
+// import dotenv from "dotenv"
 import cors from "cors"
-dotenv.config()
+// dotenv.config()
 import { databaseService } from './config/db';
 import { Request, Response, NextFunction } from 'express';
-import mongoose from 'mongoose';
 import { setupPassport } from './config/passport';
 import passport from 'passport';
-import session from 'express-session';
-import config from './config/config';
 import cron from 'node-cron';
+import config from './config/config';
 
 const corsOptions = {
   origin: "*"
 }
 
 
-app.use(session({
-  secret: config.sessionSecret || 'defaultSecret',
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: process.env.NODE_ENV === 'production',
-    httpOnly: true,
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
-  }
-}));
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -81,10 +70,11 @@ async function startServer() {
       }
     }
 
-    const PORT = parseInt(process.env.PORT || "7000", 10);
-    app.listen(PORT, '0.0.0.0', () => {
+    const PORT = parseInt(String(config.port || "000"), 10);
+    app.listen(PORT,'0.0.0.0', () => {
       console.log(`Server running on port ${PORT}`);
     })
+
     .on('error', (error) => {
       console.log(`Error is : ${error}`);
     });
