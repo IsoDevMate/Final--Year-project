@@ -40,7 +40,10 @@ export const createEventSchema = z.object({
     { message: 'End date must be a valid date' }
   ),
   location: locationSchema,
-  capacity: z.number().int().positive().optional(),
+  capacity: z.number().int()
+    .refine(value => value >= 30, { message: 'Minimum event capacity is 30' })
+    .refine(value => value <= 5000, { message: 'Maximum event capacity is 5000' })
+    .optional(),
   ticketPrice: z.number().min(0).optional()
 }).refine(
   (data) => new Date(data.startDate) < new Date(data.endDate),
@@ -77,7 +80,10 @@ export const updateEventSchema = z.object({
     { message: 'End date must be a valid date' }
   ).optional(),
   location: locationSchema.partial().optional(),
-  capacity: z.number().int().positive().optional(),
+   capacity: z.number().int()
+    .refine(value => value >= 30, { message: 'Minimum event capacity is 30' })
+    .refine(value => value <= 5000, { message: 'Maximum event capacity is 5000' })
+    .optional(),
   ticketPrice: z.number().min(0).optional()
 });
 
