@@ -42,13 +42,46 @@ export class MPaymentService {
 
 
 
-     console.log('User ID to check:', paymentData.userId);
-     console.log('Attendees:', event.attendees.map(a => a.toString()));
-     const isRegistered = event.attendees.some((attendee) => attendee.toString() === paymentData.userId);
-     console.log('Is user registered?', isRegistered);
-      // if (event.attendees.includes(new Types.ObjectId(paymentData.userId))) {
-      //   throw new AppError('User already registered for this event', 400);
-      // }
+    //  console.log('User ID to check:', paymentData.userId);
+    //  console.log('Attendees:', event.attendees.map(a => a.toString()));
+    //  const isRegistered = event.attendees.some((attendee) => attendee.toString() === paymentData.userId);
+      //  console.log('Is user registered?', isRegistered);
+
+      // Check if user is already registered
+
+        const isUserRegistered = event.attendees.some((attendee: Types.ObjectId | { _id: Types.ObjectId } | string) => {
+          console.log('Checking attendee:', attendee);
+
+          // Handle if attendee is already an ObjectId
+          if (attendee instanceof Types.ObjectId) {
+            const isMatch = attendee.toString() === paymentData.userId;
+            console.log(`Attendee is ObjectId. Match: ${isMatch}`);
+            return isMatch;
+          }
+
+          // Handle if attendee is a user object with _id
+          if (typeof attendee === 'object' && '_id' in attendee && attendee._id instanceof Types.ObjectId) {
+            const isMatch = attendee._id.toString() === paymentData.userId;
+            console.log(`Attendee is user object with _id. Match: ${isMatch}`);
+            return isMatch;
+          }
+
+          // Handle if it's a string representation of a user object (your case)
+          if (typeof attendee === 'string') {
+            const isMatch = attendee.includes(paymentData.userId);
+            console.log(`Attendee is string. Match: ${isMatch}`);
+            return isMatch;
+          }
+
+          console.log('Attendee type not recognized.');
+          return false;
+        });
+
+        console.log('Is user registered:', isUserRegistered);
+
+        if (isUserRegistered) {
+          throw new AppError('User already registered for this event', 400);
+        }
 
       // Validate event capacity constraints
       if (event.capacity) {
