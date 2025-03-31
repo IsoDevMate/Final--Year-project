@@ -40,7 +40,7 @@ export class MpesaService {
     this.passkey = process.env.MPESA_PASSKEY || '';
     this.shortcode = process.env.MPESA_SHORTCODE || '';
     this.baseUrl = process.env.MPESA_API_URL || 'https://sandbox.safaricom.co.ke';
-    this.callbackBaseUrl = process.env.APP_CALLBACK_URL || 'https://final-year-project-3qr3.onrender.com/callback/:eventId/:userId';
+    this.callbackBaseUrl = process.env.APP_CALLBACK_URL || 'https://final-year-project-3qr3.onrender.com/api/v1/mpesa/callback/:eventId/:userId';
 
     if (!this.consumerKey || !this.consumerSecret || !this.passkey || !this.shortcode) {
       console.warn('M-Pesa credentials are not properly configured');
@@ -85,7 +85,7 @@ export class MpesaService {
         PartyA: formattedPhone,
         PartyB: this.shortcode,
         PhoneNumber: formattedPhone,
-        CallBackURL: "https://final-year-project-3qr3.onrender.com/callback/:eventId/:userId",
+        CallBackURL: "https://final-year-project-3qr3.onrender.com/api/v1/mpesa/callback/:eventId/:userId",
         AccountReference: paymentData.accountReference,
         TransactionDesc: paymentData.description
       };
@@ -155,7 +155,7 @@ export class MpesaService {
     return result;
 
   }
-  
+
   async getPaymentStatus(transactionId: string): Promise<any> {
     try {
       const accessToken = await this.getAccessToken();
