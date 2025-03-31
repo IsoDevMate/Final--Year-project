@@ -2,16 +2,17 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
   Save, X, Image, File, Mic, Video,
-  Share2, Tag, Lock, Unlock, Trash2, Plus,
-  ChevronLeft, Edit3, Download
+ Tag, Lock, Unlock, Trash2, Plus,
+  ChevronLeft, Edit3,
 } from 'lucide-react';
 import * as fabric from 'fabric';
 import { useAuth } from '../../contexts/AuthContext';
 import { EventSelector } from '../Event/eventselector';
 import LinkedInShareModal from './linkedinmodal';
 import toast from 'react-hot-toast';
-import MultimediaShareModal from './sharemulti';
 import axios from 'axios';
+import { MediaAttachmentHandler } from './multimediaattatchmenthandler';
+import  LinkedInShareComponent  from './newlinkedin';
 interface Note {
   _id: string;
   title: string;
@@ -178,71 +179,6 @@ useEffect(() => {
   const handleEventSelect = (eventId: string) => {
     setSelectedEventId(eventId);
   };
-
-// const handleSave = async () => {
-//   // Validate user and token
-//   if (!user || !isAuthenticated) {
-//     alert('Please log in to save notes');
-//     navigate('/auth/login');
-//     return;
-//   }
-
-//   // Additional input validation
-//   if (!title.trim()) {
-//     alert('Please enter a note title');
-//     return;
-//   }
-
-//   if (!selectedEventId) {
-//       alert('Please select an event for this note');
-//       return;
-//     }
-
-//   setIsSaving(true);
-//   try {
-//     const noteData = {
-//       title,
-//       content,
-//       tags,
-//       isPrivate,
-//       event: selectedEventId,
-//       session: selectedSessionId,
-//     };
-
-//     const response = await fetch(`${API_BASE_URL}/api/v1/notes${noteId && noteId !== 'new' ? `/${noteId}` : ''}`, {
-//       method: noteId && noteId !== 'new' ? 'PUT' : 'POST',
-//       headers: getAuthHeaders(),
-//       body: JSON.stringify(noteData)
-//     });
-
-//     // Enhanced error handling
-//     if (!response.ok) {
-//       const errorData = await response.json();
-//       throw new Error(errorData.message || 'Failed to save note');
-//     }
-
-//     const savedNote = await response.json();
-
-//     // Navigate or update state based on save type
-//     if (noteId === 'new') {
-//       navigate(`/dashboard/notes/${savedNote.data._id}`);
-//     } else {
-//       setNote(savedNote.data);
-//     }
-
-//     // Optional: Show success message
-//     alert('Note saved successfully');
-//   } catch (error) {
-//     console.error('Error saving note:', error);
-//     if (error instanceof Error) {
-//       alert(error.message || 'Failed to save note');
-//     } else {
-//       alert('Failed to save note');
-//     }
-//   } finally {
-//     setIsSaving(false);
-//   }
-// };
 
   const addTag = () => {
     if (currentTag.trim() && !tags.includes(currentTag.trim())) {
@@ -451,42 +387,6 @@ const handleLinkedInShare = async (customMessage?: string) => {
     }
    };
 
-  // const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>, fileType: 'image' | 'audio' | 'video' | 'document') => {
-  //   const file = event.target.files?.[0];
-  //   if (!file || !noteId || noteId === 'new') return;
-
-  //   // Create FormData
-  //   const formData = new FormData();
-  //   formData.append('file', file);
-  //   formData.append('fileType', fileType);
-
-  //   const token = localStorage.getItem('accessToken');
-
-  //   try {
-  //     const response = await fetch(`${API_BASE_URL}/api/v1/notes/${noteId}/media`, {
-  //       method: 'POST',
-  //       headers: {
-  //         'Authorization': `Bearer ${token}`
-  //       },
-  //       body: formData
-  //     });
-
-  //     if (!response.ok) {
-  //       if (response.status === 401) {
-  //         navigate('/auth/login');
-  //         return;
-  //       }
-  //       throw new Error('Failed to upload file');
-  //     }
-
-  //     const result = await response.json();
-  //     setNote(result.data);
-  //     toast.success('File uploaded successfully!');
-  //   } catch (error) {
-  //     console.error('Error uploading file:', error);
-  //     alert('Failed to upload file');
-  //   }
-  // };
 
   const handleDeleteAttachment = async (attachmentId: string) => {
     if (!noteId || !attachmentId) return;
@@ -563,6 +463,18 @@ const openMediaPreview = (attachment: MediaAttachment) => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
+
+        {/* {note && note._id && (
+          <LinkedInShareComponent
+            note={{
+              id: note._id,
+              title: note.title,
+              content: note.content,
+              mediaAttachments: note.mediaAttachments || []
+            }}
+          />
+        )} */}
+
         <div className="flex items-center">
           <button
             onClick={() => navigate('/dashboard/notes')}
@@ -771,10 +683,10 @@ const openMediaPreview = (attachment: MediaAttachment) => {
 
 
             {/* Media Uploads */}
-            <div>
+            {/* <div>
               <h3 className="text-sm font-medium text-gray-700 mb-2">Media Attachments</h3>
 
-              {/* Upload Buttons */}
+
               <div className="grid grid-cols-2 gap-2 mb-4">
                 <label className="flex flex-col items-center justify-center p-3 border border-gray-300 rounded-md cursor-pointer hover:bg-gray-50">
                   <Image className="h-5 w-5 mb-1 text-indigo-600" />
@@ -821,7 +733,7 @@ const openMediaPreview = (attachment: MediaAttachment) => {
                 </label>
               </div>
 
-              {/* List of Attachments */}
+
    {note?.mediaAttachments && note.mediaAttachments.length > 0 && (
   <div>
     <h4 className="text-sm font-medium text-gray-700 mb-2">Uploaded Files</h4>
@@ -885,7 +797,21 @@ const openMediaPreview = (attachment: MediaAttachment) => {
              ))}
             </div>
           )}
-            </div>
+            </div> */}
+
+            <MediaAttachmentHandler.MediaUploadButtons
+               noteId={note?._id}
+  API_BASE_URL={API_BASE_URL}
+  setNote={setNote}
+               navigate={navigate}
+             />
+
+<MediaAttachmentHandler.AttachmentsList
+  note={note}
+  openMediaPreview={openMediaPreview}
+/>
+
+
           </div>
 
           {/* Note Info */}
@@ -959,7 +885,7 @@ const openMediaPreview = (attachment: MediaAttachment) => {
       </div>
 
       {/* Media Preview Modal */}
-      {showMediaPreview && selectedAttachment && (
+      {/* {showMediaPreview && selectedAttachment && (
          <div className="fixed inset-0 z-50 overflow-y-auto bg-black        bg-opacity-70 flex items-center justify-center p-4">
     <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
       <div className="p-4 border-b flex justify-between items-center">
@@ -1009,8 +935,15 @@ const openMediaPreview = (attachment: MediaAttachment) => {
       </div>
     </div>
          </div>
-       )}
+       )} */}
 
+          <MediaAttachmentHandler.MediaPreviewModal
+             selectedAttachment={selectedAttachment}
+             showMediaPreview={showMediaPreview}
+             setShowMediaPreview={setShowMediaPreview}
+             note={note}
+             handleDeleteAttachment={handleDeleteAttachment}
+           />
     </div>
   );
 };

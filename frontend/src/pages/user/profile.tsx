@@ -2,6 +2,7 @@ import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import axios from 'axios';
 import { User, Camera } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 interface FormData {
     firstName: string;
@@ -42,31 +43,36 @@ const ProfilePage: React.FC = () => {
         }));
     };
 
-    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        setLoading(true);
-        setError('');
-        setSuccess(false);
+   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    setSuccess(false);
 
-        try {
-            const token = localStorage.getItem('accessToken');
-            const response = await axios.put('http://localhost:3000/api/v1/auth/update-profile', formData, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-
-            if (response.data.success) {
-                setUserData({ ...user, ...formData });
-                setSuccess(true);
-                setTimeout(() => setSuccess(false), 3000);
+    try {
+        const token = localStorage.getItem('accessToken');
+        const response = await axios.put('http://localhost:3000/api/v1/auth/update-profile', formData, {
+            headers: {
+                Authorization: `Bearer ${token}`
             }
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to update profile');
-        } finally {
-            setLoading(false);
+        });
+
+        if (response.data.success) {
+            // Update user in local storage
+            const updatedUser = { ...user, ...formData };
+            setUserData(updatedUser);
+            localStorage.setItem('user', JSON.stringify(updatedUser));
+
+            setSuccess(true);
+            setTimeout(() => setSuccess(false), 3000);
         }
-    };
+        toast.success('Profile updated successfully!');
+    } catch (err: any) {
+        setError(err.response?.data?.message || 'Failed to update profile');
+    } finally {
+        setLoading(false);
+    }
+};
 
     return (
         <div className="max-w-4xl mx-auto p-4">

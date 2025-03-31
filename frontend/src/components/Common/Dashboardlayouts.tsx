@@ -33,9 +33,9 @@ const DashboardLayout = () => {
   };
 
   const navLinks = [
-    // { title: 'Dashboard', path: '/dashboard', icon: <Home className="w-5 h-5" /> },
+     { title: 'Dashboard', path: '/dashboard', icon: <Home className="w-5 h-5" /> },
     { title: 'Events', path: '/dashboard/events', icon: <Calendar className="w-5 h-5" /> },
-    // { title: 'Livestreams', path: '/dashboard/livestreams', icon: <Video className="w-5 h-5" /> },
+    // { title: 'Linkedin', path: '/dashboard/linkedin', icon: <Video className="w-5 h-5" /> },
     { title: 'Payments', path: '/dashboard/payments', icon: <CreditCard className="w-5 h-5" /> },
     { title: 'Settings', path: '/dashboard/settings', icon: <Settings className="w-5 h-5" /> },
     { title: 'Notes', path: '/dashboard/notes', icon: <Notes className="w-5 h-5" /> },

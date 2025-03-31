@@ -13,6 +13,8 @@ import PaymentSuccessPage from './components/Payment/success';
 import PaymentFailurePage from './components/Payment/failed';
 import CreatePaymentPage from './components/Payment/createpayment';
 import CreateSessionPage from './components/Session/createsession';
+import NotesListPage from './components/Note/noteslist';
+// import LinkedInShareComponent from './components/Note/newlinkedin';
 
 const LoginPage = lazy(() => import('./pages/auth/login'));
 const SignupPage = lazy(() => import('./pages/auth/signup'));
@@ -146,9 +148,25 @@ export const App: React.FC = () => {
                 }
               >
 
-                <Route  element={<div>Dashboard Home</div>} />
+                <Route index element={<NotesListPage />} />
                 <Route
-                  index
+                  path="events/:eventId/sessions/:sessionId"
+                  element={<div>Session Details</div>}
+                />
+
+                <Route path="/dashboard/notes/:noteId" element={<NotesPage />} />
+
+                <Route
+                  path="events/:eventId/sessions/:sessionId/edit"
+                  element={<div>Edit Session</div>}
+                />
+
+                {/* <Route
+                  path="linkedin"
+                  element={<LinkedInShareComponent />}
+                /> */}
+
+                <Route
                   path="events"
                   element={
                     <motion.div {...pageTransition}>
@@ -156,8 +174,6 @@ export const App: React.FC = () => {
                     </motion.div>
                   }
                 />
-
-                <Route path="livestreams" element={<div>Livestreams</div>} />
 
                 <Route path="payments" element={<CreatePaymentPage />}
                 />
@@ -244,6 +260,11 @@ export const App: React.FC = () => {
                   </motion.div>
                 }
               />
+{/*
+              <Route
+                path="/dashboard/linkedin"
+                element={<LinkedInShareComponent/>}
+              /> */}
               <Route
                 path="/dashboard/notes/:noteId"
                 element={<div>Note Details</div>}

@@ -86,44 +86,40 @@ const MyEventsPage = () => {
   }, [user]);
 
   // Handle unregister from event
-  const handleUnregister = async (eventId: string) => {
-    if (!user) return;
+const handleUnregister = async (eventId: string) => {
+  if (!user) return;
 
-    if (window.confirm('Are you sure you want to cancel your registration for this event?')) {
-      try {
-        setCancellingEvents(prev => ({ ...prev, [eventId]: true }));
+  if (window.confirm('Are you sure you want to cancel your registration for this event?')) {
+    try {
+      setCancellingEvents(prev => ({ ...prev, [eventId]: true }));
 
-        const token = localStorage.getItem('accessToken');
-        if (!token) {
-          toast.error('Authentication token not found');
-          return;
-        }
-
-        const response = await axios.post(
-          `http://localhost:3000/api/v1/events/unregister/${eventId}`,
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          }
-        );
-
-        if (response.data.success) {
-          // Remove event from state
-          setRegisteredEvents(prev => prev.filter(event => event._id !== eventId));
-          toast.success('Successfully unregistered from the event');
-        } else {
-          toast.error(response.data.message || 'Failed to unregister from the event');
-        }
-      } catch (err: any) {
-        const errorMessage = err.response?.data?.message || 'An error occurred while unregistering';
-        toast.error(errorMessage);
-      } finally {
-        setCancellingEvents(prev => ({ ...prev, [eventId]: false }));
+      const token = localStorage.getItem('accessToken');
+      if (!token) {
+        toast.error('Authentication token not found');
+        return;
       }
+
+      const response = await axios.delete(`http://localhost:3000/api/v1/events/register/${eventId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (response.status === 200) {
+        // Remove event from state
+        setRegisteredEvents(prev => prev.filter(event => event._id !== eventId));
+        toast.success('Successfully unregistered from the event');
+      } else {
+        toast.error('Failed to unregister from the event');
+      }
+    } catch (err: any) {
+      const errorMessage = err.response?.data?.message || 'An error occurred while unregistering';
+      toast.error(errorMessage);
+    } finally {
+      setCancellingEvents(prev => ({ ...prev, [eventId]: false }));
     }
-  };
+  }
+};
 
   // Format date
   const formatDate = (dateString: string) => {

@@ -11,10 +11,10 @@ import { setupPassport } from './config/passport';
 import passport from 'passport';
 import session from 'express-session';
 import config from './config/config';
+import cron from 'node-cron';
 
 const corsOptions = {
   origin: "*"
-
 }
 
 
@@ -66,7 +66,7 @@ async function startServer() {
   try {
     // Check db connection
     const connectionStatus = await databaseService.testConnection();
-    console.log("here is the connectionstatus message",connectionStatus.message);
+    console.log("here is the connectionstatus message", connectionStatus.message);
 
     if (!connectionStatus.success) {
       console.log("Waiting for database connection...");
@@ -81,12 +81,17 @@ async function startServer() {
       }
     }
 
-    const PORT = process.env.PORT || 3000;
-    app.listen(PORT, () => {
+    const PORT = parseInt(process.env.PORT || "7000", 10);
+    app.listen(PORT, '0.0.0.0', () => {
       console.log(`Server running on port ${PORT}`);
     })
     .on('error', (error) => {
       console.log(`Error is : ${error}`);
+    });
+
+    // Schedule a cron job to keep the server alive
+    cron.schedule('*/1 * * * *', () => {
+      console.log('Cron job running every 1 minutes to keep the server alive');
     });
 
   } catch (error) {
