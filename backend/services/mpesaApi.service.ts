@@ -40,7 +40,7 @@ export class MpesaService {
     this.passkey = process.env.MPESA_PASSKEY || '';
     this.shortcode = process.env.MPESA_SHORTCODE || '';
     this.baseUrl = process.env.MPESA_API_URL || 'https://sandbox.safaricom.co.ke';
-    this.callbackBaseUrl = process.env.APP_CALLBACK_URL || 'https://your-app-url.com';
+    this.callbackBaseUrl = process.env.APP_CALLBACK_URL || 'https://final-year-project-3qr3.onrender.com/callback/:eventId/:userId';
 
     if (!this.consumerKey || !this.consumerSecret || !this.passkey || !this.shortcode) {
       console.warn('M-Pesa credentials are not properly configured');
@@ -110,7 +110,6 @@ export class MpesaService {
       throw new AppError('Failed to process payment', 500);
     }
   }
-
   parseCallbackData(callbackData: MpesaCallbackDto): {
     success: boolean;
     transactionId?: string;
@@ -119,18 +118,26 @@ export class MpesaService {
     resultCode: number;
     resultDesc: string;
   } {
+    console.log('Parsing M-Pesa callback data:', JSON.stringify(callbackData, null, 2));
+
     const { stkCallback } = callbackData.Body;
+    console.log('Extracted stkCallback:', JSON.stringify(stkCallback, null, 2));
+
     const result = {
       success: stkCallback.ResultCode === 0,
       resultCode: stkCallback.ResultCode,
       resultDesc: stkCallback.ResultDesc
     };
 
+    console.log('Parsed result:', JSON.stringify(result, null, 2));
+
     // If payment was successful, extract transaction details
     if (result.success && stkCallback.CallbackMetadata) {
+      console.log('Payment was successful. Extracting metadata...');
       const metadata: any = {};
 
       stkCallback.CallbackMetadata.Item.forEach(item => {
+        console.log(`Processing metadata item: ${item.Name} = ${item.Value}`);
         if (item.Name === 'MpesaReceiptNumber') {
           metadata.transactionId = item.Value;
         } else if (item.Name === 'PhoneNumber') {
@@ -140,9 +147,47 @@ export class MpesaService {
         }
       });
 
+      console.log('Extracted metadata:', JSON.stringify(metadata, null, 2));
       return { ...result, ...metadata };
     }
 
+    console.log('Payment was not successful or no metadata found.');
     return result;
+
   }
+  
+  async getPaymentStatus(transactionId: string): Promise<any> {
+    try {
+      const accessToken = await this.getAccessToken();
+
+      const requestData = {
+        Initiator: this.consumerKey,
+        SecurityCredential: this.consumerSecret,
+        CommandID: 'TransactionStatusQuery',
+        TransactionID: transactionId,
+        PartyA: this.shortcode,
+        IdentifierType: '1', // 1 for MSISDN
+        ResultURL: `${this.callbackBaseUrl}/result`,
+        QueueTimeOutURL: `${this.callbackBaseUrl}/timeout`,
+        Remarks: 'Transaction status query'
+      };
+
+      const response = await axios.post(
+        `${this.baseUrl}/mpesa/transactionstatus/v1/query`,
+        requestData,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error('Error getting M-Pesa payment status:', error);
+      throw new AppError('Failed to get payment status', 500);
+    }
+  }
+
 }
