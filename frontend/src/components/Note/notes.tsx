@@ -75,7 +75,7 @@ interface MediaAttachment {
   const editorRef = useRef<HTMLDivElement>(null);
   // const [isAuthenticated, setIsAuthenticated] = useState(false);
   // const [isLoading, setIsLoading] = useState(true);
-   const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+   const API_BASE_URL = 'http://localhost:3000';
 
    const getAuthHeaders = () => {
     const token = localStorage.getItem('accessToken');
@@ -331,61 +331,7 @@ const handleLinkedInShare = async (customMessage?: string) => {
     }
   };
 
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>, fileType: 'image' | 'audio' | 'video' | 'document') => {
-    console.group('File Upload');
-    console.log('File Upload Started');
-    console.log('File Type:', fileType);
 
-    const file = event.target.files?.[0];
-
-    console.log('Selected File:', file);
-
-    if (!file || !noteId || noteId === 'new') {
-      console.warn('Invalid file or note context');
-      toast.error('Cannot upload file');
-      console.groupEnd();
-      return;
-    }
-
-    // Create FormData
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('fileType', fileType);
-
-    const token = localStorage.getItem('accessToken');
-    console.log('Access Token Present:', !!token);
-
-    try {
-      const response = await axios.post(`${API_BASE_URL}/api/v1/notes/${noteId}/media`, formData, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-
-      console.log('Upload Response Status:', response.status);
-
-      if (response.status !== 200) {
-        if (response.status === 401) {
-          console.error('Unauthorized - redirecting to login');
-          navigate('/auth/login');
-          return;
-        }
-        throw new Error('Failed to upload file');
-      }
-
-      const result = response.data;
-      console.log('Upload Result:', result);
-
-      setNote(result.data);
-      toast.success('File uploaded successfully!');
-    } catch (error) {
-      console.error('Error uploading file:', error);
-      toast.error('Failed to upload file');
-    } finally {
-      console.groupEnd();
-    }
-   };
 
 
   const handleDeleteAttachment = async (attachmentId: string) => {
@@ -682,135 +628,17 @@ const openMediaPreview = (attachment: MediaAttachment) => {
 
 
 
-            {/* Media Uploads */}
-            {/* <div>
-              <h3 className="text-sm font-medium text-gray-700 mb-2">Media Attachments</h3>
-
-
-              <div className="grid grid-cols-2 gap-2 mb-4">
-                <label className="flex flex-col items-center justify-center p-3 border border-gray-300 rounded-md cursor-pointer hover:bg-gray-50">
-                  <Image className="h-5 w-5 mb-1 text-indigo-600" />
-                  <span className="text-xs text-gray-500">Image</span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => handleFileUpload(e, 'image')}
-                  />
-                </label>
-
-                <label className="flex flex-col items-center justify-center p-3 border border-gray-300 rounded-md cursor-pointer hover:bg-gray-50">
-                  <File className="h-5 w-5 mb-1 text-indigo-600" />
-                  <span className="text-xs text-gray-500">Document</span>
-                  <input
-                    type="file"
-                    accept=".pdf,.doc,.docx,.txt"
-                    className="hidden"
-                    onChange={(e) => handleFileUpload(e, 'document')}
-                  />
-                </label>
-
-                <label className="flex flex-col items-center justify-center p-3 border border-gray-300 rounded-md cursor-pointer hover:bg-gray-50">
-                  <Mic className="h-5 w-5 mb-1 text-indigo-600" />
-                  <span className="text-xs text-gray-500">Audio</span>
-                  <input
-                    type="file"
-                    accept="audio/*"
-                    className="hidden"
-                    onChange={(e) => handleFileUpload(e, 'audio')}
-                  />
-                </label>
-
-                <label className="flex flex-col items-center justify-center p-3 border border-gray-300 rounded-md cursor-pointer hover:bg-gray-50">
-                  <Video className="h-5 w-5 mb-1 text-indigo-600" />
-                  <span className="text-xs text-gray-500">Video</span>
-                  <input
-                    type="file"
-                    accept="video/*"
-                    className="hidden"
-                    onChange={(e) => handleFileUpload(e, 'video')}
-                  />
-                </label>
-              </div>
-
-
-   {note?.mediaAttachments && note.mediaAttachments.length > 0 && (
-  <div>
-    <h4 className="text-sm font-medium text-gray-700 mb-2">Uploaded Files</h4>
-    {note.mediaAttachments.map((attachment) => (
-      <div
-        key={attachment._id}
-        className="flex items-center justify-between mb-2 p-2 border rounded-md cursor-pointer hover:bg-gray-50"
-        onClick={() => openMediaPreview(attachment)}
-      >
-        <div className="flex items-center space-x-2">
-          {attachment.type === 'image' && <Image className="h-5 w-5 text-blue-500" />}
-          {attachment.type === 'document' && <File className="h-5 w-5 text-green-500" />}
-          {attachment.type === 'audio' && <Mic className="h-5 w-5 text-purple-500" />}
-          {attachment.type === 'video' && <Video className="h-5 w-5 text-red-500" />}
-          <span className="text-sm">{attachment.fileName}</span>
-        </div>
-        <div className="flex items-center space-x-2">
-               <MultimediaShareModal
-                 attachment={attachment}
-                 onShare={async (customMessage) => {
-
-                 // Implement sharing logic based on attachment type
-                 const sharingEndpoint = (() => {
-                   switch (attachment.type) {
-                     case 'image':
-                       return 'http://localhost:3000/api/v1/linkedin/share/image';
-                     case 'video':
-                       return 'http://localhost:3000/api/v1/linkedin/share/video';
-                     case 'document':
-                       return 'http://localhost:3000/api/v1/linkedin/share/article';
-                     default:
-                       return 'http://localhost:3000/api/v1/linkedin/share/content';
-                   }
-                 })();
-
-                   const response = await axios.post(sharingEndpoint, {
-
-                      attachmentId: attachment._id,
-                      customMessage,
-                      noteMetadata: {
-                        title: note.title,
-                        content: note.content,
-                        event: note.event?.title,
-                        session: note.session?.title
-                      }
-                    }, {
-                      headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-                      }
-                   });
-
-                 if (response.status < 200 || response.status >= 300) {
-                   throw new Error('Failed to share');
-                 }
-
-                 return response.data;
-               }}
-             />
-           </div>
-               </div>
-             ))}
-            </div>
-          )}
-            </div> */}
-
             <MediaAttachmentHandler.MediaUploadButtons
                noteId={note?._id}
-  API_BASE_URL={API_BASE_URL}
-  setNote={setNote}
+               API_BASE_URL={API_BASE_URL}
+               setNote={setNote}
                navigate={navigate}
              />
 
-<MediaAttachmentHandler.AttachmentsList
-  note={note}
-  openMediaPreview={openMediaPreview}
-/>
-
+             <MediaAttachmentHandler.AttachmentsList
+               note={note}
+               openMediaPreview={openMediaPreview}
+             />
 
           </div>
 
@@ -855,32 +683,7 @@ const openMediaPreview = (attachment: MediaAttachment) => {
             </div>
           )}
 
-          {/* Delete Note Button (for existing notes) */}
-          {note && note._id && (
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <button
-                onClick={async () => {
-                  if (window.confirm('Are you sure you want to delete this note? This action cannot be undone.')) {
-                    try {
-                      const response = await fetch(`http:localhost:3000/api/v1/notes/${note._id}`, {
-                        method: 'DELETE'
-                      });
 
-                      if (!response.ok) throw new Error('Failed to delete note');
-
-                      navigate('/dashboard/notes');
-                    } catch (error) {
-                      console.error('Error deleting note:', error);
-                      alert('Failed to delete note');
-                    }
-                  }
-                }}
-                className="w-full flex items-center justify-center py-2 px-4 border border-red-300 text-red-600 rounded-md hover:bg-red-50"
-              >
-                <Trash2 className="h-4 w-4 mr-2" /> Delete Note
-              </button>
-            </div>
-          )}
         </div>
       </div>
 

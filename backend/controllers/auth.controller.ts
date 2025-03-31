@@ -13,33 +13,7 @@ import { User } from '../models/user.model';
 import { AppError } from '../utils/errors.utils';
 export class AuthController {
 
-//  static  async register(req: Request, res: Response, next: NextFunction) {
-//     try {
-//       const validatedData = registerSchema.parse(req.body);
-//       const user = await authService.register(validatedData);
 
-//       return ResponseUtil.success(res, 201, user, 'User registered successfully');
-//     } catch (error) {
-//       if (error instanceof ZodError) {
-//         return ResponseUtil.error(res, 400, error.errors[0].message);
-//       }
-//       next(error);
-//     }
-//   }
-
-//  static async login(req: Request, res: Response, next: NextFunction) {
-//     try {
-//       const validatedData = loginSchema.parse(req.body);
-//       const { user, tokens } = await authService.login(validatedData);
-
-//       return ResponseUtil.success(res, 200, { user, tokens }, 'Login successful');
-//     } catch (error) {
-//       if (error instanceof ZodError) {
-//         return ResponseUtil.error(res, 400, error.errors[0].message);
-//       }
-//       next(error);
-//     }
-//   }
 
 
  static async refreshToken(req: Request, res: Response, next: NextFunction) {
@@ -86,56 +60,9 @@ export class AuthController {
     }
   }
 
-//  static async updateProfile(req: Request, res: Response, next: NextFunction) {
-//     try {
 
-//       const userId = (req.user as any).id;
 
-//       if (!userId) {
-//         return ResponseUtil.error(res, 401, 'Unauthorized: User not found');
-//       }
 
-//       const updateData = req.body;
-
-//       const updatedUser = await authService.updateProfile(userId, updateData);
-
-//       return ResponseUtil.success(res, 200, updatedUser, 'Profile updated successfully');
-//     } catch (error) {
-//       next(error);
-//     }
-//   }
-
- static async generateQRCode(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { userId, eventId } = req.body;
-
-      if (!userId || !eventId) {
-        return ResponseUtil.error(res, 400, 'User ID and Event ID are required');
-      }
-
-      const qrCodeDataUrl = await authService.generateQRCode(userId, eventId);
-
-      return ResponseUtil.success(res, 200, { qrCodeDataUrl }, 'QR code generated successfully');
-    } catch (error) {
-      next(error);
-    }
-  }
-
- static async verifyQRCode(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { qrData } = req.body;
-
-      if (!qrData) {
-        return ResponseUtil.error(res, 400, 'QR code data is required');
-      }
-
-      const verificationResult = await authService.verifyQRCode(qrData);
-
-      return ResponseUtil.success(res, 200, verificationResult, 'QR code verified successfully');
-    } catch (error) {
-      next(error);
-    }
-  }
 
 
 static  async requestPasswordReset(req: Request, res: Response, next: NextFunction) {
@@ -153,21 +80,7 @@ static  async requestPasswordReset(req: Request, res: Response, next: NextFuncti
     }
   }
 
-  // static async getUserProfile(req: Request, res: Response, next: NextFunction) {
-  //   try {
-  //     const userId = (req.user as any).id;
 
-  //     if (!userId) {
-  //       return ResponseUtil.error(res, 401, 'Unauthorized: User not found');
-  //     }
-
-  //     const userProfile = await authService.getUserProfile(userId);
-
-  //     return ResponseUtil.success(res, 200, userProfile, 'User profile retrieved successfully');
-  //   } catch (error) {
-  //     next(error);
-  //   }
-  // }
 
    static async register(req: Request, res: Response, next: NextFunction) {
     try {

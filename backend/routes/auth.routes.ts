@@ -19,18 +19,6 @@ router.get('/profile',
   AuthMiddleware.verifyToken,
   AuthController.getUserProfile);
 
-// QR Code for Event Access
-router.post(
-  '/generate-qr-code',
-  AuthMiddleware.verifyToken,
-  AuthMiddleware.hasRole([UserRole.ORGANIZER, UserRole.ADMIN]),
-  AuthController.generateQRCode
-);
-router.post(
-  '/verify-qr-code',
-  AuthMiddleware.verifyToken,
-  AuthController.verifyQRCode
-);
 
 // LinkedIn OAuth
 router.get('/linkedin', LinkedInController.getAuthUrl);

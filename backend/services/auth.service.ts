@@ -18,27 +18,6 @@ import QRCode from 'qrcode';
 const sgMail = require('@sendgrid/mail');
 
 export class AuthService {
-  // async register(userData: RegisterUserDto): Promise<User> {
-  //   const existingUser = await User.findOne({ email: userData.email });
-
-  //   if (existingUser) {
-  //     throw new AppError('Email already in use', 400);
-  //   }
-
-  //   const newUser = new User(userData);
-
-  //   // Hash the password before saving
-  //   const saltRounds = 10;
-  //   const salt = await bcrypt.genSalt(saltRounds);
-  //   newUser.password = await bcrypt.hash(newUser.password, salt);
-
-  //   await newUser.save();
-
-  //   // Remove password from response
-  //   const userObject = newUser.toObject();
-
-  //   return userObject as User;
-  // }
 
   async register(userData: RegisterUserDto): Promise<User> {
   try {
@@ -61,14 +40,14 @@ export class AuthService {
     const userObject = newUser.toObject();
 
     // Send welcome email
-    // sgMail.setApiKey(config.sendgrid.apiKey);
-    // const msg = {
-    //   to: newUser.email,
-    //   from: config.sendgrid.fromEmail,
-    //   subject: 'Welcome to Comfybase',
-    //   text: `Hello ${newUser.firstName},\n\nWelcome to Comfybase! We're excited to have you on board.\n\nBest regards,\nThe Comfybase Team`,
-    //   html: `<p>Hello ${newUser.firstName},</p><p>Welcome to Comfybase! We're excited to have you on board.</p><p>Best regards,<br>The Comfybase Team</p>`,
-    // };
+    sgMail.setApiKey(config.sendgrid.apiKey);
+    const msg = {
+      to: newUser.email,
+      from: config.sendgrid.fromEmail,
+      subject: 'Welcome to Comfybase',
+      text: `Hello ${newUser.firstName},\n\nWelcome to Comfybase! We're excited to have you on board.\n\nBest regards,\nThe Comfybase Team`,
+      html: `<p>Hello ${newUser.firstName},</p><p>Welcome to Comfybase! We're excited to have you on board.</p><p>Best regards,<br>The Comfybase Team</p>`,
+    };
 
 
     return userObject as User;
@@ -152,6 +131,10 @@ export class AuthService {
       phoneNumber: user.phoneNumber,
       bio: user.bio,
       profileImage: user.profileImage,
+      socialLinks: {
+        linkedinId: user.socialLinks?.linkedinId,
+        linkedinAccessToken: user.socialLinks?.linkedinAccessToken
+      }
     };
 
     const accessToken = jwt.sign(
@@ -305,18 +288,7 @@ export class AuthService {
     return userObject as User;
   }
 
-  async generateQRCode(userId: string, eventId: string): Promise<string> {
-    // Generate unique token for QR code
-    const qrToken = jwt.sign(
-      { userId, eventId },
-      config.jwt.accessTokenSecret as string,
-      { expiresIn: '1d' }
-    );
 
-    // Generate QR code as data URL
-    const qrCodeDataUrl = await QRCode.toDataURL(qrToken);
-    return qrCodeDataUrl;
-  }
 
   async logout(refreshToken: string): Promise<void> {
     // Delete refresh token from database
@@ -332,31 +304,7 @@ export class AuthService {
 
 
 
-  async verifyQRCode(qrToken: string): Promise<{ userId: string, eventId: string }> {
-    try {
-      const decoded = jwt.verify(qrToken, config.jwt.accessTokenSecret as string) as { userId: string, eventId: string };
 
-      // Optionally, you can check if the user and event exist in your database
-      const user = await User.findById(decoded.userId);
-      if (!user) {
-        throw new AppError('User not found', 404);
-      }
-      // const event = await Event.findById(decoded.eventId);
-      // if (!event) {
-      //   throw new AppError('Event not found', 404);
-      // }
-      // Optionally, you can check if the QR code has expired
-      const currentTime = Math.floor(Date.now() / 1000);
-      // const tokenExpirationTime = decoded.
-      // if (currentTime > tokenExpirationTime) {
-      //   throw new AppError('QR code has expired', 401);
-      // }
-
-      return { userId: decoded.userId, eventId: decoded.eventId };
-    } catch (error) {
-      throw new AppError('Invalid QR code', 401);
-    }
-  }
 
 }
 

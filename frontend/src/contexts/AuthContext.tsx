@@ -15,6 +15,7 @@ interface User {
   bio?: string;
   socialLinks?: {
     linkedinId?: string;
+    linkedinAccessToken?: string;
   };
 }
 
@@ -54,38 +55,76 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 
 
-const checkAuthStatus = async () => {
+// const checkAuthStatus = async () => {
+//   setIsLoading(true);
+//   try {
+//     if (isTokenValid()) {
+//       const token = localStorage.getItem('accessToken');
+//       // First check if we already have user data in localStorage
+//       const userString = localStorage.getItem('user');
+
+//       if (userString) {
+//         try {
+//           const userData = JSON.parse(userString);
+//           setUser(userData);
+//           setIsLoading(false);
+//           return;
+//         } catch (parseError) {
+//           console.error('Failed to parse user data:', parseError);
+//           // Invalid user JSON, continue to fetch from API
+//         }
+//       }
+
+//       // If no stored user but valid token, fetch from API
+//       const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/v1/auth/me`, {
+//         headers: { Authorization: `Bearer ${token}` }
+//       });
+
+//       // Handle different response formats
+//       const userData = response.data.data || response.data.user || response.data;
+
+//       if (userData) {
+//         setUser(userData);
+//         // Store user in localStorage for future use
+//         localStorage.setItem('user', JSON.stringify(userData));
+//       } else {
+//         throw new Error('Invalid user data format');
+//       }
+//     } else {
+//       setUser(null);
+//       localStorage.removeItem('user');
+//     }
+//   } catch (error) {
+//     console.error('Auth status check failed:', error);
+//     // Clear invalid tokens
+//     localStorage.removeItem('accessToken');
+//     localStorage.removeItem('refreshToken');
+//     localStorage.removeItem('user');
+//     setUser(null);
+//   } finally {
+//     setIsLoading(false);
+//   }
+// };
+
+  const checkAuthStatus = async () => {
   setIsLoading(true);
   try {
     if (isTokenValid()) {
       const token = localStorage.getItem('accessToken');
-      // First check if we already have user data in localStorage
-      const userString = localStorage.getItem('user');
 
-      if (userString) {
-        try {
-          const userData = JSON.parse(userString);
-          setUser(userData);
-          setIsLoading(false);
-          return;
-        } catch (parseError) {
-          console.error('Failed to parse user data:', parseError);
-          // Invalid user JSON, continue to fetch from API
-        }
-      }
-
-      // If no stored user but valid token, fetch from API
+      // Fetch from API first to ensure we have the most up-to-date user data
       const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/v1/auth/me`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
       // Handle different response formats
       const userData = response.data.data || response.data.user || response.data;
+      console.log('User data from API:', userData);
 
       if (userData) {
-        setUser(userData);
-        // Store user in localStorage for future use
+        // Store complete user object in localStorage
         localStorage.setItem('user', JSON.stringify(userData));
+        setUser(userData);
       } else {
         throw new Error('Invalid user data format');
       }
@@ -119,6 +158,9 @@ const checkAuthStatus = async () => {
 
     // Extract data based on the actual response structure
     const { tokens, user } = response.data.data;
+
+      console.log('Full user object from server:', user);
+
 
     // Store tokens and user
     localStorage.setItem('accessToken', tokens.accessToken);

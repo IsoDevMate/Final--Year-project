@@ -31,6 +31,7 @@ export interface TokenPayload {
   profileImage?: string;
   socialLinks?: {
     linkedinId?: string;
+    linkedinAccessToken?: string;
   };
 }
 

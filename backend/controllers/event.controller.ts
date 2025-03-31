@@ -141,9 +141,13 @@ export class EventController {
       }
 
       // Check if user is the organizer or an admin
-      if (event.organizer.toString() !== userId && userRole !== UserRole.ADMIN) {
-        return ResponseUtil.error(res, 403, 'You do not have permission to delete this event');
-      }
+
+     // Check if user is the organizer or an admin
+      const isOrganizer = UserRole.ORGANIZER === userRole //&& event.organizer.toString() === userId;
+      console.log(`User ID: ${userId}, Event Organizer ID: ${event.organizer}`);
+       if (!isOrganizer && userRole !== UserRole.ADMIN) {
+         return ResponseUtil.error(res, 403, 'You do not have permission to delete this event');
+       }
 
       await this.eventService.deleteEvent(id);
 

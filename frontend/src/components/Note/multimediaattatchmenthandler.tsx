@@ -9,7 +9,8 @@ import {
 } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import MultimediaShareModal from './sharemulti';
+import { MultimediaShareModa } from './sharemulti';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface Note {
   _id: string;
@@ -48,8 +49,26 @@ interface MediaAttachment {
   storageRef?: string;
 }
 
+interface User {
+  id: string;
+  role: string;
+  userId: string;
+  email: string;
+  name: string;
+  phoneNumber?: string;
+  firstName: string;
+  lastName: string;
+  profileImage?: string;
+  bio?: string;
+  socialLinks?: {
+    linkedinId?: string;
+    linkedinAccessToken?: string;
+  };
+}
+
 // Add these methods to your existing NotesPage component
 export const MediaAttachmentHandler = {
+
   // File upload handler
   handleFileUpload: async (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -96,122 +115,166 @@ export const MediaAttachmentHandler = {
     }
   },
 
-  // Media preview modal component
-  MediaPreviewModal: React.memo(({
-    selectedAttachment,
-    showMediaPreview,
-    setShowMediaPreview,
-    note,
-    handleDeleteAttachment
-  }: {
-    selectedAttachment: MediaAttachment | null,
-    showMediaPreview: boolean,
-    setShowMediaPreview: (show: boolean) => void,
+//MediaPreviewModal component
+MediaPreviewModal: React.memo(({
+  selectedAttachment,
+  showMediaPreview,
+  setShowMediaPreview,
+  note,
+  handleDeleteAttachment
+}: {
+  selectedAttachment: MediaAttachment | null,
+  showMediaPreview: boolean,
+  setShowMediaPreview: (show: boolean) => void,
     note: Note | null,
-    handleDeleteAttachment: (attachmentId: string) => Promise<void>
-  }) => {
-    if (!showMediaPreview || !selectedAttachment) return null;
+  handleDeleteAttachment: (attachmentId: string) => Promise<void>
+}) => {
 
-    return (
-      <div className="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-70 flex items-center justify-center p-4">
-        <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
-          <div className="p-4 border-b flex justify-between items-center">
-            <h3 className="text-lg font-medium">{selectedAttachment.fileName}</h3>
-            <div className="flex items-center space-x-2">
-              {note && (
-                <MultimediaShareModal
-                  attachment={selectedAttachment}
-                  onShare={async (customMessage) => {
-                    // Implement sharing logic (similar to your existing implementation)
-                    const sharingEndpoint = (() => {
-                      switch (selectedAttachment.type) {
-                        case 'image':
-                          return 'http://localhost:3000/api/v1/linkedin/share/image';
-                        case 'video':
-                          return 'http://localhost:3000/api/v1/linkedin/share/video';
-                        case 'document':
-                          return 'http://localhost:3000/api/v1/linkedin/share/article';
-                        default:
-                          return 'http://localhost:3000/api/v1/linkedin/share/content';
-                      }
-                    })();
 
-                    const response = await axios.post(sharingEndpoint, {
-                      attachmentId: selectedAttachment._id,
-                      customMessage,
-                      noteMetadata: {
-                        title: note.title,
-                        content: note.content,
-                        event: note.event?.title,
-                        session: note.session?.title
-                      }
-                    }, {
-                      headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-                      }
-                    });
+  if (!showMediaPreview || !selectedAttachment) return null;
 
-                    if (response.status < 200 || response.status >= 300) {
-                      throw new Error('Failed to share');
-                    }
 
-                    return response.data;
-                  }}
-                />
-              )}
-              <button
-                onClick={() => handleDeleteAttachment(selectedAttachment._id)}
-                className="text-red-500 hover:text-red-700"
-              >
-                <Trash2 className="h-5 w-5" />
-              </button>
-              <button
-                onClick={() => setShowMediaPreview(false)}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                <X className="h-6 w-6" />
-              </button>
-            </div>
-          </div>
 
-          <div className="flex-1 overflow-auto p-4 flex items-center justify-center">
-            {selectedAttachment.type === 'image' && (
-              <img
-                src={selectedAttachment.url}
-                alt={selectedAttachment.fileName}
-                className="max-w-full max-h-[70vh] object-contain"
-                onError={(e) => {
-                  e.currentTarget.src = '/path/to/fallback/image.png';
-                }}
-              />
-            )}
-            {selectedAttachment.type === 'audio' && (
-              <audio controls className="w-full">
-                <source src={selectedAttachment.url} />
-                Your browser does not support the audio element.
-              </audio>
-            )}
-            {selectedAttachment.type === 'video' && (
-              <video controls className="max-w-full max-h-[70vh]">
-                <source src={selectedAttachment.url} />
-                Your browser does not support the video element.
-              </video>
-            )}
-            {selectedAttachment.type === 'document' && (
-              <iframe
-                src={selectedAttachment.url}
-                width="100%"
-                height="600px"
-                className="border-none"
-              >
-                Document preview not available
-              </iframe>
-            )}
+  // Fixed handleShareAttachment in MediaPreviewModal
+  const handleShareAttachment = async (customMessage = '') => {
+  if (!note || !selectedAttachment) return;
+
+
+
+  const userFromStorage = localStorage.getItem('user');
+  if (!userFromStorage) {
+    toast.error('User not found in local storage');
+    return;
+  }
+
+  const parsedUser = JSON.parse(userFromStorage);
+  const token = parsedUser?.socialLinks?.linkedinAccessToken;
+
+  if (!token) {
+    toast.error('LinkedIn access token is missing');
+    return;
+  }
+
+  console.log('Sharing attachment:', selectedAttachment, 'with custom message:', customMessage , "token" , token);
+
+  // Structure the payload according to the LinkedIn API requirements
+  const payload = {
+    note: {
+      title: note.title,
+      content: customMessage || `Check out this ${selectedAttachment.type}`,
+      mediaAttachments: [
+        {
+          type: selectedAttachment.type,
+          url: selectedAttachment.url,
+          caption: customMessage || selectedAttachment.caption || note.title
+        }
+      ]
+    },
+    user: {
+      socialLinks: {
+        linkedinAccessToken: token
+      }
+    }
+  };
+
+  // Determine the appropriate endpoint based on attachment type
+  const sharingEndpoint = (() => {
+    switch (selectedAttachment.type) {
+      case 'image':
+        return 'http://localhost:3000/api/v1/linkedin/share/image';
+      case 'video':
+        return 'http://localhost:3000/api/v1/linkedin/share/video';
+      case 'document':
+        return 'http://localhost:3000/api/v1/linkedin/share/article';
+      default:
+        return 'http://localhost:3000/api/v1/linkedin/share/content';
+    }
+  })();
+
+  try {
+    // Make the API call to share the attachment
+    const response = await axios.post(sharingEndpoint, payload, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (response.status < 200 || response.status >= 300) {
+      throw new Error('Failed to share');
+    }
+
+    return response.data;
+  } catch (error) {
+    console.error('Error sharing to LinkedIn:', error);
+    throw error;
+  }
+};
+
+  return (
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-70 flex items-center justify-center p-4">
+      <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+        <div className="p-4 border-b flex justify-between items-center">
+          <h3 className="text-lg font-medium">{selectedAttachment.fileName}</h3>
+          <div className="flex items-center space-x-2">
+
+            <MultimediaShareModa
+              attachment={selectedAttachment}
+              onShare={(customMessage) => handleShareAttachment( customMessage)}
+            />
+            <button
+              onClick={() => handleDeleteAttachment(selectedAttachment._id)}
+              className="text-red-500 hover:text-red-700"
+            >
+              <Trash2 className="h-5 w-5" />
+            </button>
+            <button
+              onClick={() => setShowMediaPreview(false)}
+              className="text-gray-500 hover:text-gray-700"
+            >
+              <X className="h-6 w-6" />
+            </button>
           </div>
         </div>
+
+        <div className="flex-1 overflow-auto p-4 flex items-center justify-center">
+          {selectedAttachment.type === 'image' && (
+            <img
+              src={selectedAttachment.url}
+              alt={selectedAttachment.fileName}
+              className="max-w-full max-h-[70vh] object-contain"
+              onError={(e) => {
+                e.currentTarget.src = '/path/to/fallback/image.png';
+              }}
+            />
+          )}
+          {selectedAttachment.type === 'audio' && (
+            <audio controls className="w-full">
+              <source src={selectedAttachment.url} />
+              Your browser does not support the audio element.
+            </audio>
+          )}
+          {selectedAttachment.type === 'video' && (
+            <video controls className="max-w-full max-h-[70vh]">
+              <source src={selectedAttachment.url} />
+              Your browser does not support the video element.
+            </video>
+          )}
+          {selectedAttachment.type === 'document' && (
+            <iframe
+              src={selectedAttachment.url}
+              width="100%"
+              height="600px"
+              className="border-none"
+            >
+              Document preview not available
+            </iframe>
+          )}
+        </div>
       </div>
-    );
-  }),
+    </div>
+  );
+}),
 
   // Media upload buttons component
   MediaUploadButtons: React.memo(({

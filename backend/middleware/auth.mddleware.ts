@@ -26,6 +26,10 @@ static async verifyToken(req: Request, res: Response, next: NextFunction) {
           role: UserRole;
           firstName: string;
           lastName: string;
+          socialLinks?: {
+            linkedinId?: string;
+            linkedinAccessToken?: string;
+          };
         };
 
         // Check if user still exists
@@ -42,7 +46,12 @@ static async verifyToken(req: Request, res: Response, next: NextFunction) {
           email: decoded.email,
           role: decoded.role,
           firstName: decoded.firstName,
-          lastName: decoded.lastName
+          lastName: decoded.lastName,
+          socialLinks: decoded.socialLinks,
+          profileImage: user.profileImage,
+          bio: user.bio,
+          phoneNumber: user.phoneNumber,
+          createdAt: user.createdAt,
         };
 
         next();

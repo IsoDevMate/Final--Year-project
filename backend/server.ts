@@ -8,15 +8,12 @@ import { databaseService } from './config/db';
 import { Request, Response, NextFunction } from 'express';
 import { setupPassport } from './config/passport';
 import passport from 'passport';
-import cron from 'node-cron';
 import config from './config/config';
+import cron from 'node-cron';
 
 const corsOptions = {
   origin: "*"
 }
-
-
-
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -81,7 +78,7 @@ async function startServer() {
 
     // Schedule a cron job to keep the server alive
     cron.schedule('*/1 * * * *', () => {
-      console.log('Cron job running every 1 minutes to keep the server alive');
+      console.log('...');
     });
 
   } catch (error) {

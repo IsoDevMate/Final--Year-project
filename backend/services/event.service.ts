@@ -143,8 +143,18 @@ export class EventService {
         throw new AppError('Event not found', 404);
       }
 
-      // TODO: Delete associated sessions, notes, and other related data
-      // This would be implemented when those services are created
+      // Delete associated sessions
+      await Event.updateMany(
+        { _id: eventId },
+        { $unset: { sessions: "" } }
+      );
+
+      // Delete associated notes or other related data
+      const Note = await import('../models/note.model').then(module => module.Note);
+      await Note.deleteMany({ eventId });
+
+      
+
     } catch (error) {
       if (error instanceof AppError) {
         throw error;
@@ -346,7 +356,7 @@ export class EventService {
       throw new AppError('Failed to retrieve registered events', 500);
     }
   }
-  
+
 
   async getEventSessions(eventId: string): Promise<any[]> {
     try {
