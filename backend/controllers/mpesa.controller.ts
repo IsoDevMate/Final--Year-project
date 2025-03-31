@@ -48,9 +48,9 @@ export class MPaymentController {
 
   async handlePaymentCallback(req: Request, res: Response, next: NextFunction) {
     try {
-      const { eventId, userId } = req.params;
+    const { eventId, userId } = req.params;
 
-        if (!Types.ObjectId.isValid(eventId) || !Types.ObjectId.isValid(userId)) {
+    if (!Types.ObjectId.isValid(eventId) || !Types.ObjectId.isValid(userId)) {
       console.error(`Invalid ObjectId: eventId=${eventId}, userId=${userId}`);
       res.status(400).json({
         success: false,

@@ -22,6 +22,12 @@ export class MPaymentService {
 
   async initiatePayment(paymentData: InitiatePaymentDto): Promise<any> {
     try {
+
+      console.log('Initiating payment with data:', paymentData);
+      // Validate payment data
+      if (!paymentData.eventId || !paymentData.userId || !paymentData.phoneNumber || !paymentData.amount) {
+        throw new AppError('Missing required payment data', 400);
+      }
       // Check if event exists and has space
       const event = await this.eventService.getEventById(paymentData.eventId);
 
@@ -34,12 +40,12 @@ export class MPaymentService {
         throw new AppError('Event has reached maximum capacity', 400);
       }
 
-      // Check if user is already registered
 
-      const isRegistered = event.attendees.some((attendee) => attendee.toString() === paymentData.userId);
-      if (isRegistered) {
-        throw new AppError('User already registered for this event', 400);
-      }
+
+     console.log('User ID to check:', paymentData.userId);
+     console.log('Attendees:', event.attendees.map(a => a.toString()));
+     const isRegistered = event.attendees.some((attendee) => attendee.toString() === paymentData.userId);
+     console.log('Is user registered?', isRegistered);
       // if (event.attendees.includes(new Types.ObjectId(paymentData.userId))) {
       //   throw new AppError('User already registered for this event', 400);
       // }
@@ -108,7 +114,7 @@ export class MPaymentService {
   async handlePaymentCallback(callbackData: MpesaCallbackDto, eventId: string, userId: string): Promise<any> {
     try {
       // Parse callback data
-      const paymentResult = this.mpesaService.parseCallbackData(callbackData);
+    const paymentResult = this.mpesaService.parseCallbackData(callbackData);
 
     // Log the values for debugging
     console.log(`Callback for eventId: ${eventId}, userId: ${userId}`);

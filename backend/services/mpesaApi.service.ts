@@ -105,7 +105,7 @@ export class MpesaService {
         PartyA: formattedPhone,
         PartyB: this.shortcode,
         PhoneNumber: formattedPhone,
-        CallBackURL: "https://final-year-project-3qr3.onrender.com/api/v1/mpesa/callback/:eventId/:userId",
+        CallBackURL: paymentData.callbackUrl,
         AccountReference: paymentData.accountReference,
         TransactionDesc: paymentData.description
       };
