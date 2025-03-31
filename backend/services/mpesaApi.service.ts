@@ -9,6 +9,10 @@ export interface MpesaInitiatePaymentDto {
   description: string;
 }
 
+export interface TokenResponse {
+  access_token: string;
+  expires_in: string;
+}
 export interface MpesaCallbackDto {
   Body: {
     stkCallback: {
@@ -50,16 +54,32 @@ export class MpesaService {
   private async getAccessToken(): Promise<string> {
     try {
       const auth = Buffer.from(`${this.consumerKey}:${this.consumerSecret}`).toString('base64');
-      const response = await axios.get(`${this.baseUrl}/oauth/v1/generate?grant_type=client_credentials`, {
+       console.log("Auth string generated (first 10 chars):", auth.substring(0, 10) + "...");
+
+      const response = await axios.get<TokenResponse>(`${this.baseUrl}/oauth/v1/generate?grant_type=client_credentials`, {
         headers: {
           Authorization: `Basic ${auth}`
         }
       });
 
+       if (!response.data || !response.data.access_token) {
+        throw new Error('Failed to retrieve access token from M-Pesa API');
+      }
+
       return response.data.access_token;
-    } catch (error) {
+    } catch (error:any) {
       console.error('Error getting M-Pesa access token:', error);
-      throw new AppError('Failed to authenticate with M-Pesa', 500);
+      if (error.response) {
+        console.error('Response data:', error.response.data);
+        console.error('Response status:', error.response.status);
+        console.error('Response headers:', JSON.stringify(error.response.headers));
+      } else if (error.request) {
+        console.error('No response received:', error.request);
+      } else {
+        console.error('Error config:', error.config);
+      }
+
+      throw new Error(`Failed to generate M-Pesa token: ${error.message}`);
     }
   }
 

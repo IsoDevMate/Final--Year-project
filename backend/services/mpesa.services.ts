@@ -35,9 +35,14 @@ export class MPaymentService {
       }
 
       // Check if user is already registered
-      if (event.attendees.includes(new Types.ObjectId(paymentData.userId))) {
+
+      const isRegistered = event.attendees.some((attendee) => attendee.toString() === paymentData.userId);
+      if (isRegistered) {
         throw new AppError('User already registered for this event', 400);
       }
+      // if (event.attendees.includes(new Types.ObjectId(paymentData.userId))) {
+      //   throw new AppError('User already registered for this event', 400);
+      // }
 
       // Validate event capacity constraints
       if (event.capacity) {
@@ -58,7 +63,7 @@ export class MPaymentService {
       }
 
       // Generate a unique callbackUrl with event and user IDs
-      const callbackUrl = `${process.env.APP_URL || 'https://your-app-url.com'}/api/v1/payments/callback/${paymentData.eventId}/${paymentData.userId}`;
+      const callbackUrl = `${process.env.APP_URL || 'https://final-year-project-3qr3.onrender.com'}/api/v1/mpesa/callback/${paymentData.eventId}/${paymentData.userId}`;
 
       // Initiate STK push
       const stkPushResponse = await this.mpesaService.initiateSTKPush({
@@ -151,7 +156,7 @@ export class MPaymentService {
        console.error('EventId:', eventId, 'UserId:', userId);
        console.error('MerchantRequestID:', callbackData.Body.stkCallback.MerchantRequestID);
        console.error('CheckoutRequestID:', callbackData.Body.stkCallback.CheckoutRequestID);
-    
+
       if (error instanceof AppError) {
         throw error;
       }
