@@ -105,6 +105,13 @@ export class MPaymentService {
       // Parse callback data
       const paymentResult = this.mpesaService.parseCallbackData(callbackData);
 
+    // Log the values for debugging
+    console.log(`Callback for eventId: ${eventId}, userId: ${userId}`);
+
+    if (!Types.ObjectId.isValid(eventId) || !Types.ObjectId.isValid(userId)) {
+      throw new AppError('Invalid eventId or userId format', 400);
+    }
+
       // Find the payment record
       const payment = await MpesaPayment.findOne({
         merchantRequestId: callbackData.Body.stkCallback.MerchantRequestID,
@@ -140,7 +147,11 @@ export class MPaymentService {
         message: paymentResult.resultDesc
       };
     } catch (error) {
-      console.error('Error handling payment callback:', error);
+       console.error('Error handling payment callback:', error);
+       console.error('EventId:', eventId, 'UserId:', userId);
+       console.error('MerchantRequestID:', callbackData.Body.stkCallback.MerchantRequestID);
+       console.error('CheckoutRequestID:', callbackData.Body.stkCallback.CheckoutRequestID);
+    
       if (error instanceof AppError) {
         throw error;
       }

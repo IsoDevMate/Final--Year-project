@@ -6,6 +6,7 @@ import { eventIdSchema } from '../utils/event.validation';
 import { ResponseUtil } from '../utils/response.utils';
 import { AppError } from '../utils/errors.utils';
 import { initiatePaymentSchema, paymentCallbackSchema } from '../utils/mpesa.validation';
+import { Types } from 'mongoose';
 
 export class MPaymentController {
   private mpaymentService: MPaymentService;
@@ -48,12 +49,22 @@ export class MPaymentController {
   async handlePaymentCallback(req: Request, res: Response, next: NextFunction) {
     try {
       const { eventId, userId } = req.params;
+
+        if (!Types.ObjectId.isValid(eventId) || !Types.ObjectId.isValid(userId)) {
+      console.error(`Invalid ObjectId: eventId=${eventId}, userId=${userId}`);
+      res.status(400).json({
+        success: false,
+        message: 'Invalid request parameters'
+      });
+      return;
+    }
       const callbackData = paymentCallbackSchema.parse(req.body);
 
       const result = await this.mpaymentService.handlePaymentCallback(callbackData, eventId, userId);
 
       return ResponseUtil.success(res, 200, result, 'Payment callback processed successfully');
     } catch (error) {
+      console.error('Error in M-Pesa callback:', error);
       if (error instanceof ZodError) {
         return ResponseUtil.error(res, 400, error.errors[0].message);
       }
