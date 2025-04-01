@@ -18,14 +18,7 @@ const eventController = new EventController();
 
 // Public routes - anyone can view published events
 router.get('/', eventController.getEvents.bind(eventController));
-router.get('/:id', eventController.getEventById.bind(eventController));
 
-// Protected routes - only authenticated users
-router.post(
-  '/register/:id',
-  AuthMiddleware.verifyToken,
-  eventController.registerForEvent.bind(eventController)
-);
 
 // Organizer routes - only event organizers and admins
 router.post(
@@ -41,12 +34,36 @@ router.get(
   eventController.getEventsihvaeRegisteredasaused.bind(eventController)
 );
 
+router.get(
+  '/organizer/events',
+  AuthMiddleware.verifyToken,
+  AuthMiddleware.hasRole([UserRole.ORGANIZER, UserRole.ADMIN]),
+  eventController.getOrganizerEvents.bind(eventController)
+);
+
+// Get attendees for a specific event
+router.get(
+  '/:id/attendees',
+  AuthMiddleware.verifyToken,
+  AuthMiddleware.hasRole([UserRole.ORGANIZER, UserRole.ADMIN]),
+  eventController.getEventAttendees.bind(eventController)
+);
+
 
 router.put(
   '/:id',
   AuthMiddleware.verifyToken,
   AuthMiddleware.hasRole([UserRole.ORGANIZER, UserRole.ADMIN]),
   eventController.updateEvent.bind(eventController)
+);
+
+router.get('/:id', eventController.getEventById.bind(eventController));
+
+// Protected routes - only authenticated users
+router.post(
+  '/register/:id',
+  AuthMiddleware.verifyToken,
+  eventController.registerForEvent.bind(eventController)
 );
 
 router.delete(

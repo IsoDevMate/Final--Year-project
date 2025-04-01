@@ -14,6 +14,7 @@ import PaymentFailurePage from './components/Payment/failed';
 import CreatePaymentPage from './components/Payment/createpayment';
 import CreateSessionPage from './components/Session/createsession';
 import NotesListPage from './components/Note/noteslist';
+import PendingPaymentPage from './components/Event/pendingpayment';
 // import LinkedInShareComponent from './components/Note/newlinkedin';
 
 const LoginPage = lazy(() => import('./pages/auth/login'));
@@ -119,6 +120,7 @@ export const App: React.FC = () => {
             />
 
 
+            <Route path="/dashboard/events/:eventId/pending-payment" element={<PendingPaymentPage />} />
 
             <Route
               path="/demo"

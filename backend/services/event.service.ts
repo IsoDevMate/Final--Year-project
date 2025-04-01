@@ -232,6 +232,9 @@ export class EventService {
   // }
 
 
+  // async getEventscreatedbyOrganizer(userId: string): Promise<Event[]> {
+
+
 
 async registerAttendee(eventId: string, userId: string): Promise<{ event: Event | null, qrCodeUrl: string }> {
   try {
@@ -445,6 +448,92 @@ async registerAttendee(eventId: string, userId: string): Promise<{ event: Event 
     }
   }
 
+//   async getEventAttendees(eventId: string, requestingUserId: string): Promise<any[]> {
+//   try {
+//     if (!Types.ObjectId.isValid(eventId)) {
+//       throw new AppError('Invalid event ID', 400);
+//     }
+
+//     const event = await Event.findById(eventId);
+//     if (!event) {
+//       throw new AppError('Event not found', 404);
+//     }
+
+//     // Check if user is the organizer or admin
+//     if (event.organizer.toString() !== requestingUserId) {
+//       throw new AppError('Not authorized to view attendees', 403);
+//     }
+
+//     // Get detailed attendee information
+//     const populatedEvent = await Event.findById(eventId)
+//       .populate('attendees', 'firstName lastName email phone')
+//       .select('attendees');
+
+//     if (!populatedEvent) {
+//       throw new AppError('Event not found after population', 404);
+//     }
+
+//     return populatedEvent.attendees;
+//   } catch (error) {
+//     if (error instanceof AppError) {
+//       throw error;
+//     }
+//     throw new AppError('Failed to retrieve event attendees', 500);
+//   }
+// }
+
+async getEventsByOrganizer(organizerId: string): Promise<Event[]> {
+  try {
+    if (!Types.ObjectId.isValid(organizerId)) {
+      throw new AppError('Invalid organizer ID', 400);
+    }
+
+    const events = await Event.find({ organizer: organizerId })
+      .populate('sessions')
+      .sort({ startDate: -1 });
+
+    return events;
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+    throw new AppError('Failed to retrieve organizer events', 500);
+  }
+}
+
+  async getEventAttendees(eventId: string, requestingUserId: string): Promise<any[]> {
+  try {
+    if (!Types.ObjectId.isValid(eventId)) {
+      throw new AppError('Invalid event ID', 400);
+    }
+
+    const event = await Event.findById(eventId);
+    if (!event) {
+      throw new AppError('Event not found', 404);
+    }
+
+    // Check if user is the organizer or admin
+    if (event.organizer.toString() !== requestingUserId) {
+      throw new AppError('Not authorized to view attendees', 403);
+    }
+
+    // Get detailed attendee information
+    const populatedEvent = await Event.findById(eventId)
+      .populate('attendees', 'firstName lastName email phone')
+      .select('attendees');
+
+    if (!populatedEvent) {
+      throw new AppError('Event not found after population', 404);
+    }
+
+    return populatedEvent.attendees;
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+    throw new AppError('Failed to retrieve event attendees', 500);
+  }
+}
 
   async getEventSessions(eventId: string): Promise<any[]> {
     try {

@@ -56,7 +56,7 @@ const MyEventsPage = () => {
         }
 
         // Fetch all events first
-        const response = await axios.get('http://localhost:3000/api/v1/events', {
+          const response = await axios.get('http://localhost:3000/api/v1/events/registered', {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -66,11 +66,9 @@ const MyEventsPage = () => {
         console.log('User ID:', myuserId); // Log the user ID
         if (response.data.success) {
           // Filter events where user is an attendee
-          const myEvents = response.data.data.events.filter((event: Event) =>
-            Array.isArray(event.attendees) && event.attendees.includes(myuserId)
-          );
-           console.log('My Events:', myEvents);
-          setRegisteredEvents(myEvents);
+          const allEvents = response.data.data;
+          console.log('My Events:', allEvents); // Log all events
+          setRegisteredEvents(allEvents);
         } else {
           setError('Failed to fetch events');
         }
@@ -279,15 +277,15 @@ const handleUnregister = async (eventId: string) => {
                   </div>
                 </div>
 
-                {/* Actions */}
+                Actions
                 <div className="border-t px-4 py-3 bg-gray-50 flex justify-between">
-                  <Link
+                  {/* <Link
                     to={`/events/${event._id}`}
                     className="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center"
                   >
                     View Details
                     <ExternalLink className="h-4 w-4 ml-1" />
-                  </Link>
+                  </Link> */}
 
                   <button
                     onClick={() => handleUnregister(event._id)}
@@ -314,3 +312,4 @@ const handleUnregister = async (eventId: string) => {
 };
 
 export default MyEventsPage;
+

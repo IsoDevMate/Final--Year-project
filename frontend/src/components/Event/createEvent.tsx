@@ -13,8 +13,8 @@ const CreateEventPage: React.FC = () => {
  const [eventData, setEventData] = useState({
   title: '',
   description: '',
-  type: '', // Change to match exact backend enum
-  status: 'draft', // Add status with default value
+  type: '',
+  status: 'published',
   startDate: '',
   endDate: '',
   location: {

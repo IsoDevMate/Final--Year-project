@@ -274,6 +274,67 @@ async unregisterFromEvent(req: Request, res: Response, next: NextFunction) {
   }
 }
 
+  async getOrganizerEvents(req: Request, res: Response, next: NextFunction) {
+  try {
+    // Check if user object exists (should be set by auth middleware)
+    if (!req.user) {
+      return ResponseUtil.error(res, 401, 'Not authenticated');
+    }
+
+    const userId = (req.user as any).userId;
+    const userRole = (req.user as any).role;
+
+    // Only organizers and admins can access this endpoint
+    if (userRole !== UserRole.ORGANIZER && userRole !== UserRole.ADMIN) {
+      return ResponseUtil.error(res, 403, 'Insufficient permissions');
+    }
+
+    const events = await this.eventService.getEventsByOrganizer(userId);
+
+    return ResponseUtil.success(res, 200, events, 'Organizer events retrieved successfully');
+  } catch (error) {
+    if (error instanceof ZodError) {
+      return ResponseUtil.error(res, 400, error.errors[0].message);
+    }
+    next(error);
+  }
+}
+
+async getEventAttendees(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { id } = eventIdSchema.parse(req.params);
+
+    // Check if user object exists (should be set by auth middleware)
+    if (!req.user) {
+      return ResponseUtil.error(res, 401, 'Not authenticated');
+    }
+
+    const userId = (req.user as any).userId;
+    const userRole = (req.user as any).role;
+
+    // Only organizers and admins can access attendee information
+    if (userRole !== UserRole.ORGANIZER && userRole !== UserRole.ADMIN) {
+      return ResponseUtil.error(res, 403, 'Insufficient permissions');
+    }
+
+    try {
+      const attendees = await this.eventService.getEventAttendees(id, userId);
+      return ResponseUtil.success(res, 200, attendees, 'Event attendees retrieved successfully');
+    } catch (error) {
+      if (error instanceof AppError) {
+        return ResponseUtil.error(res, error.statusCode, error.message);
+      }
+      throw error;
+    }
+  } catch (error) {
+    if (error instanceof ZodError) {
+      return ResponseUtil.error(res, 400, error.errors[0].message);
+    }
+    next(error);
+  }
+  }
+
+
   async getEventsihvaeRegisteredasaused(req: Request, res: Response, next: NextFunction) {
     try {
       // Check if user object exists (should be set by auth middleware)
