@@ -13,9 +13,6 @@ import { User } from '../models/user.model';
 import { AppError } from '../utils/errors.utils';
 export class AuthController {
 
-
-
-
  static async refreshToken(req: Request, res: Response, next: NextFunction) {
     try {
       const validatedData = refreshTokenSchema.parse(req.body);

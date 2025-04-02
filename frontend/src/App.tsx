@@ -15,6 +15,8 @@ import CreatePaymentPage from './components/Payment/createpayment';
 import CreateSessionPage from './components/Session/createsession';
 import NotesListPage from './components/Note/noteslist';
 import PendingPaymentPage from './components/Event/pendingpayment';
+import ReportsPage from './components/rports';
+import RoleProtectedRoute from './services/role.service';
 // import LinkedInShareComponent from './components/Note/newlinkedin';
 
 const LoginPage = lazy(() => import('./pages/auth/login'));
@@ -122,6 +124,8 @@ export const App: React.FC = () => {
 
             <Route path="/dashboard/events/:eventId/pending-payment" element={<PendingPaymentPage />} />
 
+
+
             <Route
               path="/demo"
               element={
@@ -155,6 +159,19 @@ export const App: React.FC = () => {
                   path="events/:eventId/sessions/:sessionId"
                   element={<div>Session Details</div>}
                 />
+
+                
+
+                <Route element={<RoleProtectedRoute allowedRoles={['organizer']} />}>
+                 <Route
+                   path="/dashboard/reports"
+                   element={
+                     <motion.div {...pageTransition}>
+                       <ReportsPage />
+                     </motion.div>
+                   }
+                 />
+               </Route>
 
                 <Route path="/dashboard/notes/:noteId" element={<NotesPage />} />
 

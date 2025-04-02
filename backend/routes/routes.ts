@@ -6,6 +6,7 @@ import sessionroutes from './session.routes';
 import paymentRoutes from './subscription.routes';
 import linkedInSharingRoutes from './linkedinsharing.routes';
 import mpesaroutes from './mpesa.routes';
+import reportsRoutes from './report.routes';
 const router = Router();
 
 // API version prefix
@@ -20,5 +21,6 @@ router.use(`${API_PREFIX}/notes`, notesroutes);
 router.use(`${API_PREFIX}/sessions`, sessionroutes);
 router.use(`${API_PREFIX}/linkedin`, linkedInSharingRoutes);
 router.use(`${API_PREFIX}/mpesa`, mpesaroutes);
+router.use(`${API_PREFIX}/reports`, reportsRoutes);
 
 export default router;

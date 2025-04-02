@@ -3,7 +3,6 @@ import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 import { User, UserRole } from '../models/user.model';
 import { Token } from '../models/token.model';
-// import { Token } from '../models/token.model';
 import {
   RegisterUserDto,
   LoginUserDto,
@@ -14,7 +13,6 @@ import {
 } from '../interfaces/auth.interface';
 import { AppError } from '../utils/errors.utils';
 import config from '../config/config';
-import QRCode from 'qrcode';
 const sgMail = require('@sendgrid/mail');
 
 export class AuthService {
@@ -205,7 +203,6 @@ export class AuthService {
     // For now, just return success
   }
 
-
   async resetPassword(data: ResetPasswordDto): Promise<void> {
     const hashedToken = crypto
       .createHash('sha256')
@@ -288,8 +285,6 @@ export class AuthService {
     return userObject as User;
   }
 
-
-
   async logout(refreshToken: string): Promise<void> {
     // Delete refresh token from database
     const tokenDoc = await Token.findOne({ token: refreshToken });
@@ -301,10 +296,6 @@ export class AuthService {
       return;
     }
   }
-
-
-
-
 
 }
 

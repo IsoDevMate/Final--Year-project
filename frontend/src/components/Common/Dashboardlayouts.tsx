@@ -33,15 +33,15 @@ const DashboardLayout = () => {
   };
 
   const navLinks = [
-     { title: 'Dashboard', path: '/dashboard', icon: <Home className="w-5 h-5" /> },
+    { title: 'Dashboard', path: '/dashboard', icon: <Home className="w-5 h-5" /> },
     { title: 'Events', path: '/dashboard/events', icon: <Calendar className="w-5 h-5" /> },
     // { title: 'Linkedin', path: '/dashboard/linkedin', icon: <Video className="w-5 h-5" /> },
-    { title: 'Payments', path: '/dashboard/payments', icon: <CreditCard className="w-5 h-5" /> },
-    { title: 'Settings', path: '/dashboard/settings', icon: <Settings className="w-5 h-5" /> },
+    // { title: 'Payments', path: '/dashboard/payments', icon: <Video className="w-5 h-5" /> },
+    { title: 'Reports', path: '/dashboard/reports', icon: <CreditCard className="w-5 h-5" />, roles: ['admin', 'organizer'] },
+    { title: 'Settings', path: '/dashboard/settings', icon: <Settings className="w-5 h-5" />,  },
     { title: 'Notes', path: '/dashboard/notes', icon: <Notes className="w-5 h-5" /> },
     { title: 'Profile', path: '/dashboard/profile', icon: <Users className="w-5 h-5" /> },
-
-  ];
+  ].filter(link => !link.roles || link.roles.includes(user?.role));
 
   const navigateToWebsite = () => {
     window.open('/', '_blank');

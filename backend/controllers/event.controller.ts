@@ -289,7 +289,7 @@ async unregisterFromEvent(req: Request, res: Response, next: NextFunction) {
       return ResponseUtil.error(res, 403, 'Insufficient permissions');
     }
 
-    const events = await this.eventService.getEventsByOrganizer(userId);
+    const events = await EventService.getEventsByOrganizer(userId);
 
     return ResponseUtil.success(res, 200, events, 'Organizer events retrieved successfully');
   } catch (error) {
@@ -318,7 +318,7 @@ async getEventAttendees(req: Request, res: Response, next: NextFunction) {
     }
 
     try {
-      const attendees = await this.eventService.getEventAttendees(id, userId);
+      const attendees = await EventService.getEventAttendees(id, userId);
       return ResponseUtil.success(res, 200, attendees, 'Event attendees retrieved successfully');
     } catch (error) {
       if (error instanceof AppError) {

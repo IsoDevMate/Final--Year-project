@@ -482,7 +482,7 @@ async registerAttendee(eventId: string, userId: string): Promise<{ event: Event 
 //   }
 // }
 
-async getEventsByOrganizer(organizerId: string): Promise<Event[]> {
+static async getEventsByOrganizer(organizerId: string): Promise<Event[]> {
   try {
     if (!Types.ObjectId.isValid(organizerId)) {
       throw new AppError('Invalid organizer ID', 400);
@@ -501,7 +501,7 @@ async getEventsByOrganizer(organizerId: string): Promise<Event[]> {
   }
 }
 
-  async getEventAttendees(eventId: string, requestingUserId: string): Promise<any[]> {
+  static async getEventAttendees(eventId: string, requestingUserId: string): Promise<any[]> {
   try {
     if (!Types.ObjectId.isValid(eventId)) {
       throw new AppError('Invalid event ID', 400);

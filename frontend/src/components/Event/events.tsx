@@ -654,7 +654,6 @@
 // export default EventsPage;
 
 
-
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Calendar, MapPin, Users, Clock, Filter, Search, Plus, Trash2, Edit, Loader } from 'lucide-react';
@@ -665,6 +664,7 @@ import MyEventsPage from './eventsregistered';
  import PaymentModal from './registerpayment';
 
 
+ 
 interface Location {
   name: string;
   address: string;
