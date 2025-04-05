@@ -27,7 +27,7 @@ export const EventSelector: React.FC<EventSelectorProps> = ({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+  const API_BASE_URL = 'http://localhost:3000';
 
    const fetchRegisteredEvents = async () => {
     try {
@@ -37,14 +37,14 @@ export const EventSelector: React.FC<EventSelectorProps> = ({
         return;
       }
 
-      const response = await axios.get(`${API_BASE_URL}/api/v1/events`, {
+      const response = await axios.get(`${API_BASE_URL}/api/v1/events/registered`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
 
       if (response.data.success) {
-        setEvents(response.data.data.events);
+        setEvents(response.data.data);
               // If no event is selected and there are events, auto-select the first one
         if (!selectedEventId && response.data.length > 0) {
           onEventSelect(response.data.data[0]._id);
@@ -52,7 +52,8 @@ export const EventSelector: React.FC<EventSelectorProps> = ({
       } else {
         setError('Failed to fetch events');
       }
-    } catch (err) {
+    } catch (err: any) {
+      console.error('Error fetching events:', err);
       setError('Could not load events');
     } finally {
       setIsLoading(false);

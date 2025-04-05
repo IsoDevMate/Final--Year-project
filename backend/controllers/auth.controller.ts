@@ -167,5 +167,3 @@ static  async requestPasswordReset(req: Request, res: Response, next: NextFuncti
 }
 
 export default new AuthController();
-
-

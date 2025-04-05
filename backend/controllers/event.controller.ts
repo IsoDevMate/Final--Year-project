@@ -82,44 +82,51 @@ export class EventController {
   }
 
   async updateEvent(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { id } = eventIdSchema.parse(req.params);
-      const validatedData = updateEventSchema.parse(req.body);
+  try {
+    const { id } = eventIdSchema.parse(req.params);
+    const validatedData = updateEventSchema.parse(req.body);
 
-      // Check if user object exists (should be set by auth middleware)
-      if (!req.user) {
-        return ResponseUtil.error(res, 401, 'Not authenticated');
-      }
-
-      const userId = (req.user as any).userId;
-      const userRole = (req.user as any).role;
-
-      // Get the event to check ownership
-      const event = await this.eventService.getEventById(id);
-
-      if (!event) {
-        return ResponseUtil.error(res, 404, 'Event not found');
-      }
-
-      // Check if user is the organizer or an admin
-      if (event.organizer.toString() !== userId && userRole !== UserRole.ADMIN) {
-        return ResponseUtil.error(res, 403, 'You do not have permission to update this event');
-      }
-
-      const updatedEvent = await this.eventService.updateEvent(id, {
-        ...validatedData,
-        startDate: validatedData.startDate ? new Date(validatedData.startDate) : undefined,
-        endDate: validatedData.endDate ? new Date(validatedData.endDate) : undefined,
-      });
-
-      return ResponseUtil.success(res, 200, updatedEvent, 'Event updated successfully');
-    } catch (error) {
-      if (error instanceof ZodError) {
-        return ResponseUtil.error(res, 400, error.errors[0].message);
-      }
-      next(error);
+    // Check if user object exists (should be set by auth middleware)
+    if (!req.user) {
+      return ResponseUtil.error(res, 401, 'Not authenticated');
     }
+
+    const userId = (req.user as any).userId;
+    const userRole = (req.user as any).role;
+
+    // Get the event to check ownership
+    const event = await this.eventService.getEventById(id);
+
+    if (!event) {
+      return ResponseUtil.error(res, 404, 'Event not found');
+    }
+
+    // Add these debug logs
+    console.log('User ID:', userId);
+    console.log('User Role:', userRole);
+    console.log('Event Organizer ID:', event.organizer);
+    console.log('Comparison result:', event.organizer === userId);
+
+
+    if ((typeof event.organizer === 'object' && event.organizer !== null && '_id' in event.organizer ? event.organizer._id.toString() : String(event.organizer)) !== userId && userRole !== UserRole.ADMIN) {
+  return ResponseUtil.error(res, 403, 'You do not have permission to update this event');
+}
+
+
+    const updatedEvent = await this.eventService.updateEvent(id, {
+      ...validatedData,
+      startDate: validatedData.startDate ? new Date(validatedData.startDate) : undefined,
+      endDate: validatedData.endDate ? new Date(validatedData.endDate) : undefined,
+    });
+
+    return ResponseUtil.success(res, 200, updatedEvent, 'Event updated successfully');
+  } catch (error) {
+    if (error instanceof ZodError) {
+      return ResponseUtil.error(res, 400, error.errors[0].message);
+    }
+    next(error);
   }
+}
 
   async deleteEvent(req: Request, res: Response, next: NextFunction) {
     try {
@@ -140,14 +147,16 @@ export class EventController {
         return ResponseUtil.error(res, 404, 'Event not found');
       }
 
-      // Check if user is the organizer or an admin
+     // Add these debug logs
+     console.log('User ID:', userId);
+     console.log('User Role:', userRole);
+     console.log('Event Organizer ID:', event.organizer);
 
-     // Check if user is the organizer or an admin
-      const isOrganizer = UserRole.ORGANIZER === userRole //&& event.organizer.toString() === userId;
-      console.log(`User ID: ${userId}, Event Organizer ID: ${event.organizer}`);
-       if (!isOrganizer && userRole !== UserRole.ADMIN) {
-         return ResponseUtil.error(res, 403, 'You do not have permission to delete this event');
-       }
+
+      // Check if user is the organizer or an admin
+      if ((typeof event.organizer === 'object' && event.organizer !== null && '_id' in event.organizer ? event.organizer._id.toString() : String(event.organizer)) !== userId && userRole !== UserRole.ADMIN) {
+        return ResponseUtil.error(res, 403, 'You do not have permission to delete this event');
+      }
 
       await this.eventService.deleteEvent(id);
 

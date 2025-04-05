@@ -11,7 +11,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { MultimediaShareModa } from './sharemulti';
 import { useAuth } from '../../contexts/AuthContext';
-
+import { useNavigate } from 'react-router-dom';
 interface Note {
   _id: string;
   title: string;
@@ -69,51 +69,117 @@ interface User {
 // Add these methods to your existing NotesPage component
 export const MediaAttachmentHandler = {
 
+
   // File upload handler
-  handleFileUpload: async (
-    event: React.ChangeEvent<HTMLInputElement>,
-    fileType: 'image' | 'audio' | 'video' | 'document',
-    noteId: string,
-    API_BASE_URL: string,
-    setNote: React.Dispatch<React.SetStateAction<Note | null>>,
-    navigate: (path: string) => void
-  ) => {
-    const file = event.target.files?.[0];
+  // handleFileUpload: async (
+  //   event: React.ChangeEvent<HTMLInputElement>,
+  //   fileType: 'image' | 'audio' | 'video' | 'document',
+  //   noteId: string,
+  //   API_BASE_URL: string,
+  //   setNote: React.Dispatch<React.SetStateAction<Note | null>>,
+  //   navigate: (path: string) => void
+  // ) => {
+  //   const file = event.target.files?.[0];
 
-    if (!file || !noteId) {
-      toast.error('Cannot upload file');
-      return;
-    }
+  //   if (!file || !noteId) {
+  //     toast.error('Cannot upload file');
+  //     return;
+  //   }
 
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('fileType', fileType);
+  //   const formData = new FormData();
+  //   formData.append('file', file);
+  //   formData.append('fileType', fileType);
 
-    const token = localStorage.getItem('accessToken');
+  //   const token = localStorage.getItem('accessToken');
 
-    try {
-      const response = await axios.post(`${API_BASE_URL}/api/v1/notes/${noteId}/media`, formData, {
+  //   try {
+  //     const response = await axios.post(`${API_BASE_URL}/api/v1/notes/${noteId}/media`, formData, {
+  //       headers: {
+  //         'Authorization': `Bearer ${token}`,
+  //         'Content-Type': 'multipart/form-data'
+  //       }
+  //     });
+
+  //     if (response.status !== 200) {
+  //       if (response.status === 401) {
+  //         navigate('/auth/login');
+  //         return;
+  //       }
+  //       throw new Error('Failed to upload file');
+  //     }
+
+  //     setNote(response.data.data);
+  //     toast.success('File uploaded successfully!');
+  //   } catch (error) {
+  //     console.error('Error uploading file:', error);
+  //     toast.error('Failed to upload file');
+  //   }
+  // },
+
+  // Enhanced handleFileUpload with progress indicator
+handleFileUpload: async (
+  event: React.ChangeEvent<HTMLInputElement>,
+  fileType: 'image' | 'audio' | 'video' | 'document',
+  noteId: string,
+  API_BASE_URL: string,
+  setNote: React.Dispatch<React.SetStateAction<Note | null>>,
+  navigate: (path: string) => void
+) => {
+  const file = event.target.files?.[0];
+
+  if (!file || !noteId) {
+    toast.error('Cannot upload file');
+    return;
+  }
+
+  // Create upload progress toast that we can update
+  const toastId = toast.loading(`Uploading ${fileType}: 0%`);
+
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('fileType', fileType);
+
+  const token = localStorage.getItem('accessToken');
+
+  try {
+    // Use axios with upload progress
+    const response = await axios.post(
+      `${API_BASE_URL}/api/v1/notes/${noteId}/media`,
+      formData,
+      {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'multipart/form-data'
+        },
+        onUploadProgress: (progressEvent) => {
+          if (progressEvent.total) {
+            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            // Update the toast with current progress
+            toast.loading(`Uploading ${fileType}: ${percentCompleted}%`, { id: toastId });
+          }
         }
-      });
-
-      if (response.status !== 200) {
-        if (response.status === 401) {
-          navigate('/auth/login');
-          return;
-        }
-        throw new Error('Failed to upload file');
       }
+    );
 
-      setNote(response.data.data);
-      toast.success('File uploaded successfully!');
-    } catch (error) {
-      console.error('Error uploading file:', error);
-      toast.error('Failed to upload file');
+    if (response.status !== 200) {
+      if (response.status === 401) {
+        toast.dismiss(toastId);
+        toast.error('Session expired. Please login again.');
+        navigate('/auth/login');
+        return;
+      }
+      throw new Error('Failed to upload file');
     }
-  },
+
+    setNote(response.data.data);
+    toast.dismiss(toastId);
+    toast.success('File uploaded successfully!');
+  } catch (error) {
+    console.error('Error uploading file:', error);
+    toast.dismiss(toastId);
+    toast.error('Failed to upload file');
+  }
+},
 
 //MediaPreviewModal component
 MediaPreviewModal: React.memo(({
@@ -135,64 +201,145 @@ MediaPreviewModal: React.memo(({
 
 
 
-  // Fixed handleShareAttachment in MediaPreviewModal
-  const handleShareAttachment = async (customMessage = '') => {
+//   // Fixed handleShareAttachment in MediaPreviewModal
+//   const handleShareAttachment = async (customMessage = '') => {
+//   if (!note || !selectedAttachment) return;
+
+
+
+//   const userFromStorage = localStorage.getItem('user');
+//   if (!userFromStorage) {
+//     toast.error('User not found in local storage');
+//     return;
+//   }
+
+//   const parsedUser = JSON.parse(userFromStorage);
+//   const token = parsedUser?.socialLinks?.linkedinAccessToken;
+
+//   if (!token) {
+//     toast.error('LinkedIn access token is missing');
+//     return;
+//   }
+
+//   console.log('Sharing attachment:', selectedAttachment, 'with custom message:', customMessage , "token" , token);
+
+//   // Structure the payload according to the LinkedIn API requirements
+//   const payload = {
+//     note: {
+//       title: note.title,
+//       content: customMessage || `Check out this ${selectedAttachment.type}`,
+//       mediaAttachments: [
+//         {
+//           type: selectedAttachment.type,
+//           url: selectedAttachment.url,
+//           caption: customMessage || selectedAttachment.caption || note.title
+//         }
+//       ]
+//     },
+//     user: {
+//       socialLinks: {
+//         linkedinAccessToken: token
+//       }
+//     }
+//   };
+
+//   // Determine the appropriate endpoint based on attachment type
+//   const sharingEndpoint = (() => {
+//     switch (selectedAttachment.type) {
+//       case 'image':
+//         return 'http://localhost:3000/api/v1/linkedin/share/image';
+//       case 'video':
+//         return 'http://localhost:3000/api/v1/linkedin/share/video';
+//       case 'document':
+//         return 'http://localhost:3000/api/v1/linkedin/share/article';
+//       default:
+//         return 'http://localhost:3000/api/v1/linkedin/share/content';
+//     }
+//   })();
+
+//   try {
+//     // Make the API call to share the attachment
+//     const response = await axios.post(sharingEndpoint, payload, {
+//       headers: {
+//         'Authorization': `Bearer ${token}`,
+//         'Content-Type': 'application/json'
+//       }
+//     });
+
+//     if (response.status < 200 || response.status >= 300) {
+//       throw new Error('Failed to share');
+//     }
+
+//     return response.data;
+//   } catch (error) {
+//     console.error('Error sharing to LinkedIn:', error);
+//     throw error;
+//   }
+// };
+
+
+
+  // In the handleShareAttachment function in MediaPreviewModal
+const handleShareAttachment = async (customMessage = '') => {
+   const navigate = useNavigate();
   if (!note || !selectedAttachment) return;
 
 
+  // Get token from localStorage directly instead of user object
+  const token = localStorage.getItem('accessToken');
+  if (!token) {
+    toast.error('Authentication token missing');
+    return;
+  }
 
+  // Get LinkedIn token from user object
   const userFromStorage = localStorage.getItem('user');
   if (!userFromStorage) {
-    toast.error('User not found in local storage');
+    toast.error('User information not found');
     return;
   }
 
   const parsedUser = JSON.parse(userFromStorage);
-  const token = parsedUser?.socialLinks?.linkedinAccessToken;
+  const linkedInToken = parsedUser?.socialLinks?.linkedinAccessToken;
 
-  if (!token) {
-    toast.error('LinkedIn access token is missing');
+  if (!linkedInToken) {
+    toast.error('LinkedIn not connected. Please connect your LinkedIn account first.');
     return;
   }
 
-  console.log('Sharing attachment:', selectedAttachment, 'with custom message:', customMessage , "token" , token);
-
-  // Structure the payload according to the LinkedIn API requirements
-  const payload = {
-    note: {
-      title: note.title,
-      content: customMessage || `Check out this ${selectedAttachment.type}`,
-      mediaAttachments: [
-        {
-          type: selectedAttachment.type,
-          url: selectedAttachment.url,
-          caption: customMessage || selectedAttachment.caption || note.title
-        }
-      ]
-    },
-    user: {
-      socialLinks: {
-        linkedinAccessToken: token
-      }
-    }
-  };
-
-  // Determine the appropriate endpoint based on attachment type
-  const sharingEndpoint = (() => {
-    switch (selectedAttachment.type) {
-      case 'image':
-        return 'http://localhost:3000/api/v1/linkedin/share/image';
-      case 'video':
-        return 'http://localhost:3000/api/v1/linkedin/share/video';
-      case 'document':
-        return 'http://localhost:3000/api/v1/linkedin/share/article';
-      default:
-        return 'http://localhost:3000/api/v1/linkedin/share/content';
-    }
-  })();
+  const API_BASE_URL= "http://localhost:3000"
 
   try {
-    // Make the API call to share the attachment
+    // Use your API endpoint but with proper error handling
+    const sharingEndpoint = (() => {
+      switch (selectedAttachment.type) {
+        case 'image': return `${API_BASE_URL}/api/v1/linkedin/share/image`;
+        case 'video': return `${API_BASE_URL}/api/v1/linkedin/share/video`;
+        case 'document': return `${API_BASE_URL}/api/v1/linkedin/share/article`;
+        default: return `${API_BASE_URL}/api/v1/linkedin/share/content`;
+      }
+    })();
+
+    const payload = {
+      note: {
+        title: note.title,
+        content: customMessage || `Check out this ${selectedAttachment.type}`,
+        mediaAttachments: [
+          {
+            type: selectedAttachment.type,
+            url: selectedAttachment.url,
+            caption: customMessage || selectedAttachment.caption || note.title
+          }
+        ]
+      },
+      user: {
+        socialLinks: {
+          linkedinAccessToken: linkedInToken,
+          linkedinId: parsedUser.socialLinks?.linkedinId
+        }
+      }
+    };
+
     const response = await axios.post(sharingEndpoint, payload, {
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -200,13 +347,23 @@ MediaPreviewModal: React.memo(({
       }
     });
 
-    if (response.status < 200 || response.status >= 300) {
+    if (response.status >= 200 && response.status < 300) {
+      toast.success('Successfully shared to LinkedIn!');
+      return response.data;
+      navigate('/dashboard/notes');
+    } else {
       throw new Error('Failed to share');
     }
-
-    return response.data;
   } catch (error) {
     console.error('Error sharing to LinkedIn:', error);
+    // Don't automatically logout on error
+    if (axios.isAxiosError(error) && error.response && error.response.status === 401) {
+      toast.error('Your session has expired. Please login again.');
+      // Only logout if absolutely necessary
+      // navigate('/auth/login');
+    } else {
+      toast.error('Failed to share to LinkedIn');
+    }
     throw error;
   }
 };

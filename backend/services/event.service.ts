@@ -162,77 +162,6 @@ export class EventService {
     }
   }
 
-  // async registerAttendee(eventId: string, userId: string): Promise<{ event: Event | null, qrCodeUrl: string }> {
-  //   try {
-  //     if (!Types.ObjectId.isValid(eventId) || !Types.ObjectId.isValid(userId)) {
-  //       throw new AppError('Invalid ID', 400);
-  //     }
-
-  //     // Check if event exists
-  //     const event = await Event.findById(eventId);
-
-  //     if (!event) {
-  //       throw new AppError('Event not found', 404);
-  //     }
-
-  //     // Check if user is already registered
-  //     if (event.attendees.includes(new Types.ObjectId(userId))) {
-  //       throw new AppError('User already registered for this event', 400);
-  //     }
-
-  //     // Check if event has reached capacity
-  //     if (event.capacity && event.attendees.length >= event.capacity) {
-  //       throw new AppError('Event has reached maximum capacity', 400);
-  //     }
-
-  //     // Add user to attendees
-  //     event.attendees.push(new Types.ObjectId(userId));
-  //     await event.save();
-
-  //     // Generate QR code token and QR code
-  //     const token = this.qrCodeService.generateTokenForEventAttendee(eventId, userId);
-  //     const qrCodeUrl = await this.qrCodeService.generateQRCode(token);
-
-  //      // Get user details for sending email
-  //      const populatedEvent = await Event.findById(eventId)
-  //      .populate({
-  //       path: 'attendees',
-  //       match: { _id: userId },
-  //       select: 'email firstName lastName'
-  //        });
-
-  //      if (!populatedEvent) {
-  //        throw new AppError('Event not found after population', 404);
-  //      }
-
-  //      // Find the specific attendee in the populated attendees array
-  //      const attendee = populatedEvent.attendees.find(a => a._id.toString() === userId) as unknown as { email: string, firstName: string, lastName: string };
-
-  //      // Send email with QR code if we have user's email
-  //      if (attendee) {
-  //        await EmailService.sendEventRegistrationEmail(
-  //          attendee.email,
-  //          {
-  //            eventName: event.title,
-  //            eventDate: event.startDate.toDateString(),
-  //            eventLocation: `${event.location.name}, ${event.location.city}`,
-  //            qrCodeUrl,
-  //            attendeeName: `${attendee.firstName} ${attendee.lastName}`
-  //          }
-  //        );
-  //      }
-
-  //     return { event, qrCodeUrl };
-  //   } catch (error) {
-  //     if (error instanceof AppError) {
-  //       throw error;
-  //     }
-  //     throw new AppError('Failed to register for event', 500);
-  //   }
-  // }
-
-
-  // async getEventscreatedbyOrganizer(userId: string): Promise<Event[]> {
 
 
 
@@ -448,39 +377,7 @@ async registerAttendee(eventId: string, userId: string): Promise<{ event: Event 
     }
   }
 
-//   async getEventAttendees(eventId: string, requestingUserId: string): Promise<any[]> {
-//   try {
-//     if (!Types.ObjectId.isValid(eventId)) {
-//       throw new AppError('Invalid event ID', 400);
-//     }
 
-//     const event = await Event.findById(eventId);
-//     if (!event) {
-//       throw new AppError('Event not found', 404);
-//     }
-
-//     // Check if user is the organizer or admin
-//     if (event.organizer.toString() !== requestingUserId) {
-//       throw new AppError('Not authorized to view attendees', 403);
-//     }
-
-//     // Get detailed attendee information
-//     const populatedEvent = await Event.findById(eventId)
-//       .populate('attendees', 'firstName lastName email phone')
-//       .select('attendees');
-
-//     if (!populatedEvent) {
-//       throw new AppError('Event not found after population', 404);
-//     }
-
-//     return populatedEvent.attendees;
-//   } catch (error) {
-//     if (error instanceof AppError) {
-//       throw error;
-//     }
-//     throw new AppError('Failed to retrieve event attendees', 500);
-//   }
-// }
 
 static async getEventsByOrganizer(organizerId: string): Promise<Event[]> {
   try {

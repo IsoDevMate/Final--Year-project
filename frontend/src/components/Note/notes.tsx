@@ -2,17 +2,17 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
   Save, X, Image, File, Mic, Video,
- Tag, Lock, Unlock, Trash2, Plus,
+ Tag, Lock, Unlock, Trash2, Plus, Pencil,
   ChevronLeft, Edit3,
 } from 'lucide-react';
-import * as fabric from 'fabric';
+// import * as fabric from 'fabric';
 import { useAuth } from '../../contexts/AuthContext';
 import { EventSelector } from '../Event/eventselector';
 import LinkedInShareModal from './linkedinmodal';
 import toast from 'react-hot-toast';
-import axios from 'axios';
 import { MediaAttachmentHandler } from './multimediaattatchmenthandler';
-import  LinkedInShareComponent  from './newlinkedin';
+// import  LinkedInShareComponent  from './newlinkedin';
+import SimpleCanvasDrawing from './canvasdrawingtool';
 interface Note {
   _id: string;
   title: string;
@@ -56,8 +56,8 @@ interface MediaAttachment {
     const [note, setNote] = useState<Note | null>(null);
     const { user ,isAuthenticated } = useAuth();
    const [title, setTitle] = useState('');
-   const [brushWidth, setBrushWidth] = useState(5);
-  const [brushColor, setBrushColor] = useState('#000000');
+  //  const [brushWidth, setBrushWidth] = useState(5);
+  // const [brushColor, setBrushColor] = useState('#000000');
   const [content, setContent] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [isPrivate, setIsPrivate] = useState(true);
@@ -65,8 +65,8 @@ interface MediaAttachment {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [showCanvasEditor, setShowCanvasEditor] = useState(false);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
+  // const canvasRef = useRef<HTMLCanvasElement>(null);
+  // const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
   const [selectedAttachment, setSelectedAttachment] = useState<MediaAttachment | null>(null);
   const [showMediaPreview, setShowMediaPreview] = useState(false);
   const [selectedEventId, setSelectedEventId] = useState<string | undefined>();
@@ -141,40 +141,40 @@ useEffect(() => {
   };
 
   // Initialize fabric.js canvas when showing canvas editor
-useEffect(() => {
-  if (showCanvasEditor && canvasRef.current && !fabricCanvasRef.current) {
-    fabricCanvasRef.current = new fabric.Canvas(canvasRef.current, {
-      width: canvasRef.current.offsetWidth,
-      height: 400,
-      backgroundColor: '#fff'
-    });
+// useEffect(() => {
+//   if (showCanvasEditor && canvasRef.current && !fabricCanvasRef.current) {
+//     fabricCanvasRef.current = new fabric.Canvas(canvasRef.current, {
+//       width: canvasRef.current.offsetWidth,
+//       height: 400,
+//       backgroundColor: '#fff'
+//     });
 
-    // Enhanced drawing configuration
-    fabricCanvasRef.current.isDrawingMode = true;
-    if (fabricCanvasRef.current.freeDrawingBrush) {
-      fabricCanvasRef.current.freeDrawingBrush.width = 5;
-      fabricCanvasRef.current.freeDrawingBrush.color = '#000';
-    }
+//     // Enhanced drawing configuration
+//     fabricCanvasRef.current.isDrawingMode = true;
+//     if (fabricCanvasRef.current.freeDrawingBrush) {
+//       fabricCanvasRef.current.freeDrawingBrush.width = 5;
+//       fabricCanvasRef.current.freeDrawingBrush.color = '#000';
+//     }
 
-    // Add color and brush size controls
-    const updateBrush = () => {
-      if (fabricCanvasRef.current) {
-        fabricCanvasRef.current.freeDrawingBrush.width = brushWidth;
-        fabricCanvasRef.current.freeDrawingBrush.color = brushColor;
-      }
-    };
+//     // Add color and brush size controls
+//     const updateBrush = () => {
+//       if (fabricCanvasRef.current) {
+//         fabricCanvasRef.current.freeDrawingBrush.width = brushWidth;
+//         fabricCanvasRef.current.freeDrawingBrush.color = brushColor;
+//       }
+//     };
 
-    // Call updateBrush when brushWidth or brushColor changes
-    updateBrush();
+//     // Call updateBrush when brushWidth or brushColor changes
+//     updateBrush();
 
-    return () => {
-      if (fabricCanvasRef.current) {
-        fabricCanvasRef.current.dispose();
-        fabricCanvasRef.current = null;
-      }
-    };
-  }
-}, [showCanvasEditor]);
+//     return () => {
+//       if (fabricCanvasRef.current) {
+//         fabricCanvasRef.current.dispose();
+//         fabricCanvasRef.current = null;
+//       }
+//     };
+//   }
+// }, [showCanvasEditor]);
 
   const handleEventSelect = (eventId: string) => {
     setSelectedEventId(eventId);
@@ -191,28 +191,44 @@ useEffect(() => {
     setTags(tags.filter(tag => tag !== tagToRemove));
   };
 
-  const handleAddDrawing = () => {
-    if (!fabricCanvasRef.current) return;
+  // const handleAddDrawing = () => {
+  //   if (!fabricCanvasRef.current) return;
 
-    // Convert canvas to image and add to note content
-    const dataUrl = fabricCanvasRef.current.toDataURL({
-      format: 'png',
-      quality: 0.8,
-      multiplier: 1
-    });
+  //   // Convert canvas to image and add to note content
+  //   const dataUrl = fabricCanvasRef.current.toDataURL({
+  //     format: 'png',
+  //     quality: 0.8,
+  //     multiplier: 1
+  //   });
 
-    // For this demo, we'll add it as a base64 image in the content
-    // In production, you would upload this to your storage service
-    setContent(prev => `${prev}\n\n![Drawing](${dataUrl})`);
+  //   // For this demo, we'll add it as a base64 image in the content
+  //   // In production, you would upload this to your storage service
+  //   setContent(prev => `${prev}\n\n![Drawing](${dataUrl})`);
 
-    // Clear and hide canvas
-    fabricCanvasRef.current.clear();
-    setShowCanvasEditor(false);
-   };
+  //   // Clear and hide canvas
+  //   fabricCanvasRef.current.clear();
+  //   setShowCanvasEditor(false);
+  //  };
+
+   const handleSaveDrawing = (dataUrl) => {
+  // Add the drawing to the note content
+  setContent(prev => `${prev}\n\n![Drawing](${dataUrl})`);
+  setShowCanvasEditor(false);
+};
+
+const handleCancelDrawing = () => {
+  setShowCanvasEditor(false);
+};
 
    // Add this method to your NotesPage component
 const handleLinkedInShare = async (customMessage?: string) => {
   if (!note) return;
+
+  //check if user object contains linkedin token
+  if (!user || !user.socialLinks?.linkedinAccessToken) {
+    toast.error('Please connect your LinkedIn account to share notes.');
+    return;
+  }
 
   try {
     const response = await fetch(`${API_BASE_URL}/api/v1/linkedin/share/note/${note._id}`, {
@@ -509,7 +525,7 @@ const openMediaPreview = (attachment: MediaAttachment) => {
             </div>
 
             {/* Canvas Editor */}
-            {showCanvasEditor && (
+            {/* {showCanvasEditor && (
               <div className="mb-4 border border-gray-300 rounded-md p-2">
                 <div className="bg-gray-100 p-2 rounded-md mb-2 flex justify-between items-center">
                   <span className="text-sm font-medium text-gray-700">Drawing Tool</span>
@@ -530,7 +546,24 @@ const openMediaPreview = (attachment: MediaAttachment) => {
                 </div>
                 <canvas ref={canvasRef} className="border border-gray-200 rounded-md w-full"></canvas>
               </div>
-            )}
+            )} */}
+
+            {showCanvasEditor && (
+               <SimpleCanvasDrawing
+                 onSave={handleSaveDrawing}
+                 onCancel={handleCancelDrawing}
+               />
+             )}
+
+
+            <button
+  onClick={() => setShowCanvasEditor(true)}
+  className="flex items-center text-indigo-600 hover:text-indigo-800"
+>
+  <Pencil className="h-5 w-5 mr-1" />
+  Show Drawing Tool
+</button>
+
 
             {/* Text Editor */}
             <div

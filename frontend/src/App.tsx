@@ -17,6 +17,9 @@ import NotesListPage from './components/Note/noteslist';
 import PendingPaymentPage from './components/Event/pendingpayment';
 import ReportsPage from './components/rports';
 import RoleProtectedRoute from './services/role.service';
+import EventDetailsPage from './components/Event/eventsdetails';
+import UpdateEventPage from './components/Event/updateEvent';
+import { toast } from 'react-hot-toast';
 // import LinkedInShareComponent from './components/Note/newlinkedin';
 
 const LoginPage = lazy(() => import('./pages/auth/login'));
@@ -43,6 +46,25 @@ axios.interceptors.response.use(
       localStorage.removeItem('user');
       window.location.href = '/auth/login';
     }
+
+    if (error.response && error.response.status === 403) {
+      toast.error('You do not have permission to access this resource.');
+      window.location.href = '/dashboard';
+    }
+    if (error.response && error.response.status === 404) {
+      toast.error('The requested resource was not found.');
+      window.location.href = '/dashboard';
+    }
+
+    if (error.response && error.response.status === 500) {
+      toast.error('An internal server error occurred. Please try again later.');
+      window.location.href = '/dashboard';
+    }
+    if (error.response && error.response.status === 400) {
+      toast.error('Bad request. Please check your input.');
+      window.location.href = '/dashboard';
+    }
+
     return Promise.reject(error);
   }
 );
@@ -125,7 +147,6 @@ export const App: React.FC = () => {
             <Route path="/dashboard/events/:eventId/pending-payment" element={<PendingPaymentPage />} />
 
 
-
             <Route
               path="/demo"
               element={
@@ -160,7 +181,7 @@ export const App: React.FC = () => {
                   element={<div>Session Details</div>}
                 />
 
-                
+                <Route path="/dashboard/events/:eventId/edit " element={<UpdateEventPage />} />
 
                 <Route element={<RoleProtectedRoute allowedRoles={['organizer']} />}>
                  <Route
@@ -213,7 +234,7 @@ export const App: React.FC = () => {
                     </motion.div>
                   }
                 />
-                <Route path="*" element={<div>404 Not Found</div>} />
+                <Route path="*" element={<NotFoundPage />} />
                 <Route
                   path="profile"
                   element={
@@ -226,7 +247,7 @@ export const App: React.FC = () => {
 
                {/* Routes for event and session details */}
               {/* <Route path="events/:eventId/sessions" element={<SessionsPage />} /> */}
-              {/* <Route path="events/:eventId" element={<EventDetails />} />
+              {/*
               <Route path="events/:eventId/sessions/create" element={<CreateSession /      >} />
               <Route path="sessions/:sessionId" element={<SessionDetails />} />
               <Route path="sessions/:sessionId/edit" element={<EditSession />} /> */}
