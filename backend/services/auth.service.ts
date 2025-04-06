@@ -13,7 +13,7 @@ import {
 } from '../interfaces/auth.interface';
 import { AppError } from '../utils/errors.utils';
 import config from '../config/config';
-const sgMail = require('@sendgrid/mail');
+import sgMail, { MailDataRequired } from '@sendgrid/mail';
 
 export class AuthService {
 
@@ -37,6 +37,8 @@ export class AuthService {
     // Remove password from response
     const userObject = newUser.toObject();
 
+      process.nextTick(() => {
+        try {
     // Send welcome email
     sgMail.setApiKey(config.sendgrid.apiKey);
     const msg = {
@@ -45,10 +47,15 @@ export class AuthService {
       subject: 'Welcome to Comfybase',
       text: `Hello ${newUser.firstName},\n\nWelcome to Comfybase! We're excited to have you on board.\n\nBest regards,\nThe Comfybase Team`,
       html: `<p>Hello ${newUser.firstName},</p><p>Welcome to Comfybase! We're excited to have you on board.</p><p>Best regards,<br>The Comfybase Team</p>`,
-    };
+    }
+         sgMail.send(msg as MailDataRequired).catch((err: Error) => console.error('Email sending error:', err));
+        } catch (err) {
+          console.error('Email preparation error:', err);
+        }
+      });
 
+      return userObject as User;
 
-    return userObject as User;
   } catch (error) {
     if (error instanceof AppError) throw error;
     console.error('Registration error:', error);

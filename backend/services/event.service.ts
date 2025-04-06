@@ -231,16 +231,23 @@ async registerAttendee(eventId: string, userId: string): Promise<{ event: Event 
 
     // Send email with QR code if we have user's email
     if (attendee) {
-      await EmailService.sendEventRegistrationEmail(
-        attendee.email,
-        {
-          eventName: event.title,
-          eventDate: event.startDate.toDateString(),
-          eventLocation: `${event.location.name}, ${event.location.city}`,
-          qrCodeUrl,
-          attendeeName: `${attendee.firstName} ${attendee.lastName}`
+      process.nextTick(async () => {
+      try {
+        await EmailService.sendEventRegistrationEmail(
+          attendee.email,
+          {
+            eventName: event.title,
+            eventDate: event.startDate.toDateString(),
+            eventLocation: `${event.location.name}, ${event.location.city}`,
+            qrCodeUrl,
+            attendeeName: `${attendee.firstName} ${attendee.lastName}`
+          }
+        );
+
+      } catch (err) {
+        console.error('Email sending error:', err);
         }
-      );
+          });
     }
 
     return { event, qrCodeUrl };

@@ -10,9 +10,71 @@ import { setupPassport } from './config/passport';
 import passport from 'passport';
 import config from './config/config';
 import cron from 'node-cron';
+import { gc } from 'v8';
+import compression from 'compression';
+
 
 const corsOptions = {
   origin: "*"
+}
+//memory optimizations
+app.use(compression());
+app.use((req, res, next) => {
+  const startMem = process.memoryUsage().heapUsed;
+
+  res.on('finish', () => {
+    const endMem = process.memoryUsage().heapUsed;
+    const memoryDiff = endMem - startMem;
+    if (memoryDiff > 5 * 1024 * 1024) { // Log if route consumed more than 5MB
+      console.log(`Memory intensive route: ${req.method} ${req.path} - Used ${(memoryDiff / 1024 / 1024).toFixed(2)} MB`);
+    }
+  });
+
+  next();
+});
+
+
+function manageMemory() {
+  const memUsage = process.memoryUsage();
+  const heapUsedMB = memUsage.heapUsed / 1024 / 1024;
+  const heapTotalMB = memUsage.heapTotal / 1024 / 1024;
+  const rss = memUsage.rss / 1024 / 1024;
+
+  console.log(`Memory Status: HeapUsed: ${heapUsedMB.toFixed(2)}MB, HeapTotal: ${heapTotalMB.toFixed(2)}MB, RSS: ${rss.toFixed(2)}MB`);
+
+  // If memory usage gets high, try to clean up
+  if (heapUsedMB > 300) { // 75% of your 400MB limit
+    console.log('Memory usage high, attempting cleanup...');
+    try {
+      if (typeof global.gc === 'function') {
+        global.gc(); // Force garbage collection (requires --expose-gc flag)
+      } else {
+        console.log('Manual garbage collection not available. Run with --expose-gc flag');
+      }
+      console.log('Garbage collection triggered');
+    } catch (e) {
+      console.log('Manual garbage collection not available. Run with --expose-gc flag');
+    }
+  }
+}
+
+cron.schedule('*/1 * * * *', () => {
+  manageMemory();
+});
+
+process.on('SIGTERM', gracefulShutdown);
+process.on('SIGINT', gracefulShutdown);
+
+async function gracefulShutdown() {
+  console.log('Graceful shutdown initiated...');
+
+  // Close database connections
+  await databaseService.disconnect();
+
+  // Close any other connections
+
+  console.log('Graceful shutdown complete');
+  process.exit(0);
 }
 
 app.use(express.json());
@@ -80,6 +142,8 @@ async function startServer() {
     cron.schedule('*/1 * * * *', () => {
       console.log('...');
     });
+
+     manageMemory();
 
   } catch (error) {
     console.error("Failed to start server:", error);

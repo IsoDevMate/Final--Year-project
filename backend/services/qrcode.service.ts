@@ -19,7 +19,10 @@ export class QRCodeService {
       // Create payload with limited but necessary info
       const payload = {
         eventId,
-        userId,
+        user: {
+          id: userId,
+         //...othere user properties
+        },
         type: 'event-registration',
         createdAt: new Date().toISOString(),
       };

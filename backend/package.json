@@ -4,10 +4,10 @@
   "description": "ComfyBASE Event Management System Backend",
   "main": "index.js",
   "scripts": {
-  "start": "cross-env NODE_OPTIONS=--max-old-space-size=512 node dist/server.js",
-  "dev": "cross-env NODE_OPTIONS=--max-old-space-size=512 nodemon --exec ts-node server.ts",
+  "start": "cross-env NODE_OPTIONS='--expose-gc --max-old-space-size=512' node dist/server.js",
+  "dev": "cross-env NODE_OPTIONS='--expose-gc --max-old-space-size=512' nodemon --exec ts-node server.ts",
   "build": "tsc",
-  "start:pm2": "npm run build && pm2 start dist/server.js --name comfybase-backend",
+  "start:pm2": "npm run build && pm2 start dist/server.js --node-args='--expose-gc' --name comfybase-backend",
   "pm2:logs": "pm2 logs comfybase-backend",
   "pm2:restart": "pm2 restart comfybase-backend",
   "pm2:stop": "pm2 stop comfybase-backend"
