@@ -22,7 +22,6 @@ export class MPaymentService {
 
   async initiatePayment(paymentData: InitiatePaymentDto): Promise<any> {
     try {
-
       console.log('Initiating payment with data:', paymentData);
       // Validate payment data
       if (!paymentData.eventId || !paymentData.userId || !paymentData.phoneNumber || !paymentData.amount) {
@@ -183,6 +182,9 @@ export class MPaymentService {
       if (paymentResult.success) {
         await this.eventService.registerAttendee(eventId, userId);
       }
+
+      console.log('Payment record updated:', payment);
+      console.log('Payment result:', paymentResult);
 
       return {
         success: paymentResult.success,

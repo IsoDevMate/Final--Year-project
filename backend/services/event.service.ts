@@ -163,38 +163,41 @@ export class EventService {
   }
 
 
-
-
 async registerAttendee(eventId: string, userId: string): Promise<{ event: Event | null, qrCodeUrl: string }> {
   try {
+    console.log(`Registering attendee. Event ID: ${eventId}, User ID: ${userId}`);
+
     if (!Types.ObjectId.isValid(eventId) || !Types.ObjectId.isValid(userId)) {
+      console.error(`Invalid ID(s). Event ID: ${eventId}, User ID: ${userId}`);
       throw new AppError('Invalid ID', 400);
     }
 
     // Check if event exists
     const event = await Event.findById(eventId);
-
     if (!event) {
+      console.error(`Event not found. Event ID: ${eventId}`);
       throw new AppError('Event not found', 404);
     }
+    console.log(`Event found. Event ID: ${eventId}, Title: ${event.title}`);
 
     // Check if user is already registered
     if (event.attendees.includes(new Types.ObjectId(userId))) {
+      console.warn(`User already registered. Event ID: ${eventId}, User ID: ${userId}`);
       throw new AppError('User already registered for this event', 400);
     }
 
     // Check if event has reached capacity
     if (event.capacity && event.attendees.length >= event.capacity) {
+      console.warn(`Event capacity reached. Event ID: ${eventId}, Capacity: ${event.capacity}`);
       throw new AppError('Event has reached maximum capacity', 400);
     }
 
     // If event has a ticket price, check for payment
     if (event.ticketPrice && event.ticketPrice > 0) {
-      // Import here to avoid circular dependency
+      console.log(`Event requires payment. Event ID: ${eventId}, Ticket Price: ${event.ticketPrice}`);
       const MpesaPayment = await import('../models/mpesapayment.model').then(module => module.MpesaPayment);
       const { MpesaPaymentStatus } = await import('../models/mpesapayment.model');
 
-      // Check if payment exists and is completed
       const payment = await MpesaPayment.findOne({
         eventId: new Types.ObjectId(eventId),
         userId: new Types.ObjectId(userId),
@@ -202,17 +205,21 @@ async registerAttendee(eventId: string, userId: string): Promise<{ event: Event 
       });
 
       if (!payment) {
+        console.error(`Payment not found or incomplete. Event ID: ${eventId}, User ID: ${userId}`);
         throw new AppError('Payment required to register for this event', 400);
       }
+      console.log(`Payment verified. Event ID: ${eventId}, User ID: ${userId}`);
     }
 
     // Add user to attendees
     event.attendees.push(new Types.ObjectId(userId));
     await event.save();
+    console.log(`User added to attendees. Event ID: ${eventId}, User ID: ${userId}`);
 
     // Generate QR code token and QR code
     const token = this.qrCodeService.generateTokenForEventAttendee(eventId, userId);
     const qrCodeUrl = await this.qrCodeService.generateQRCode(token);
+    console.log(`QR code generated. Event ID: ${eventId}, User ID: ${userId}, QR Code URL: ${qrCodeUrl}`);
 
     // Get user details for sending email
     const populatedEvent = await Event.findById(eventId)
@@ -223,35 +230,38 @@ async registerAttendee(eventId: string, userId: string): Promise<{ event: Event 
       });
 
     if (!populatedEvent) {
+      console.error(`Event not found after population. Event ID: ${eventId}`);
       throw new AppError('Event not found after population', 404);
     }
 
-    // Find the specific attendee in the populated attendees array
     const attendee = populatedEvent.attendees.find(a => a._id.toString() === userId) as unknown as { email: string, firstName: string, lastName: string };
 
-    // Send email with QR code if we have user's email
     if (attendee) {
+      console.log(`Attendee details found. User ID: ${userId}, Email: ${attendee.email}`);
       process.nextTick(async () => {
-      try {
-        await EmailService.sendEventRegistrationEmail(
-          attendee.email,
-          {
-            eventName: event.title,
-            eventDate: event.startDate.toDateString(),
-            eventLocation: `${event.location.name}, ${event.location.city}`,
-            qrCodeUrl,
-            attendeeName: `${attendee.firstName} ${attendee.lastName}`
-          }
-        );
-
-      } catch (err) {
-        console.error('Email sending error:', err);
+        try {
+          await EmailService.sendEventRegistrationEmail(
+            attendee.email,
+            {
+              eventName: event.title,
+              eventDate: event.startDate.toDateString(),
+              eventLocation: `${event.location.name}, ${event.location.city}`,
+              qrCodeUrl,
+              attendeeName: `${attendee.firstName} ${attendee.lastName}`
+            }
+          );
+          console.log(`Registration email sent. User ID: ${userId}, Email: ${attendee.email}`);
+        } catch (err) {
+          console.error(`Email sending error. User ID: ${userId}, Error: ${err}`);
         }
-          });
+      });
+    } else {
+      console.warn(`Attendee details not found for email. User ID: ${userId}`);
     }
 
     return { event, qrCodeUrl };
   } catch (error) {
+    console.error(`Error during registration. Event ID: ${eventId}, User ID: ${userId}, Error: ${error}`);
     if (error instanceof AppError) {
       throw error;
     }
