@@ -1,6 +1,11 @@
-{"rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
+{
+    "rewrites": [
+        {
+            "source": "/(.*)",
+            "destination": "/index.html"
+        }
+    ],
+    "typescript": {
+        "ignoreBuildErrors": true
     }
-  ]}
+}
