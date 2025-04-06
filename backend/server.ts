@@ -10,7 +10,7 @@ import { setupPassport } from './config/passport';
 import passport from 'passport';
 import config from './config/config';
 import cron from 'node-cron';
-import { gc } from 'v8';
+// import { gc } from 'v8';
 import compression from 'compression';
 
 
