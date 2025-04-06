@@ -2,8 +2,8 @@
   "compilerOptions": {
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "skipLibCheck": true, // Skip type checking of declaration files
-    "noEmitOnError": false // Allow emitting output even if there are errors
+    "skipLibCheck": true,
+    "noEmitOnError": true
   },
   "files": [],
   "references": [
