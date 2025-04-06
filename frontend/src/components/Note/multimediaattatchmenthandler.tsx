@@ -11,7 +11,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { MultimediaShareModa } from './sharemulti';
 import { useAuth } from '../../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 interface Note {
   _id: string;
   title: string;
@@ -281,7 +281,7 @@ MediaPreviewModal: React.memo(({
 
   // In the handleShareAttachment function in MediaPreviewModal
 const handleShareAttachment = async (customMessage = '') => {
-   const navigate = useNavigate();
+
   if (!note || !selectedAttachment) return;
 
 
@@ -350,7 +350,6 @@ const handleShareAttachment = async (customMessage = '') => {
     if (response.status >= 200 && response.status < 300) {
       toast.success('Successfully shared to LinkedIn!');
       return response.data;
-      navigate('/dashboard/notes');
     } else {
       throw new Error('Failed to share');
     }
