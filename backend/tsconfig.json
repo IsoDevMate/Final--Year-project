@@ -1,15 +1,15 @@
 {
   "compilerOptions": {
     "target": "ES6",
-    "module": "CommonJS",
+    "module": "commonjs",
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": "./",
     "strict": true,
     "typeRoots": ["./node_modules/@types", "./types"],
      "resolveJsonModule": true,
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
   },
-  "include": ["src"],
-  "exclude": ["node_modules"]
+ "include": ["./**/*.ts"],
+  "exclude": ["node_modules", "dist", "coverage", "test", "tests", "**/*.spec.ts", "**/*.test.ts"]
 }

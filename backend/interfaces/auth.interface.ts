@@ -32,6 +32,8 @@ export interface TokenPayload {
     linkedinId?: string;
     linkedinAccessToken?: string;
   };
+  // isVerified?: boolean;
+  // createdAt: Date;
 }
 
 export interface ResetPasswordDto {

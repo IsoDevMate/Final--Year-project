@@ -9,10 +9,20 @@ declare global {
       role: UserRole;
       firstName?: string;
       lastName?: string;
+      socialLinks?: {
+        linkedinId?: string;
+        linkedinAccessToken?: string;
+      } | null;
+      profileImage?: string;
+      bio?: string;
+      phoneNumber?: string;
+      createdAt?: Date;
+      updatedAt?: Date;
+      isVerified?: boolean;
     }
 
     interface Request {
-      user?: User;
+      user?: User | undefined;
     }
   }
 }

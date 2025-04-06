@@ -29,16 +29,18 @@ export const setupPassport = () => {
           role: UserRole.ATTENDEE,
           profileImage: profile.photos?.[0]?.value,
           socialLinks: {
-            linkedin: profile.id
+            linkedin: profile.id,
+            linkedinAccessToken: accessToken
           }
         });
       } else if (!user.socialLinks?.linkedinId) {
         // Update existing user with LinkedIn ID if not set
         user.socialLinks = {
             ...user.socialLinks,
-            linkedinId: profile.id
+          linkedinId: profile.id,
+          linkedinAccessToken: accessToken,
           };
-        user.firstName = profile.name.givenName;
+          user.firstName = profile.name.givenName;
           user.lastName = profile.name.familyName;
           user.email = profile.emails[0].value;
           user.role = UserRole.ATTENDEE;
@@ -47,23 +49,6 @@ export const setupPassport = () => {
         await user.save();
       }
 
-      // if (!user) {
-      //   // Create new user
-      //   user = new User({
-      //     email: emails?.[0]?.value || '',
-      //     firstName: name.givenName,
-      //     lastName: name.familyName,
-      //     profileImage: photos[0].value,
-      //     role: UserRole.USER,
-      //   });
-      //   await user.save();
-      // } else {
-      //   // Update existing user
-      //   user.profilePicture = photos[0].value;
-      //   await user.save();
-      // }
-
-      // Return user
       return done(null, user);
     } catch (error) {
       return done(error as Error);
@@ -79,7 +64,7 @@ export const setupPassport = () => {
   passport.deserializeUser(async (id, done) => {
     try {
       const user = await User.findById(id);
-      done(null, user);
+      done(null, user as any);
     } catch (error) {
       done(error);
     }

@@ -27,7 +27,7 @@ export class LinkedInStatusService {
 
       return {
         hasLinkedIn: hasLinkedInId,
-        linkedInId: user.socialLinks?.linkedinId
+        linkedInId: user.socialLinks?.linkedinId,
         isTokenValid
       };
     } catch (error) {

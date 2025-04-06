@@ -47,7 +47,8 @@ static async verifyToken(req: Request, res: Response, next: NextFunction) {
           role: decoded.role,
           firstName: decoded.firstName,
           lastName: decoded.lastName,
-          socialLinks: decoded.socialLinks,
+          // socialLinks is not part of the User type
+          socialLinks: decoded.socialLinks || null,
           profileImage: user.profileImage,
           bio: user.bio,
           phoneNumber: user.phoneNumber,
