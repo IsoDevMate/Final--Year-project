@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, Users, DollarSign, TrendingUp, Clock, Video, ArrowRight } from 'lucide-react';
+import { Calendar, Users, DollarSign, Clock, Video, ArrowRight } from 'lucide-react';
 
 const Dashboard = () => {
   const [statsData, setStatsData] = useState({

@@ -1,11 +1,10 @@
 
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import {
   Home,
   Calendar,
-  Video,
   Users,
   CreditCard,
   Settings,
@@ -41,7 +40,7 @@ const DashboardLayout = () => {
     { title: 'Settings', path: '/dashboard/settings', icon: <Settings className="w-5 h-5" />,  },
     { title: 'Notes', path: '/dashboard/notes', icon: <Notes className="w-5 h-5" /> },
     { title: 'Profile', path: '/dashboard/profile', icon: <Users className="w-5 h-5" /> },
-  ].filter(link => !link.roles || link.roles.includes(user?.role));
+  ].filter(link => !link.roles || link.roles.includes(user?.role || ''));
 
   const navigateToWebsite = () => {
     window.open('/', '_blank');
