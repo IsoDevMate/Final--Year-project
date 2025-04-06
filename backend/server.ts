@@ -1,9 +1,9 @@
 import router from "./routes/routes"
 import express from "express"
 const app = express();
-// import dotenv from "dotenv"
+import dotenv from "dotenv"
 import cors from "cors"
-// dotenv.config()
+dotenv.config()
 import { databaseService } from './config/db';
 import { Request, Response, NextFunction } from 'express';
 import { setupPassport } from './config/passport';
@@ -67,7 +67,7 @@ async function startServer() {
       }
     }
 
-    const PORT = parseInt(String(config.port || "000"), 10);
+    const PORT = parseInt(String(config.port || "3000"), 10);
     app.listen(PORT,'0.0.0.0', () => {
       console.log(`Server running on port ${PORT}`);
     })
