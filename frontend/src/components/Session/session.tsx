@@ -74,7 +74,7 @@ const SessionsPage = () => {
 
       try {
         // Fetch event details
-        const eventResponse = await axios.get(`http://localhost:3000/api/v1/events/${eventId}`);
+        const eventResponse = await axios.get(`https://final-year-project-77pa.onrender.com/api/v1/events/${eventId}`);
         if (eventResponse.data.success) {
           const eventData = eventResponse.data.data;
           setEvent(eventData);
@@ -82,7 +82,7 @@ const SessionsPage = () => {
         }
 
         // Fetch sessions for this event
-        const sessionsResponse = await axios.get(`http://localhost:3000/api/v1/sessions/event/${eventId}`);
+        const sessionsResponse = await axios.get(`https://final-year-project-77pa.onrender.com/api/v1/sessions/event/${eventId}`);
         if (sessionsResponse.data.success) {
           const sessionsData = sessionsResponse.data.data;
           setSessions(sessionsData);
@@ -106,7 +106,7 @@ const SessionsPage = () => {
   const handleDeleteSession = async (sessionId: string) => {
     if (window.confirm('Are you sure you want to delete this session?')) {
       try {
-        const response = await axios.delete(`http://localhost:3000/api/v1/sessions/${sessionId}`);
+        const response = await axios.delete(`https://final-year-project-77pa.onrender.com/api/v1/sessions/${sessionId}`);
 
         if (response.data.success) {
           // Remove from local state
@@ -136,7 +136,7 @@ const SessionsPage = () => {
         updateData.streamUrl = url;
       }
 
-      const response = await axios.patch(`http://localhost:3000/api/v1/sessions/${sessionId}/livestream`, updateData);
+      const response = await axios.patch(`https://final-year-project-77pa.onrender.com/api/v1/sessions/${sessionId}/livestream`, updateData);
 
       if (response.data.success) {
         // Update in local state
@@ -155,7 +155,7 @@ const SessionsPage = () => {
   // Register for a session
   const handleRegisterForSession = async (sessionId: string) => {
     try {
-      const response = await axios.post(`http://localhost:3000/api/v1/sessions/${sessionId}/register`);
+      const response = await axios.post(`https://final-year-project-77pa.onrender.com/api/v1/sessions/${sessionId}/register`);
 
       if (response.data.success) {
         // Update the attendees count in local state

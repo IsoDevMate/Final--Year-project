@@ -144,7 +144,7 @@ const UpdateEventPage: React.FC = () => {
     const fetchEventData = async () => {
       try {
         const token = localStorage.getItem('accessToken');
-        const response = await axios.get(`http://localhost:3000/api/v1/events/${id}`, {
+        const response = await axios.get(`https://final-year-project-77pa.onrender.com/api/v1/events/${id}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -320,7 +320,7 @@ const UpdateEventPage: React.FC = () => {
 
       const token = localStorage.getItem('accessToken');
       const response = await axios.post(
-        `http://localhost:3000/api/v1/events/${id}/cover-image`,
+        `https://final-year-project-77pa.onrender.com/api/v1/events/${id}/cover-image`,
         formData,
         {
           headers: {
@@ -372,7 +372,7 @@ const UpdateEventPage: React.FC = () => {
 
       const token = localStorage.getItem('accessToken');
       const response = await axios.put(
-        `http://localhost:3000/api/v1/events/${id}`,
+        `https://final-year-project-77pa.onrender.com/api/v1/events/${id}`,
         {
           ...eventData,
           coverImage: coverImageUrl

@@ -56,10 +56,10 @@ export const LinkedInShareComponent: React.FC<LinkedInShareProps> = ({ note }) =
   // Determine share route based on media type
   const getShareRoute = () => {
     switch (mediaType) {
-      case 'image': return 'http://localhost:3000/api/v1/linkedin/share/image';
-      case 'video': return 'http://localhost:3000/api/v1/linkedin/share/video';
-      case 'article': return 'http://localhost:3000/api/v1/linkedin/share/article';
-      default: return 'http://localhost:3000/api/v1/linkedin/share/text';
+      case 'image': return 'https://final-year-project-77pa.onrender.com/api/v1/linkedin/share/image';
+      case 'video': return 'https://final-year-project-77pa.onrender.com/api/v1/linkedin/share/video';
+      case 'article': return 'https://final-year-project-77pa.onrender.com/api/v1/linkedin/share/article';
+      default: return 'https://final-year-project-77pa.onrender.com/api/v1/linkedin/share/text';
     }
   };
 

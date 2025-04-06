@@ -201,84 +201,6 @@ MediaPreviewModal: React.memo(({
 
 
 
-//   // Fixed handleShareAttachment in MediaPreviewModal
-//   const handleShareAttachment = async (customMessage = '') => {
-//   if (!note || !selectedAttachment) return;
-
-
-
-//   const userFromStorage = localStorage.getItem('user');
-//   if (!userFromStorage) {
-//     toast.error('User not found in local storage');
-//     return;
-//   }
-
-//   const parsedUser = JSON.parse(userFromStorage);
-//   const token = parsedUser?.socialLinks?.linkedinAccessToken;
-
-//   if (!token) {
-//     toast.error('LinkedIn access token is missing');
-//     return;
-//   }
-
-//   console.log('Sharing attachment:', selectedAttachment, 'with custom message:', customMessage , "token" , token);
-
-//   // Structure the payload according to the LinkedIn API requirements
-//   const payload = {
-//     note: {
-//       title: note.title,
-//       content: customMessage || `Check out this ${selectedAttachment.type}`,
-//       mediaAttachments: [
-//         {
-//           type: selectedAttachment.type,
-//           url: selectedAttachment.url,
-//           caption: customMessage || selectedAttachment.caption || note.title
-//         }
-//       ]
-//     },
-//     user: {
-//       socialLinks: {
-//         linkedinAccessToken: token
-//       }
-//     }
-//   };
-
-//   // Determine the appropriate endpoint based on attachment type
-//   const sharingEndpoint = (() => {
-//     switch (selectedAttachment.type) {
-//       case 'image':
-//         return 'http://localhost:3000/api/v1/linkedin/share/image';
-//       case 'video':
-//         return 'http://localhost:3000/api/v1/linkedin/share/video';
-//       case 'document':
-//         return 'http://localhost:3000/api/v1/linkedin/share/article';
-//       default:
-//         return 'http://localhost:3000/api/v1/linkedin/share/content';
-//     }
-//   })();
-
-//   try {
-//     // Make the API call to share the attachment
-//     const response = await axios.post(sharingEndpoint, payload, {
-//       headers: {
-//         'Authorization': `Bearer ${token}`,
-//         'Content-Type': 'application/json'
-//       }
-//     });
-
-//     if (response.status < 200 || response.status >= 300) {
-//       throw new Error('Failed to share');
-//     }
-
-//     return response.data;
-//   } catch (error) {
-//     console.error('Error sharing to LinkedIn:', error);
-//     throw error;
-//   }
-// };
-
-
-
   // In the handleShareAttachment function in MediaPreviewModal
 const handleShareAttachment = async (customMessage = '') => {
 
@@ -307,7 +229,7 @@ const handleShareAttachment = async (customMessage = '') => {
     return;
   }
 
-  const API_BASE_URL= "http://localhost:3000"
+  const API_BASE_URL= "https://final-year-project-77pa.onrender.com"
 
   try {
     // Use your API endpoint but with proper error handling

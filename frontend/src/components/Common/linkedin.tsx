@@ -14,7 +14,7 @@ const LinkedInShareButton: React.FC<LinkedInShareButtonProps> = ({ noteId }) => 
   useEffect(() => {
     const checkLinkedInStatus = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/linkedin/status');
+        const response = await axios.get('https://final-year-project-77pa.onrender.com/api/linkedin/status');
         setCanShare(response.data.data.hasLinkedIn);
       } catch (error) {
         console.error('Failed to check LinkedIn status:', error);
@@ -30,7 +30,7 @@ const LinkedInShareButton: React.FC<LinkedInShareButtonProps> = ({ noteId }) => 
     setShareResult(null);
 
     try {
-      const response = await axios.post(`http://localhost:3000/api/linkedin/share/note/${noteId}`);
+      const response = await axios.post(`https://final-year-project-77pa.onrender.com/api/linkedin/share/note/${noteId}`);
 
       setShareResult({
         success: true,

@@ -54,7 +54,7 @@ const EventDetailsPage = () => {
       setError(null);
 
       try {
-        const response = await axios.get(`http://localhost:3000/api/v1/events/${id}`);
+        const response = await axios.get(`https://final-year-project-77pa.onrender.com/api/v1/events/${id}`);
 
         if (response.data.success) {
           setEvent(response.data.data);
@@ -173,7 +173,7 @@ const EventDetailsPage = () => {
       }
 
       const response = await axios.post(
-        `http://localhost:3000/api/v1/events/register/${event._id}`,
+        `https://final-year-project-77pa.onrender.com/api/v1/events/register/${event._id}`,
         {},
         {
           headers: {
@@ -218,7 +218,7 @@ const EventDetailsPage = () => {
         }
 
         const response = await axios.delete(
-          `http://localhost:3000/api/v1/events/register/${event._id}`,
+          `https://final-year-project-77pa.onrender.com/api/v1/events/register/${event._id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`
@@ -258,7 +258,7 @@ const EventDetailsPage = () => {
 
       // Initiate M-Pesa payment
       const paymentResponse = await axios.post(
-        `http://localhost:3000/api/v1/mpesa/event/${event._id}`,
+        `https://final-year-project-77pa.onrender.com/api/v1/mpesa/event/${event._id}`,
         {
           phoneNumber: phoneNumber,
           amount: event.ticketPrice
@@ -283,7 +283,7 @@ const EventDetailsPage = () => {
 
           try {
             const statusResponse = await axios.get(
-              `http://localhost:3000/api/v1/mpesa/event/${event._id}`,
+              `https://final-year-project-77pa.onrender.com/api/v1/mpesa/event/${event._id}`,
               {
                 headers: {
                   Authorization: `Bearer ${token}`
