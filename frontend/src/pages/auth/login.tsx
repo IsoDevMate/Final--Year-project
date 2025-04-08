@@ -45,9 +45,13 @@ const onSubmit = async (data: LoginFormData) => {
    await checkAuthStatus();
     toast.success('Login successful!');
     navigate('/dashboard');
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Login error:', error);
-    toast.error(error.response?.data?.error || 'Login failed. Please try again.');
+    if (axios.isAxiosError(error) && error.response?.data?.error) {
+      toast.error(error.response.data.error);
+    } else {
+      toast.error('Login failed. Please try again.');
+    }
   } finally {
     setIsLoading(false);
   }

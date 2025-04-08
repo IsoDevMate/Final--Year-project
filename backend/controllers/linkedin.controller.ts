@@ -21,7 +21,7 @@ export class LinkedInController {
   const state = crypto.randomBytes(16).toString('hex'); // More secure random state
   const scope = ['openid', 'profile', 'email', 'w_member_social'];
   const responseType = 'code';
-  const redirectUri = config.linkedin.callbackUrl;
+  const redirectUri = "https://final-year-project-77pa.onrender.com/api/v1/auth/linkedin/callback"
   const clientId = config.linkedin.clientId;
 
     const linkedInAuthUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=${responseType}&client_id=${clientId}&redirect_uri=${redirectUri}&state=${state}&scope=${scope.join(' ')}`;

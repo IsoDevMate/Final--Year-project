@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
-  Save, X, Image, File, Mic, Video,
+  Save, X,
  Tag, Lock, Unlock, Trash2, Plus, Pencil,
   ChevronLeft, Edit3,
 } from 'lucide-react';
