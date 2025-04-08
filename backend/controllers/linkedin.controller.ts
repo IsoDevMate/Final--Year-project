@@ -24,8 +24,6 @@ export class LinkedInController {
   const redirectUri = config.linkedin.callbackUrl;
   const clientId = config.linkedin.clientId;
 
-
-
     const linkedInAuthUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=${responseType}&client_id=${clientId}&redirect_uri=${redirectUri}&state=${state}&scope=${scope.join(' ')}`;
     return ResponseUtil.success(res, 200, { url: linkedInAuthUrl }, 'LinkedIn authentication URL');
   };

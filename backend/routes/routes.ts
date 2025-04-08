@@ -14,7 +14,6 @@ const API_PREFIX = '/api/v1';
 
 // Authentication routes
 router.use(`${API_PREFIX}/auth`, authRoutes);
-
 router.use(`${API_PREFIX}/events`, eventRoutes);
 router.use(`${API_PREFIX}/payments`, paymentRoutes);
 router.use(`${API_PREFIX}/notes`, notesroutes);

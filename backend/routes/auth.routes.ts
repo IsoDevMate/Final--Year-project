@@ -24,7 +24,6 @@ router.get('/profile',
 router.get('/linkedin', LinkedInController.getAuthUrl);
 router.get('/linkedin/callback', LinkedInController.handleCallback);
 
-
 router.get(
   '/me',
   AuthMiddleware.verifyToken,
