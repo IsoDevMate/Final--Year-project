@@ -16,6 +16,13 @@ const upload = multer({
 const router = Router();
 const eventController = new EventController();
 
+// Protected routes - only authenticated users
+router.post(
+  '/register/:id',
+  AuthMiddleware.verifyToken,
+  eventController.registerForEvent.bind(eventController)
+);
+
 
 router.get(
   '/registered',
@@ -38,6 +45,7 @@ router.get(
   eventController.getEventAttendees.bind(eventController)
 );
 
+router.get('/:id', eventController.getEventById.bind(eventController));
 
 router.put(
   '/:id',
@@ -46,14 +54,6 @@ router.put(
   eventController.updateEvent.bind(eventController)
 );
 
-router.get('/:id', eventController.getEventById.bind(eventController));
-
-// Protected routes - only authenticated users
-router.post(
-  '/register/:id',
-  AuthMiddleware.verifyToken,
-  eventController.registerForEvent.bind(eventController)
-);
 
 router.delete(
   '/:id',
