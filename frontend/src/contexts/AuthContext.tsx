@@ -60,7 +60,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const token = localStorage.getItem('accessToken');
 
       // Fetch from API first to ensure we have the most up-to-date user data
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/v1/auth/me`, {
+      const response = await axios.get(`https://final-year-project-77pa.onrender.com/api/v1/auth/me`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -98,7 +98,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
  const login = async (email: string, password: string) => {
   try {
-    const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/auth/login`, {
+    const response = await axios.post(`https://final-year-project-77pa.onrender.com/api/v1/auth/login`, {
       email,
       password
     });
@@ -125,7 +125,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const loginWithLinkedIn = async () => {
     try {
       // Redirect to backend LinkedIn auth endpoint
-      window.location.href = `${import.meta.env.VITE_API_URL}/api/v1/auth/linkedin`;
+      window.location.href = `https://final-year-project-77pa.onrender.com/api/v1/auth/linkedin`;
     } catch (error) {
       console.error('LinkedIn login failed:', error);
       throw error;
@@ -134,7 +134,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = async () => {
     try {
-      await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/auth/logout`);
+      await axios.post(`https://final-year-project-77pa.onrender.com/api/v1/auth/logout`);
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
       localStorage.removeItem('user');
@@ -152,7 +152,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const register = async (email: string, password: string, name: string) => {
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/auth/register`, {
+      const response = await axios.post(`https://final-year-project-77pa.onrender.com/api/v1/auth/register`, {
         email,
         password,
         name
