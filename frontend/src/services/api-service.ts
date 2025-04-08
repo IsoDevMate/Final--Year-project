@@ -11,6 +11,8 @@ export const fetchEvents = async (params = {}) => {
     });
 
     const response = await axios.get(`${API_BASE_URL}/events?${queryParams.toString()}`);
+
+    console.log('ALL Fetched events:', response.data);
     return response.data;
   } catch (error) {
     console.error('Error fetching events:', error);
@@ -21,6 +23,7 @@ export const fetchEvents = async (params = {}) => {
 export const fetchEventById = async (eventId: string) => {
   try {
     const response = await axios.get(`${API_BASE_URL}/events/${eventId}`);
+    console.log('Event data: from our service- api', response.data);
     return response.data;
   } catch (error) {
     console.error(`Error fetching event ${eventId}:`, error);
