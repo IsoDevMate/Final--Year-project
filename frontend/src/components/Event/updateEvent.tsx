@@ -143,12 +143,7 @@ const UpdateEventPage: React.FC = () => {
   useEffect(() => {
     const fetchEventData = async () => {
       try {
-        const token = localStorage.getItem('accessToken');
-        const response = await axios.get(`https://final-year-project-77pa.onrender.com/api/v1/events/${id}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
+        const response = await axios.get(`https://final-year-project-77pa.onrender.com/api/v1/events/${id}`);
 
         if (response.data.success) {
           const eventData = response.data.data;

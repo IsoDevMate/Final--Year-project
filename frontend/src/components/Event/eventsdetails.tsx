@@ -34,7 +34,7 @@ interface Event {
 }
 
 const EventDetailsPage = () => {
-  const { id } = useParams<{ id: string }>();
+  const { _id } = useParams<{ _id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -52,32 +52,40 @@ const EventDetailsPage = () => {
     const fetchEventDetails = async () => {
       setIsLoading(true);
       setError(null);
-
-      try {
-        const response = await axios.get(`https://final-year-project-77pa.onrender.com/api/v1/events/${id}`);
-
-        if (response.data.success) {
-          setEvent(response.data.data);
-
-          // Check if current user is registered
-        //   if (user && Array.isArray(response.data.data.attendees)) {
-        //     setIsUserRegistered(response.data.data.attendees.includes(user.id));
-        //   }
-        } else {
-          setError('Failed to fetch event details');
+try {
+        if (!id) {
+          setError('Event ID is required');
+          return;
         }
-      } catch (err) {
-        setError('An error occurred while fetching event details');
-        console.error(err);
-      } finally {
+  console.log("Attempting to fetch event with ID:", _id);
+  const response = await axios.get(`https://final-year-project-77pa.onrender.com/api/v1/events/${_id}`);
+  console.log("API Response:", response.data);
+
+  if (response.data.success) {
+    console.log("Setting event data:", response.data.data);
+    setEvent(response.data.data);
+  } else {
+    console.log("API reported failure:", response.data);
+    setError('Failed to fetch event details');
+  }
+     } catch (err) {
+       console.error("API request error:", err);
+       if (axios.isAxiosError(err) && err.response) {
+         console.error("Error response:", err.response.data);
+       } else {
+         console.error("Unknown error:", err);
+       }
+       setError('An error occurred while fetching event details');
+           } finally {
         setIsLoading(false);
       }
-    };
+  }
 
-    if (id) {
+
+    if (_id) {
       fetchEventDetails();
     }
-  }, [id, user]);
+  }, [_id]);
 
   // Format date for display
   const formatDate = (dateString: string) => {

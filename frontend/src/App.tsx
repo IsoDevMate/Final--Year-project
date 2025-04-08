@@ -258,6 +258,11 @@ export const App: React.FC = () => {
               />
 
               <Route
+                path="/dashboard/events/:eventId"
+                element={<EventDetailsPage />}
+              />
+
+              <Route
                 path="/dashboard/events/:eventId/success"
                 element={<RegistrationSuccessPage />}
               />

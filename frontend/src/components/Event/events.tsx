@@ -628,9 +628,9 @@ const handleDeleteEvent = async (eventId: string) => {
                           </div>
                           <div className="ml-4">
                             <div className="font-medium text-gray-900">
-                              <Link to={`/events/${event._id}`} className="hover:text-indigo-600">
-                                {event.title}
-                              </Link>
+                             <Link to={`/dashboard/events/${event._id}`} className="hover:text-indigo-600">
+                             {event.title}
+                           </Link>
                             </div>
                             <div className="text-sm text-gray-500 truncate max-w-xs">
                               {event.description.length > 60
