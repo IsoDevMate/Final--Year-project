@@ -115,13 +115,9 @@ export class LinkedInService {
           firstName: profile.given_name,
           lastName: profile.family_name,
           role: UserRole.ATTENDEE,
+          profileImage: profile.picture || '',
+          bio: profile.name || 'Default uuser bio',
           password: Math.random().toString(36).slice(-10) + Math.random().toString(36).slice(-10),
-          // socialLinks: {
-          //   linkedinId: profile.sub,
-          //   linkedinAccessToken: tokenResponse.access_token,
-          //   linkedinRefreshToken: tokenResponse.refresh_token, // Assuming refresh token is returned
-          //   linkedinTokenExpiry: new Date(Date.now() + tokenResponse.expires_in * 1000)
-          // }
           socialLinks: {
             linkedinId: profile.sub,
             linkedinAccessToken: tokenResponse.access_token,
@@ -136,15 +132,6 @@ export class LinkedInService {
         await user.save();
       } else {
         // Update existing user's LinkedIn tokens
-        //   user.socialLinks = {
-        //     ...user.socialLinks,
-        //     linkedinId: profile.sub,
-        //     linkedinAccessToken: tokenResponse.access_token,
-        //     linkedinRefreshToken: tokenResponse.refresh_token, // Assuming refresh token is returned
-        //     linkedinTokenExpiry: new Date(Date.now() + tokenResponse.expires_in * 1000)
-        //   };
-        //   await user.save();
-        // }
         user.socialLinks = {
           ...user.socialLinks,
           linkedinId: profile.sub,
