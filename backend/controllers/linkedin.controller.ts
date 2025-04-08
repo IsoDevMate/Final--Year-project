@@ -24,6 +24,14 @@ export class LinkedInController {
   const redirectUri = "https://final-year-project-77pa.onrender.com/api/v1/auth/linkedin/callback"
   const clientId = config.linkedin.clientId;
 
+    console.log('LinkedIn auth URL generation:', {
+      responseType,
+      clientId,
+      redirectUri,
+      state,
+      scope
+    });
+
     const linkedInAuthUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=${responseType}&client_id=${clientId}&redirect_uri=${redirectUri}&state=${state}&scope=${scope.join(' ')}`;
     return ResponseUtil.success(res, 200, { url: linkedInAuthUrl }, 'LinkedIn authentication URL');
   };
