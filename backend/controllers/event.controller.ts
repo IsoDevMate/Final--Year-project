@@ -11,6 +11,7 @@ import { ResponseUtil } from '../utils/response.utils';
 import { AppError } from '../utils/errors.utils';
 import { UserRole } from '../models/user.model';
 import { StorageService } from '../services/upload.service';
+import { Types } from 'mongoose';
 
 export class EventController {
   private eventService: EventService;
@@ -63,23 +64,45 @@ export class EventController {
     }
   }
 
-  async getEventById(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { id } = eventIdSchema.parse(req.params);
-      const event = await this.eventService.getEventById(id);
+  // async getEventById(req: Request, res: Response, next: NextFunction) {
+  //   try {
+  //     const { id } = eventIdSchema.parse(req.params);
+  //     const event = await this.eventService.getEventById(id);
 
-      if (!event) {
-        return ResponseUtil.error(res, 404, 'Event not found');
-      }
+  //     if (!event) {
+  //       return ResponseUtil.error(res, 404, 'Event not found');
+  //     }
 
-      return ResponseUtil.success(res, 200, event, 'Event retrieved successfully');
-    } catch (error) {
-      if (error instanceof ZodError) {
-        return ResponseUtil.error(res, 400, error.errors[0].message);
-      }
-      next(error);
+  //     return ResponseUtil.success(res, 200, event, 'Event retrieved successfully');
+  //   } catch (error) {
+  //     if (error instanceof ZodError) {
+  //       return ResponseUtil.error(res, 400, error.errors[0].message);
+  //     }
+  //     next(error);
+  //   }
+  // }
+
+  // In event.controller.ts
+async getEventById(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { id } = req.params;
+
+    // Validate ID format first
+    if (!Types.ObjectId.isValid(id)) {
+      return ResponseUtil.error(res, 400, 'Invalid event ID format');
     }
+
+    const event = await this.eventService.getEventById(id);
+
+    if (!event) {
+      return ResponseUtil.error(res, 404, 'Event not found');
+    }
+
+    return ResponseUtil.success(res, 200, event, 'Event fetched successfully');
+  } catch (error) {
+    next(error);
   }
+}
 
   async updateEvent(req: Request, res: Response, next: NextFunction) {
   try {

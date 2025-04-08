@@ -177,7 +177,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     loginWithLinkedIn,
     logout,
     register,
-    checkAuthStatus, // Expose the function
+    checkAuthStatus, 
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -16,17 +16,6 @@ const upload = multer({
 const router = Router();
 const eventController = new EventController();
 
-// Public routes - anyone can view published events
-router.get('/', eventController.getEvents.bind(eventController));
-
-
-// Organizer routes - only event organizers and admins
-router.post(
-  '/',
-  AuthMiddleware.verifyToken,
-  AuthMiddleware.hasRole([UserRole.ORGANIZER, UserRole.ADMIN]),
-  eventController.createEvent.bind(eventController)
-);
 
 router.get(
   '/registered',
@@ -88,5 +77,16 @@ router.post(
   upload.single('image'),
   eventController.uploadEventCoverImage.bind(eventController)
 );
+
+router.get('/', eventController.getEvents.bind(eventController));
+
+// Organizer routes - only event organizers and admins
+router.post(
+  '/',
+  AuthMiddleware.verifyToken,
+  AuthMiddleware.hasRole([UserRole.ORGANIZER, UserRole.ADMIN]),
+  eventController.createEvent.bind(eventController)
+);
+
 
 export default router;

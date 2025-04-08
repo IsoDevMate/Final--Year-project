@@ -37,7 +37,7 @@ useEffect(() => {
 
       // Always fetch user data from API to ensure we have the latest data
       try {
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/v1/auth/me`, {
+        const response = await axios.get(`https://final-year-project-77pa.onrender.com/api/v1/auth/me`, {
           headers: { Authorization: `Bearer ${accessToken}` }
         });
 
@@ -71,7 +71,7 @@ useEffect(() => {
   const delay = setTimeout(handleAuthentication, 500);
   return () => clearTimeout(delay);
 }, [searchParams, navigate, checkAuthStatus]);
-  
+
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-md text-center">
