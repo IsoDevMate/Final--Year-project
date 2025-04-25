@@ -85,7 +85,7 @@ export class MPaymentController {
       }
 
       const userId = (req.user as any).userId;
-
+      console.log('User ID:', userId);
       const payment = await this.mpaymentService.getPaymentByEventAndUser(id, userId);
 
       if (!payment) {

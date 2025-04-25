@@ -205,7 +205,7 @@ const formatTime = (seconds: number): string => {
           </Link>
 
           <Link
-            to="/dashboard/my-events"
+            to="/dashboard/events"
             className="text-indigo-600 hover:text-indigo-800"
           >
             My Registered Events

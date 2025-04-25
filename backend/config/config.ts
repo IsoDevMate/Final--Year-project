@@ -19,7 +19,7 @@ const config = {
     clientId: process.env.LINKEDIN_CLIENT_ID,
     clientSecret: process.env.LINKEDIN_CLIENT_SECRET,
     callbackUrl: process.env.LINKEDIN_CALLBACK_URL || 'https://final-year-project-77pa.onrender.com/api/v1/auth/linkedin/callback',
-    scope: 'openid profile w_member_social email'
+    scope: 'openid profile email w_member_social'
   },
   storagebucketnameis: process.env.STORAGE_BUCKET_NAME || 'gs://uploadtimes-2d6d3.appspot.com',
   firebaseserviceacc: process.env.FIREBASE_CONFIG,
