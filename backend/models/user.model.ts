@@ -24,7 +24,6 @@ export interface User extends Document {
   isVerified?: boolean;
   createdAt: Date;
   updatedAt: Date;
- // comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
 const userSchema = new Schema<User>(

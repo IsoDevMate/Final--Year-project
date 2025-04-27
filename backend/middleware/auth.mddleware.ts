@@ -29,6 +29,8 @@ static async verifyToken(req: Request, res: Response, next: NextFunction) {
           socialLinks?: {
             linkedinId?: string;
             linkedinAccessToken?: string;
+            linkedinRefreshToken?: string;
+            linkedinTokenExpiry?: Date;
           };
         };
 

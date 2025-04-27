@@ -12,6 +12,8 @@ declare global {
       socialLinks?: {
         linkedinId?: string;
         linkedinAccessToken?: string;
+        linkedinRefreshToken?: string;
+        linkedinTokenExpiry?: Date;
       } | null;
       profileImage?: string;
       bio?: string;

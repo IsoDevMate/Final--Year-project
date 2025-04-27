@@ -418,15 +418,38 @@ export class LinkedInSharingService {
   /**
    * Helper method to get a fresh access token for the user
    */
-   static async getAccessToken(user: any): Promise<string> {
-    try {
-      // Use the new method from LinkedInService to get a valid access token
-      return await LinkedInService.getValidAccessToken(user);
-    } catch (error) {
-      console.error('LinkedIn token retrieval error:', error);
-      throw new AppError('Failed to get LinkedIn access token', 401);
+ static async getAccessToken(user: any): Promise<string> {
+  try {
+
+    const isTokenValid = user.socialLinks?.linkedinTokenExpiry &&  new Date(user.socialLinks.linkedinTokenExpiry) > new Date();
+
+    if (!isTokenValid) {
+      // Token is expired or about to expire, try to refresh it
+      console.log('LinkedIn access token expired or invalid, attempting refresh...');
+      await LinkedInService.refreshLinkedInToken(user);
+
+      // Reload the user to get updated token info
+      const updatedUser = await User.findById(user._id);
+      if (!updatedUser) {
+        throw new AppError('User not found after token refresh', 404);
+      }
+
+      return updatedUser.socialLinks?.linkedinAccessToken || '';
     }
+
+    // Token is still valid, return it
+    return user.socialLinks?.linkedinAccessToken;
+  } catch (error) {
+    console.error('LinkedIn token retrieval error:', error);
+
+    // Handle specific error cases
+    if (error instanceof AppError && error.message.includes('No LinkedIn refresh token')) {
+      throw new AppError('LinkedIn session expired. Please reconnect your LinkedIn account.', 401);
+    }
+
+    throw new AppError('Failed to get valid LinkedIn access token', 401);
   }
+}
 }
 
 export const linkedInSharingService = new LinkedInSharingService();

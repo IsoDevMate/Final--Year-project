@@ -11,6 +11,8 @@ interface IUser {
   socialLinks?: {
     linkedinId?: string;
     linkedinAccessToken?: string;
+    linkedinRefreshToken?: string;
+    linkedinTokenExpiry?: Date;
   };
   isVerified?: boolean;
   createdAt: Date;

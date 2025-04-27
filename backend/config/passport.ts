@@ -30,7 +30,9 @@ export const setupPassport = () => {
           profileImage: profile.photos?.[0]?.value,
           socialLinks: {
             linkedin: profile.id,
-            linkedinAccessToken: accessToken
+            linkedinAccessToken: accessToken,
+            linkedinRefreshToken: refreshToken,
+            linkedinTokenExpiry: new Date(Date.now() + 2 * 30 * 24 * 60 * 60 * 1000) // 2 months
           }
         });
       } else if (!user.socialLinks?.linkedinId) {
@@ -39,6 +41,8 @@ export const setupPassport = () => {
             ...user.socialLinks,
           linkedinId: profile.id,
           linkedinAccessToken: accessToken,
+          linkedinRefreshToken: refreshToken,
+          linkedinTokenExpiry: new Date(Date.now() + 2 * 30 * 24 * 60 * 60 * 1000) // 2 months
           };
           user.firstName = profile.name.givenName;
           user.lastName = profile.name.familyName;
