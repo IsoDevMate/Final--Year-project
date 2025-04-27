@@ -31,8 +31,11 @@ static getAuthUrl(req: Request, res: Response) {
     scope
   });
 
+  // Generate the LinkedIn authentication URL
+  const authUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=${responseType}&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&state=${state}&scope=${scope.join(' ')}`;
+
   return ResponseUtil.success(res, 200, {
-    url: `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=https://final-year-project-56d5.onrender.com/api/v1/auth/linkedin/callback&state=HARDCODED_STATE&scope=openid%20profile%20email%20w_member_social`
+    url: authUrl
   }, 'LinkedIn authentication URL generated successfully');
 }
 
