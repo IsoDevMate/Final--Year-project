@@ -54,8 +54,7 @@ interface MediaAttachment {
     const [note, setNote] = useState<Note | null>(null);
     const { user ,isAuthenticated } = useAuth();
    const [title, setTitle] = useState('');
-  //  const [brushWidth, setBrushWidth] = useState(5);
-  // const [brushColor, setBrushColor] = useState('#000000');
+
   const [content, setContent] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [isPrivate, setIsPrivate] = useState(true);
@@ -63,16 +62,14 @@ interface MediaAttachment {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [showCanvasEditor, setShowCanvasEditor] = useState(false);
-  // const canvasRef = useRef<HTMLCanvasElement>(null);
-  // const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
+
   const [selectedAttachment, setSelectedAttachment] = useState<MediaAttachment | null>(null);
   const [showMediaPreview, setShowMediaPreview] = useState(false);
   const [selectedEventId, setSelectedEventId] = useState<string | undefined>();
   const [selectedSessionId, setSelectedSessionId] = useState<string | undefined>();
 
   const editorRef = useRef<HTMLDivElement>(null);
-  // const [isAuthenticated, setIsAuthenticated] = useState(false);
-  // const [isLoading, setIsLoading] = useState(true);
+
    const API_BASE_URL = 'https://final-year-project-56d5.onrender.com';
 
    const getAuthHeaders = () => {
