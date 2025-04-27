@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 
 const SimpleCanvasDrawing = ({ onSave, onCancel }) => {
-  const canvasRef = useRef(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [context, setContext] = useState(null);
   const [brushColor, setBrushColor] = useState('#000000');

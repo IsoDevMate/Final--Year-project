@@ -5,13 +5,11 @@ import {
  Tag, Lock, Unlock, Trash2, Plus, Pencil,
   ChevronLeft, Edit3,
 } from 'lucide-react';
-// import * as fabric from 'fabric';
 import { useAuth } from '../../contexts/AuthContext';
 import { EventSelector } from '../Event/eventselector';
 import LinkedInShareModal from './linkedinmodal';
 import toast from 'react-hot-toast';
 import { MediaAttachmentHandler } from './multimediaattatchmenthandler';
-// import  LinkedInShareComponent  from './newlinkedin';
 import SimpleCanvasDrawing from './canvasdrawingtool';
 interface Note {
   _id: string;
@@ -140,41 +138,6 @@ useEffect(() => {
     }
   };
 
-  // Initialize fabric.js canvas when showing canvas editor
-// useEffect(() => {
-//   if (showCanvasEditor && canvasRef.current && !fabricCanvasRef.current) {
-//     fabricCanvasRef.current = new fabric.Canvas(canvasRef.current, {
-//       width: canvasRef.current.offsetWidth,
-//       height: 400,
-//       backgroundColor: '#fff'
-//     });
-
-//     // Enhanced drawing configuration
-//     fabricCanvasRef.current.isDrawingMode = true;
-//     if (fabricCanvasRef.current.freeDrawingBrush) {
-//       fabricCanvasRef.current.freeDrawingBrush.width = 5;
-//       fabricCanvasRef.current.freeDrawingBrush.color = '#000';
-//     }
-
-//     // Add color and brush size controls
-//     const updateBrush = () => {
-//       if (fabricCanvasRef.current) {
-//         fabricCanvasRef.current.freeDrawingBrush.width = brushWidth;
-//         fabricCanvasRef.current.freeDrawingBrush.color = brushColor;
-//       }
-//     };
-
-//     // Call updateBrush when brushWidth or brushColor changes
-//     updateBrush();
-
-//     return () => {
-//       if (fabricCanvasRef.current) {
-//         fabricCanvasRef.current.dispose();
-//         fabricCanvasRef.current = null;
-//       }
-//     };
-//   }
-// }, [showCanvasEditor]);
 
   const handleEventSelect = (eventId: string) => {
     setSelectedEventId(eventId);
@@ -190,25 +153,6 @@ useEffect(() => {
   const removeTag = (tagToRemove: string) => {
     setTags(tags.filter(tag => tag !== tagToRemove));
   };
-
-  // const handleAddDrawing = () => {
-  //   if (!fabricCanvasRef.current) return;
-
-  //   // Convert canvas to image and add to note content
-  //   const dataUrl = fabricCanvasRef.current.toDataURL({
-  //     format: 'png',
-  //     quality: 0.8,
-  //     multiplier: 1
-  //   });
-
-  //   // For this demo, we'll add it as a base64 image in the content
-  //   // In production, you would upload this to your storage service
-  //   setContent(prev => `${prev}\n\n![Drawing](${dataUrl})`);
-
-  //   // Clear and hide canvas
-  //   fabricCanvasRef.current.clear();
-  //   setShowCanvasEditor(false);
-  //  };
 
    const handleSaveDrawing = (dataUrl) => {
   // Add the drawing to the note content
@@ -348,8 +292,6 @@ const handleLinkedInShare = async (customMessage?: string) => {
   };
 
 
-
-
   const handleDeleteAttachment = async (attachmentId: string) => {
     if (!noteId || !attachmentId) return;
 
@@ -412,7 +354,6 @@ const openMediaPreview = (attachment: MediaAttachment) => {
   setShowMediaPreview(true);
 };
 
-
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -425,17 +366,6 @@ const openMediaPreview = (attachment: MediaAttachment) => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-
-        {/* {note && note._id && (
-          <LinkedInShareComponent
-            note={{
-              id: note._id,
-              title: note.title,
-              content: note.content,
-              mediaAttachments: note.mediaAttachments || []
-            }}
-          />
-        )} */}
 
         <div className="flex items-center">
           <button
@@ -524,29 +454,6 @@ const openMediaPreview = (attachment: MediaAttachment) => {
               </button>
             </div>
 
-            {/* Canvas Editor */}
-            {/* {showCanvasEditor && (
-              <div className="mb-4 border border-gray-300 rounded-md p-2">
-                <div className="bg-gray-100 p-2 rounded-md mb-2 flex justify-between items-center">
-                  <span className="text-sm font-medium text-gray-700">Drawing Tool</span>
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => fabricCanvasRef.current?.clear()}
-                      className="text-sm bg-gray-200 px-2 py-1 rounded hover:bg-gray-300"
-                    >
-                      Clear
-                    </button>
-                    <button
-                      onClick={handleAddDrawing}
-                      className="text-sm bg-indigo-600 text-white px-2 py-1 rounded hover:bg-indigo-700"
-                    >
-                      Add to Note
-                    </button>
-                  </div>
-                </div>
-                <canvas ref={canvasRef} className="border border-gray-200 rounded-md w-full"></canvas>
-              </div>
-            )} */}
 
             {showCanvasEditor && (
                <SimpleCanvasDrawing
@@ -557,12 +464,12 @@ const openMediaPreview = (attachment: MediaAttachment) => {
 
 
             <button
-  onClick={() => setShowCanvasEditor(true)}
-  className="flex items-center text-indigo-600 hover:text-indigo-800"
->
-  <Pencil className="h-5 w-5 mr-1" />
-  Show Drawing Tool
-</button>
+               onClick={() => setShowCanvasEditor(true)}
+               className="flex items-center text-indigo-600              hover:text-indigo-800"
+             >
+               <Pencil className="h-5 w-5 mr-1" />
+               Show Drawing Tool
+             </button>
 
 
             {/* Text Editor */}
@@ -720,58 +627,6 @@ const openMediaPreview = (attachment: MediaAttachment) => {
         </div>
       </div>
 
-      {/* Media Preview Modal */}
-      {/* {showMediaPreview && selectedAttachment && (
-         <div className="fixed inset-0 z-50 overflow-y-auto bg-black        bg-opacity-70 flex items-center justify-center p-4">
-    <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
-      <div className="p-4 border-b flex justify-between items-center">
-        <h3 className="text-lg font-medium">{selectedAttachment.fileName}</h3>
-        <button
-          onClick={() => setShowMediaPreview(false)}
-          className="text-gray-500 hover:text-gray-700"
-        >
-          <X className="h-6 w-6" />
-        </button>
-      </div>
-
-      <div className="flex-1 overflow-auto p-4 flex items-center justify-center">
-        {selectedAttachment.type === 'image' && (
-          <img
-            src={selectedAttachment.url}
-            alt={selectedAttachment.fileName}
-            className="max-w-full max-h-[70vh] object-contain"
-            onError={(e) => {
-              // Fallback if image fails to load
-              e.currentTarget.src = '/path/to/fallback/image.png';
-            }}
-          />
-        )}
-        {selectedAttachment.type === 'audio' && (
-          <audio controls className="w-full">
-            <source src={selectedAttachment.url} />
-            Your browser does not support the audio element.
-          </audio>
-        )}
-        {selectedAttachment.type === 'video' && (
-          <video controls className="max-w-full max-h-[70vh]">
-            <source src={selectedAttachment.url} />
-            Your browser does not support the video element.
-          </video>
-        )}
-        {selectedAttachment.type === 'document' && (
-          <iframe
-            src={selectedAttachment.url}
-            width="100%"
-            height="600px"
-            className="border-none"
-          >
-            Document preview not available
-          </iframe>
-        )}
-      </div>
-    </div>
-         </div>
-       )} */}
 
           <MediaAttachmentHandler.MediaPreviewModal
              selectedAttachment={selectedAttachment}

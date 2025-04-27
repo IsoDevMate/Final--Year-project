@@ -7,8 +7,9 @@ const router = express.Router();
 // Middleware to verify token
 router.use(AuthMiddleware.verifyToken);
 
-// Check LinkedIn account status
+
 router.get('/status', LinkedInSharingController.checkLinkedInStatus);
+
 
 // Share a note to LinkedIn
 router.post('/share/note/:noteId', LinkedInSharingController.shareNote);

@@ -16,22 +16,7 @@ interface MediaAttachment {
   preview?: string;
 }
 
-interface User {
-  id: string;
-  role: string;
-  userId: string;
-  email: string;
-  name: string;
-  phoneNumber?: string;
-  firstName: string;
-  lastName: string;
-  profileImage?: string;
-  bio?: string;
-  socialLinks?: {
-    linkedinId?: string;
-    linkedinAccessToken?: string;
-  };
-}
+
 
 interface MultimediaShareModalProps {
   attachment: MediaAttachment;

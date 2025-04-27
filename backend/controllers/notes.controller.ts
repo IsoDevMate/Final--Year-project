@@ -156,8 +156,6 @@ export class NoteController {
     }
   }
 
-
-
   static async uploadAttachment(req: Request, res: Response, next: NextFunction) {
   try {
     const { id } = noteIdSchema.parse(req.params);
@@ -166,7 +164,6 @@ export class NoteController {
       return ResponseUtil.error(res, 400, 'No file uploaded');
     }
 
-    // Check if user object exists (should be set by auth middleware)
     if (!req.user) {
       return ResponseUtil.error(res, 401, 'Not authenticated');
     }
@@ -203,8 +200,8 @@ export class NoteController {
 static async removeAttachment(req: Request, res: Response, next: NextFunction) {
   try {
     const { id } = noteIdSchema.parse(req.params);
-    const { attachmentId } = req.body;
-
+    const { attachmentId } = req.params
+    console.log("here is the attachmentId", attachmentId)
     if (!attachmentId) {
       return ResponseUtil.error(res, 400, 'Attachment ID is required');
     }
