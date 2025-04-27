@@ -21,7 +21,7 @@ static getAuthUrl(req: Request, res: Response) {
   const state = crypto.randomBytes(16).toString('hex');
   const scope = ['openid', 'profile', 'email', 'w_member_social'];
   const responseType = 'code';
-  const redirectUri = config.linkedin.callbackUrl;
+  const redirectUri = 'https://final-year-project-77pa.onrender.com/api/v1/auth/linkedin/callback';
   const clientId = config.linkedin.clientId;
 
   console.log('LinkedIn auth URL generation:', {
@@ -32,12 +32,10 @@ static getAuthUrl(req: Request, res: Response) {
     scope
   });
 
-
   return ResponseUtil.success(res, 200, {
-    authUrl: `https://www.linkedin.com/oauth/v2/authorization?response_type=${responseType}&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&state=${state}&scope=${scope.join(' ')}`
+    authUrl: `https://www.linkedin.com/oauth/v2/authorization?response_type=${responseType}&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&state=${state}&scope=${scope}`
   }, 'LinkedIn authentication URL generated successfully');
 }
-
 
   /**
    * Handle LinkedIn callback
