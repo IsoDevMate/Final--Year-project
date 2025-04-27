@@ -38,7 +38,7 @@ const ReportsPage = () => {
   const fetchEvents = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get('https://final-year-project-77pa.onrender.com/api/v1/events/organizer/events', {
+      const response = await axios.get('https://final-year-project-56d5.onrender.com/api/v1/events/organizer/events', {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`
         }
@@ -64,7 +64,7 @@ const ReportsPage = () => {
 
   const downloadAttendeeReport = async (eventId: string) => {
     try {
-      const response = await axios.get(`https://final-year-project-77pa.onrender.com/api/v1/events/${eventId}/attendees`, {
+      const response = await axios.get(`https://final-year-project-56d5.onrender.com/api/v1/events/${eventId}/attendees`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`
         },
@@ -92,7 +92,7 @@ const ReportsPage = () => {
 
   const downloadEventSummaryReport = async () => {
     try {
-      const response = await axios.get('https://final-year-project-77pa.onrender.com/api/v1/reports/events/summary', {
+      const response = await axios.get('https://final-year-project-56d5.onrender.com/api/v1/reports/events/summary', {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`
         },

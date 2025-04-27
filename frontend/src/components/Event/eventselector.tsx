@@ -27,7 +27,7 @@ export const EventSelector: React.FC<EventSelectorProps> = ({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const API_BASE_URL = 'https://final-year-project-77pa.onrender.com';
+  const API_BASE_URL = 'https://final-year-project-56d5.onrender.com';
 
    const fetchRegisteredEvents = async () => {
     try {

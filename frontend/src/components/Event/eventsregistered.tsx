@@ -56,7 +56,7 @@ const MyEventsPage = () => {
         }
 
         // Fetch all events first
-          const response = await axios.get('https://final-year-project-77pa.onrender.com/api/v1/events/registered', {
+          const response = await axios.get('https://final-year-project-56d5.onrender.com/api/v1/events/registered', {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -97,7 +97,7 @@ const handleUnregister = async (eventId: string) => {
         return;
       }
 
-      const response = await axios.delete(`https://final-year-project-77pa.onrender.com/api/v1/events/register/${eventId}`, {
+      const response = await axios.delete(`https://final-year-project-56d5.onrender.com/api/v1/events/register/${eventId}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

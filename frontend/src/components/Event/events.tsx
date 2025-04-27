@@ -100,7 +100,7 @@ const EventsPage = () => {
         if (filters.startDate) params.append('startDate', filters.startDate);
         if (filters.endDate) params.append('endDate', filters.endDate);
 
-        const response = await axios.get(`https://final-year-project-77pa.onrender.com/api/v1/events?${params.toString()}`);
+        const response = await axios.get(`https://final-year-project-56d5.onrender.com/api/v1/events?${params.toString()}`);
 
         if (response.data.success) {
           setEvents(response.data.data.events);
@@ -148,7 +148,7 @@ const handleDeleteEvent = async (eventId: string) => {
       const token = localStorage.getItem('accessToken');
       console.log('Using token for delete:', token?.substring(0, 10) + '...');
 
-      const response = await axios.delete(`https://final-year-project-77pa.onrender.com/api/v1/events/${eventId}`, {
+      const response = await axios.delete(`https://final-year-project-56d5.onrender.com/api/v1/events/${eventId}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -242,7 +242,7 @@ const handleDeleteEvent = async (eventId: string) => {
       }
 
       const response = await axios.post(
-        `https://final-year-project-77pa.onrender.com/api/v1/events/register/${eventId}`,
+        `https://final-year-project-56d5.onrender.com/api/v1/events/register/${eventId}`,
         {},
         {
           headers: {
@@ -304,7 +304,7 @@ const handleDeleteEvent = async (eventId: string) => {
 
       // Initiate M-Pesa payment
       const paymentResponse = await axios.post(
-        `https://final-year-project-77pa.onrender.com/api/v1/mpesa/event/${eventId}`,
+        `https://final-year-project-56d5.onrender.com/api/v1/mpesa/event/${eventId}`,
         {
           phoneNumber: phoneNumber,
           amount: selectedEvent.ticketPrice
@@ -329,7 +329,7 @@ const handleDeleteEvent = async (eventId: string) => {
 
           try {
             const statusResponse = await axios.get(
-              `https://final-year-project-77pa.onrender.com/api/v1/mpesa/event/${eventId}`,
+              `https://final-year-project-56d5.onrender.com/api/v1/mpesa/event/${eventId}`,
               {
                 headers: {
                   Authorization: `Bearer ${token}`

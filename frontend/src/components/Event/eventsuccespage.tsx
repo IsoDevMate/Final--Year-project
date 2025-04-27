@@ -73,7 +73,7 @@ const { eventId } = useParams<{ eventId: string }>();
 
         // Get event details
         const eventResponse = await axios.get(
-          `https://final-year-project-77pa.onrender.com/api/v1/events/${eventId}`,
+          `https://final-year-project-56d5.onrender.com/api/v1/events/${eventId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`
@@ -129,7 +129,7 @@ const { eventId } = useParams<{ eventId: string }>();
           // Fetch QR code (optional)
           try {
             const qrResponse = await axios.get(
-              `https://final-year-project-77pa.onrender.com/api/v1/events/${eventId}/qrcode`,
+              `https://final-year-project-56d5.onrender.com/api/v1/events/${eventId}/qrcode`,
               {
                 headers: {
                   Authorization: `Bearer ${token}`

@@ -75,7 +75,7 @@ interface MediaAttachment {
   const editorRef = useRef<HTMLDivElement>(null);
   // const [isAuthenticated, setIsAuthenticated] = useState(false);
   // const [isLoading, setIsLoading] = useState(true);
-   const API_BASE_URL = 'https://final-year-project-77pa.onrender.com';
+   const API_BASE_URL = 'https://final-year-project-56d5.onrender.com';
 
    const getAuthHeaders = () => {
     const token = localStorage.getItem('accessToken');

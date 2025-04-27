@@ -15,7 +15,7 @@ const ForgotPasswordPage: React.FC = () => {
         setError('');
 
         try {
-            const response = await axios.post('https://final-year-project-77pa.onrender.com/api/v1/auth/forgot-password', { email });
+            const response = await axios.post('https://final-year-project-56d5.onrender.com/api/v1/auth/forgot-password', { email });
 
             if (response.data.success) {
                 setSuccess(true);

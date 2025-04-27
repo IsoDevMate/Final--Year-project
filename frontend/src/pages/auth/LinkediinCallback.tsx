@@ -36,7 +36,7 @@ useEffect(() => {
       localStorage.setItem('refreshToken', refreshToken);
 
       try {
-        const response = await axios.get(`https://final-year-project-77pa.onrender.com/api/v1/auth/me`, {
+        const response = await axios.get(`https://final-year-project-56d5.onrender.com/api/v1/auth/me`, {
           headers: { Authorization: `Bearer ${accessToken}` }
         });
 

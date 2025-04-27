@@ -143,7 +143,7 @@ const UpdateEventPage: React.FC = () => {
   useEffect(() => {
     const fetchEventData = async () => {
       try {
-        const response = await axios.get(`https://final-year-project-77pa.onrender.com/api/v1/events/${id}`);
+        const response = await axios.get(`https://final-year-project-56d5.onrender.com/api/v1/events/${id}`);
 
         if (response.data.success) {
           const eventData = response.data.data;
@@ -315,7 +315,7 @@ const UpdateEventPage: React.FC = () => {
 
       const token = localStorage.getItem('accessToken');
       const response = await axios.post(
-        `https://final-year-project-77pa.onrender.com/api/v1/events/${id}/cover-image`,
+        `https://final-year-project-56d5.onrender.com/api/v1/events/${id}/cover-image`,
         formData,
         {
           headers: {
@@ -367,7 +367,7 @@ const UpdateEventPage: React.FC = () => {
 
       const token = localStorage.getItem('accessToken');
       const response = await axios.put(
-        `https://final-year-project-77pa.onrender.com/api/v1/events/${id}`,
+        `https://final-year-project-56d5.onrender.com/api/v1/events/${id}`,
         {
           ...eventData,
           coverImage: coverImageUrl

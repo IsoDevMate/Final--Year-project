@@ -28,7 +28,7 @@ const PendingPaymentPage = () => {
     // Fetch event details
     const fetchEventDetails = async () => {
       try {
-        const response = await axios.get(`https://final-year-project-77pa.onrender.com/api/v1/events/${eventId}`);
+        const response = await axios.get(`https://final-year-project-56d5.onrender.com/api/v1/events/${eventId}`);
         if (response.data.success) {
           setEventDetails(response.data.data);
         }
@@ -62,7 +62,7 @@ const PendingPaymentPage = () => {
       }
 
       const statusResponse = await axios.get(
-        `https://final-year-project-77pa.onrender.com/api/v1/mpesa/event/${eventId}`,
+        `https://final-year-project-56d5.onrender.com/api/v1/mpesa/event/${eventId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`

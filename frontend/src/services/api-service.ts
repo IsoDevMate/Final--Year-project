@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://final-year-project-77pa.onrender.com/api/v1';
+const API_BASE_URL = 'https://final-year-project-56d5.onrender.com/api/v1';
 
 // Event service functions
 export const fetchEvents = async (params = {}) => {
