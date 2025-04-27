@@ -35,7 +35,7 @@ static getAuthUrl(req: Request, res: Response) {
   // const authUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=${responseType}&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&state=${state}&scope=${scope.join(' ')}`;
 
   return ResponseUtil.success(res, 200, {
-    url: `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=https://final-year-project-56d5.onrender.com/api/v1/auth/linkedin/callback&state=${state}&scope=openid%20profile%20email%20w_member_social`
+    url: `https://www.linkedin.com/oauth/v2/authorization?response_type=${responseType}&client_id=${clientId}&redirect_uri=https://final-year-project-56d5.onrender.com/api/v1/auth/linkedin/callback&state=${state}&scope=openid%20profile%20email%20w_member_social`
   }, 'LinkedIn authentication URL generated successfully');
 }
 
@@ -52,6 +52,8 @@ static async handleCallback(req: Request, res: Response, next: NextFunction) {
     if (!code) {
       return ResponseUtil.error(res, 400, 'Authorization code not provided');
     }
+
+    
 
     const result = await LinkedInService.authenticate(code.toString());
 

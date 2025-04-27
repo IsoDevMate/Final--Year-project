@@ -42,7 +42,7 @@ function manageMemory() {
   console.log(`Memory Status: HeapUsed: ${heapUsedMB.toFixed(2)}MB, HeapTotal: ${heapTotalMB.toFixed(2)}MB, RSS: ${rss.toFixed(2)}MB`);
 
   // If memory usage gets high, try to clean up
-  if (heapUsedMB > 300) { // 75% of your 400MB limit
+  if (heapUsedMB > 500) { 
     console.log('Memory usage high, attempting cleanup...');
     try {
       if (typeof global.gc === 'function') {
