@@ -32,8 +32,10 @@ static getAuthUrl(req: Request, res: Response) {
     scope
   });
 
-  const linkedInAuthUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=${responseType}&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&state=${state}&scope=${scope.join(' ')}`;
-  return ResponseUtil.success(res, 200, { url: linkedInAuthUrl }, 'LinkedIn authentication URL');
+
+  return ResponseUtil.success(res, 200, {
+    authUrl: `https://www.linkedin.com/oauth/v2/authorization?response_type=${responseType}&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&state=${state}&scope=${scope.join(' ')}`
+  }, 'LinkedIn authentication URL generated successfully');
 }
 
 
