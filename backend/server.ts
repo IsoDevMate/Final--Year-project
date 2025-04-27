@@ -10,9 +10,7 @@ import { setupPassport } from './config/passport';
 import passport from 'passport';
 import config from './config/config';
 import cron from 'node-cron';
-// import { gc } from 'v8';
 import compression from 'compression';
-
 
 const corsOptions = {
   origin: "*"
@@ -68,11 +66,7 @@ process.on('SIGINT', gracefulShutdown);
 async function gracefulShutdown() {
   console.log('Graceful shutdown initiated...');
 
-  // Close database connections
   await databaseService.disconnect();
-
-  // Close any other connections
-
   console.log('Graceful shutdown complete');
   process.exit(0);
 }
@@ -112,20 +106,17 @@ app.use((err: any, req: any, res: any, next: any) => {
 
 async function startServer() {
   try {
-    // Check db connection
     const connectionStatus = await databaseService.testConnection();
     console.log("here is the connectionstatus message", connectionStatus.message);
 
     if (!connectionStatus.success) {
       console.log("Waiting for database connection...");
-      // Wait for a bit and try again or proceed with caution
     } else {
       try {
         const stats = await databaseService.getDatabaseStats();
         console.log('Database Stats:', stats);
       } catch (error) {
         console.error("Failed to get database stats:", error);
-        // Continue anyway as this isn't critical
       }
     }
 

@@ -193,89 +193,7 @@ export class LinkedInService {
     }
   }
 
-  /**
-   * Refresh LinkedIn access token
-   */
-  // static async refreshLinkedInToken(user: any): Promise<string> {
-  //   try {
-  //     // Check if refresh token exists
-  //     if (!user.socialLinks?.linkedinRefreshToken) {
-  //       throw new AppError('No LinkedIn refresh token found', 401);
-  //     }
 
-  //     // Check if token is close to expiry or already expired
-  //     const response = await axios.post(
-  //       'https://www.linkedin.com/oauth/v2/accessToken',
-  //       null,
-  //       {
-  //         params: {
-  //           grant_type: 'refresh_token',
-  //           refresh_token: user.socialLinks.linkedinRefreshToken,
-  //           client_id: config.linkedin.clientId,
-  //           client_secret: config.linkedin.clientSecret
-  //         },
-  //         headers: {
-  //           'Content-Type': 'application/x-www-form-urlencoded'
-  //         }
-  //       }
-  //     );
-
-  //     // Update user with new tokens
-  //     user.socialLinks.linkedinAccessToken = response.data.access_token;
-  //     user.socialLinks.linkedinTokenExpiry = new Date(Date.now() + response.data.expires_in * 1000);
-
-  //     // If a new refresh token is provided, update it
-  //     if (response.data.refresh_token) {
-  //       user.socialLinks.linkedinRefreshToken = response.data.refresh_token;
-  //     }
-
-  //     await user.save();
-
-  //     return response.data.access_token;
-  //   } catch (error) {
-  //     console.error('LinkedIn token refresh error:', error);
-  //     throw new AppError('Failed to refresh LinkedIn access token', 401);
-  //   }
-  // }
-
-
-
-
-  // In linkedin.auth.service.ts
-  // static async refreshLinkedInToken(user: any): Promise<void> {
-  //   // Check if refresh token exists
-  //   if (!user.socialLinks?.linkedinRefreshToken) {
-  //     throw new AppError('No LinkedIn refresh token available. Please reconnect your LinkedIn account.', 401);
-  //   }
-
-  //   try {
-  //     const response = await axios.post('https://www.linkedin.com/oauth/v2/accessToken', null, {
-  //       params: {
-  //         grant_type: 'refresh_token',
-  //         refresh_token: user.socialLinks.linkedinRefreshToken,
-  //         client_id: config.linkedin.clientId,
-  //         client_secret: config.linkedin.clientSecret
-  //       },
-  //       headers: {
-  //         'Content-Type': 'application/x-www-form-urlencoded'
-  //       }
-  //     });
-
-  //     // Update user's tokens
-  //     user.socialLinks.linkedinAccessToken = response.data.access_token;
-  //     user.socialLinks.linkedinTokenExpiry = new Date(Date.now() + response.data.expires_in * 1000);
-
-  //     // Optional: Update refresh token if a new one is provided
-  //     if (response.data.refresh_token) {
-  //       user.socialLinks.linkedinRefreshToken = response.data.refresh_token;
-  //     }
-
-  //     await user.save();
-  //   } catch (error) {
-  //     console.error('LinkedIn token refresh failed:', error);
-  //     throw new AppError('Failed to refresh LinkedIn token. Please reconnect your account.', 401);
-  //   }
-  // }
 
 
   static async refreshLinkedInToken(user: any): Promise<void> {
@@ -318,26 +236,6 @@ export class LinkedInService {
   }
 
 
-  /**
-   * Get current valid access token for a user
-   */
-  //   static async getValidAccessToken(user: any): Promise<string> {
-  //     // Check if current token is valid (not expired)
-  //     if (user.socialLinks?.linkedinTokenExpiry &&
-  //         new Date(user.socialLinks.linkedinTokenExpiry) > new Date()) {
-  //       return user.socialLinks.linkedinAccessToken;
-  //     }
-
-  //     // If token is expired, refresh it
-  //     try {
-  //       await this.refreshLinkedInToken(user);
-  //       return user.socialLinks.linkedinAccessToken;
-  //     } catch (error) {
-  //       console.error('Failed to refresh LinkedIn token:', error);
-  //       throw new AppError('Failed to refresh LinkedIn token', 401);
-  //     }
-  //   }
-  // }
   /**
   * Get current valid access token for a user
   */

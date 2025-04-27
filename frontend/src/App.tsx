@@ -40,10 +40,12 @@ const NotFoundPage = lazy(() => import('./config/notfound'));
 axios.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error.response && error.response.status === 401) {
+   if (error.response && error.response.status === 400) {
+
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
-      localStorage.removeItem('user');
+     localStorage.removeItem('user');
+      toast.error('Bad request. Please check your input.')
       window.location.href = '/auth/login';
     }
 

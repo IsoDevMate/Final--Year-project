@@ -57,11 +57,6 @@ export class AuthController {
     }
   }
 
-
-
-
-
-
 static  async requestPasswordReset(req: Request, res: Response, next: NextFunction) {
     try {
       const validatedData = passwordResetSchema.parse(req.body);
@@ -76,8 +71,6 @@ static  async requestPasswordReset(req: Request, res: Response, next: NextFuncti
       next(error);
     }
   }
-
-
 
    static async register(req: Request, res: Response, next: NextFunction) {
     try {

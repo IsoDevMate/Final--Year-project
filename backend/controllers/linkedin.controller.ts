@@ -17,24 +17,24 @@ export class LinkedInController {
    */
 
 
-  static getAuthUrl(req: Request, res: Response) {
-  const state = crypto.randomBytes(16).toString('hex'); // More secure random state
+static getAuthUrl(req: Request, res: Response) {
+  const state = crypto.randomBytes(16).toString('hex');
   const scope = ['openid', 'profile', 'email', 'w_member_social'];
   const responseType = 'code';
-  const redirectUri = "https://final-year-project-77pa.onrender.com/api/v1/auth/linkedin/callback"
+  const redirectUri = config.linkedin.callbackUrl;
   const clientId = config.linkedin.clientId;
 
-    console.log('LinkedIn auth URL generation:', {
-      responseType,
-      clientId,
-      redirectUri,
-      state,
-      scope
-    });
+  console.log('LinkedIn auth URL generation:', {
+    responseType,
+    clientId,
+    redirectUri,
+    state,
+    scope
+  });
 
-    const linkedInAuthUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=${responseType}&client_id=${clientId}&redirect_uri=${redirectUri}&state=${state}&scope=${scope.join(' ')}`;
-    return ResponseUtil.success(res, 200, { url: linkedInAuthUrl }, 'LinkedIn authentication URL');
-  };
+  const linkedInAuthUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=${responseType}&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&state=${state}&scope=${scope.join(' ')}`;
+  return ResponseUtil.success(res, 200, { url: linkedInAuthUrl }, 'LinkedIn authentication URL');
+}
 
 
   /**
