@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from 'express';
-import session from 'express-session';
 import {LinkedInService } from '../services/linkedin.auth.service';
 import { ResponseUtil } from '../utils/response.utils';
 import config from '../config/config';
