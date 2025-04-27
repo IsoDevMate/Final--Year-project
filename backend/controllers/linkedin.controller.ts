@@ -32,7 +32,7 @@ static getAuthUrl(req: Request, res: Response) {
   });
 
   return ResponseUtil.success(res, 200, {
-    authUrl: `https://www.linkedin.com/oauth/v2/authorization?response_type=${responseType}&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&state=${state}&scope=${scope}`
+    Url: `https://www.linkedin.com/oauth/v2/authorization?response_type=${responseType}&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&state=${state}&scope=${scope}`
   }, 'LinkedIn authentication URL generated successfully');
 }
 

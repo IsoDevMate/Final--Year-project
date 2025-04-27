@@ -15,6 +15,7 @@ import compression from 'compression';
 const corsOptions = {
   origin: "*"
 }
+
 //memory optimizations
 app.use(compression());
 app.use((req, res, next) => {

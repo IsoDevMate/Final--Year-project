@@ -35,7 +35,6 @@ useEffect(() => {
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
 
-      // Always fetch user data from API to ensure we have the latest data
       try {
         const response = await axios.get(`https://final-year-project-77pa.onrender.com/api/v1/auth/me`, {
           headers: { Authorization: `Bearer ${accessToken}` }
