@@ -323,13 +323,17 @@ async resetPassword(data: ResetPasswordDto): Promise<void> {
 
     // Verify the password was hashed correctly
     const savedUser = await User.findById(user._id);
-    console.log('Saved password in DB:', savedUser?.password);
 
     // Verify the hashed password can be compared correctly
     if (savedUser) {
       const passwordMatch = await bcrypt.compare(data.newPassword, savedUser.password);
       console.log('Password verification test:', passwordMatch); // Should be true
+    } else {
+      console.error('User not found after saving:', user._id);
     }
+
+    // console.log('userin db  in DB:', savedUser?.password);
+
 
     // Delete token
     await Token.deleteOne({ _id: tokenDoc._id });
