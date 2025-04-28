@@ -189,7 +189,6 @@ async resetPassword(data: ResetPasswordDto): Promise<void> {
   }
 }
 
-  
   async login(loginData: LoginUserDto): Promise<{ user: User, tokens: AuthTokens }> {
     try{
     const user = await User.findOne({ email: loginData.email });

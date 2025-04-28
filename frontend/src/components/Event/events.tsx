@@ -402,7 +402,6 @@ const handleDeleteEvent = async (eventId: string) => {
     }
   };
 
-
   return (
     <div className="space-y-6 p-6">
       {/* Header */}

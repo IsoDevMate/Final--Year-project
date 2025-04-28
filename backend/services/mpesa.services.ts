@@ -39,15 +39,6 @@ export class MPaymentService {
         throw new AppError('Event has reached maximum capacity', 400);
       }
 
-
-
-    //  console.log('User ID to check:', paymentData.userId);
-    //  console.log('Attendees:', event.attendees.map(a => a.toString()));
-    //  const isRegistered = event.attendees.some((attendee) => attendee.toString() === paymentData.userId);
-      //  console.log('Is user registered?', isRegistered);
-
-      // Check if user is already registered
-
         const isUserRegistered = event.attendees.some((attendee: Types.ObjectId | { _id: Types.ObjectId } | string) => {
           console.log('Checking attendee:', attendee);
 

@@ -1,4 +1,3 @@
-
 import { Event } from '../models/event.model';
 
 export class EventCleanupService {
@@ -11,6 +10,9 @@ export class EventCleanupService {
       { $set: { status: 'completed' } }
     );
 
-    console.log(`Past events marked as completed at ${currentDate}`);
+    // Delete events with status 'completed'
+    await Event.deleteMany({ status: 'completed' });
+
+    console.log(`Past events marked as completed and deleted at ${currentDate}`);
   }
 }

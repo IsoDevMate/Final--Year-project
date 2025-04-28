@@ -41,8 +41,8 @@ export class MpesaService {
   constructor() {
     this.consumerKey = process.env.MPESA_CONSUMER_KEY || '';
     this.consumerSecret = process.env.MPESA_CONSUMER_SECRET || '';
-    this.passkey = process.env.MPESA_PASSKEY || '';
-    this.shortcode = process.env.MPESA_SHORTCODE || '';
+    this.passkey = process.env.MPESA_PASSKEY || '174379';
+    this.shortcode = process.env.MPESA_SHORTCODE || '17';
     this.baseUrl = process.env.MPESA_API_URL || 'https://sandbox.safaricom.co.ke';
     this.callbackBaseUrl = process.env.APP_CALLBACK_URL || 'https://final-year-project-3qr3.onrender.com/api/v1/mpesa/callback/:eventId/:userId';
 
@@ -173,20 +173,18 @@ export class MpesaService {
 
     console.log('Payment was not successful or no metadata found.');
     return result;
-
   }
 
   async getPaymentStatus(transactionId: string): Promise<any> {
     try {
       const accessToken = await this.getAccessToken();
-
       const requestData = {
         Initiator: this.consumerKey,
         SecurityCredential: this.consumerSecret,
         CommandID: 'TransactionStatusQuery',
         TransactionID: transactionId,
         PartyA: this.shortcode,
-        IdentifierType: '1', // 1 for MSISDN
+        IdentifierType: '4', // 1 for MSISDN, 2 for till number, 4 for shortcode
         ResultURL: `${this.callbackBaseUrl}/result`,
         QueueTimeOutURL: `${this.callbackBaseUrl}/timeout`,
         Remarks: 'Transaction status query'
@@ -209,5 +207,4 @@ export class MpesaService {
       throw new AppError('Failed to get payment status', 500);
     }
   }
-
 }
