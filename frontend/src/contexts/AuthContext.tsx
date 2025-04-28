@@ -16,6 +16,8 @@ interface User {
   socialLinks?: {
     linkedinId?: string;
     linkedinAccessToken?: string;
+    linkedinRefreshToken?: string;
+    linkedinTokenExpiry?: Date;
   };
 }
 

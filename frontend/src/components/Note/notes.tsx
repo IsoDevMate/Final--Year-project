@@ -11,6 +11,7 @@ import LinkedInShareModal from './linkedinmodal';
 import toast from 'react-hot-toast';
 import { MediaAttachmentHandler } from './multimediaattatchmenthandler';
 import SimpleCanvasDrawing from './canvasdrawingtool';
+import LinkedInConnection from '../connectLinked';
 interface Note {
   _id: string;
   title: string;
@@ -48,11 +49,13 @@ interface MediaAttachment {
   storageRef?: string;
 }
 
+
+
  const NotesPage: React.FC = () => {
   const { noteId, eventId } = useParams();
   const navigate = useNavigate();
     const [note, setNote] = useState<Note | null>(null);
-    const { user ,isAuthenticated } = useAuth();
+    const { user ,isAuthenticated,setUser } = useAuth();
    const [title, setTitle] = useState('');
 
   const [content, setContent] = useState('');
@@ -75,6 +78,7 @@ interface MediaAttachment {
 
    const API_BASE_URL = 'https://final-year-project-56d5.onrender.com';
 
+
    const getAuthHeaders = () => {
     const token = localStorage.getItem('accessToken');
     return {
@@ -91,6 +95,9 @@ useEffect(() => {
 
     fetchNoteData();
   }, [noteId, user, navigate]);
+
+
+
 
   // Fetch note data or initialize a new note
    const fetchNoteData = async () => {
@@ -552,12 +559,26 @@ const openMediaPreview = (attachment: MediaAttachment) => {
           </h1>
         </div>
 
+        {user && (
+      <LinkedInConnection
+        user={user}
+        API_BASE_URL={API_BASE_URL}
+        onUpdate={() => {
+          // Refresh user data after LinkedIn connection changes
+          setUser({ ...user, socialLinks: { ...user.socialLinks, linkedinAccessToken: null } });
+          toast.success("LinkedIn connection updated successfully!");
+        }}
+      />
+    )}
+
         <div className="flex space-x-3">
-              {note && note._id  && (
-               <LinkedInShareModal
-                 note={note}
-                 onShare={handleLinkedInShare}
-               />
+              {note && note._id && user?.socialLinks?.linkedinAccessToken && (
+             <LinkedInShareModal
+               note={note}
+               onShare={handleLinkedInShare}
+               user={user}
+               API_BASE_URL={API_BASE_URL}
+             />
           )}
 
           <button
