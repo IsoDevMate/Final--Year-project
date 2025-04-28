@@ -244,102 +244,20 @@ const PendingPaymentPage = () => {
   const message = location.state?.message || 'Your payment is being processed. Please wait.';
 
   // Function to check payment status
-  // const checkPaymentStatus = async () => {
-  //   if (!eventId || !user) return;
-
-  //   setIsPolling(true);
-  //   try {
-  //     const token = localStorage.getItem('accessToken');
-  //     if (!token) {
-  //       toast.error('Authentication error. Please log in again.');
-  //       navigate('/auth/login');
-  //       return;
-  //     }
-
-  //     const statusResponse = await axios.get(
-  //       `${API_URL}/api/v1/mpesa/event/${eventId}`,
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`
-  //         }
-  //       }
-  //     );
-
-  //     if (statusResponse.data.success) {
-  //       const status = statusResponse.data.data.status;
-  //       setPaymentStatus(status);
-
-  //       if (status === 'completed') {
-  //         toast.success('Payment confirmed! You are now registered for the event.');
-  //         setTimeout(() => {
-  //           navigate(`/dashboard/events/${eventId}/success`, {
-  //             state: {
-  //               registrationSuccess: true,
-  //               eventId: eventId,
-  //               paymentStatus: 'completed'
-  //             }
-  //           });
-  //         }, 2000);
-  //       } else if (status === 'failed') {
-  //         toast.error('Payment failed. Please try again.');
-  //       } else {
-  //         toast('Payment is still being processed. Please check back later.');
-  //       }
-  //     }
-  //   } catch (err) {
-  //     console.error('Error checking payment status:', err);
-  //     toast.error('Could not check payment status. Please try again later.');
-  //   } finally {
-  //     setIsPolling(false);
-  //   }
-  // };
-
   const checkPaymentStatus = async () => {
-  if (!eventId || !user) return;
+    if (!eventId || !user) return;
 
-  setIsPolling(true);
-  try {
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
-      toast.error('Authentication error. Please log in again.');
-      navigate('/auth/login');
-      return;
-    }
-
-    // First try to get the payment status from our database
-    const statusResponse = await axios.get(
-      `${API_URL}/api/v1/mpesa/event/${eventId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
-    );
-
-    if (statusResponse.data.success) {
-      const status = statusResponse.data.data.status;
-      setPaymentStatus(status);
-
-      if (status === 'completed') {
-        toast.success('Payment confirmed! You are now registered for the event.');
-        setTimeout(() => {
-          navigate(`/dashboard/events/${eventId}/success`, {
-            state: {
-              registrationSuccess: true,
-              eventId: eventId,
-              paymentStatus: 'completed'
-            }
-          });
-        }, 2000);
+    setIsPolling(true);
+    try {
+      const token = localStorage.getItem('accessToken');
+      if (!token) {
+        toast.error('Authentication error. Please log in again.');
+        navigate('/auth/login');
         return;
       }
-    }
 
-    // If payment is still pending, actively check with M-Pesa
-    if (paymentStatus === 'pending') {
-      const checkResponse = await axios.post(
-        `${API_URL}/api/v1/mpesa/check/${eventId}`,
-        {},
+      const statusResponse = await axios.get(
+        `${API_URL}/api/v1/mpesa/event/${eventId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -347,11 +265,11 @@ const PendingPaymentPage = () => {
         }
       );
 
-      if (checkResponse.data.success) {
-        const checkStatus = checkResponse.data.data.status;
-        setPaymentStatus(checkStatus);
+      if (statusResponse.data.success) {
+        const status = statusResponse.data.data.status;
+        setPaymentStatus(status);
 
-        if (checkStatus === 'completed') {
+        if (status === 'completed') {
           toast.success('Payment confirmed! You are now registered for the event.');
           setTimeout(() => {
             navigate(`/dashboard/events/${eventId}/success`, {
@@ -362,20 +280,102 @@ const PendingPaymentPage = () => {
               }
             });
           }, 2000);
-        } else if (checkStatus === 'failed') {
+        } else if (status === 'failed') {
           toast.error('Payment failed. Please try again.');
         } else {
           toast('Payment is still being processed. Please check back later.');
         }
       }
+    } catch (err) {
+      console.error('Error checking payment status:', err);
+      toast.error('Could not check payment status. Please try again later.');
+    } finally {
+      setIsPolling(false);
     }
-  } catch (err) {
-    console.error('Error checking payment status:', err);
-    toast.error('Could not check payment status. Please try again later.');
-  } finally {
-    setIsPolling(false);
-  }
-};
+  };
+
+//   const checkPaymentStatus = async () => {
+//   if (!eventId || !user) return;
+
+//   setIsPolling(true);
+//   try {
+//     const token = localStorage.getItem('accessToken');
+//     if (!token) {
+//       toast.error('Authentication error. Please log in again.');
+//       navigate('/auth/login');
+//       return;
+//     }
+
+//     // First try to get the payment status from our database
+//     const statusResponse = await axios.get(
+//       `${API_URL}/api/v1/mpesa/event/${eventId}`,
+//       {
+//         headers: {
+//           Authorization: `Bearer ${token}`
+//         }
+//       }
+//     );
+
+//     if (statusResponse.data.success) {
+//       const status = statusResponse.data.data.status;
+//       setPaymentStatus(status);
+
+//       if (status === 'completed') {
+//         toast.success('Payment confirmed! You are now registered for the event.');
+//         setTimeout(() => {
+//           navigate(`/dashboard/events/${eventId}/success`, {
+//             state: {
+//               registrationSuccess: true,
+//               eventId: eventId,
+//               paymentStatus: 'completed'
+//             }
+//           });
+//         }, 2000);
+//         return;
+//       }
+//     }
+
+//     // If payment is still pending, actively check with M-Pesa
+//     if (paymentStatus === 'pending') {
+//       const checkResponse = await axios.post(
+//         `${API_URL}/api/v1/mpesa/check/${eventId}`,
+//         {},
+//         {
+//           headers: {
+//             Authorization: `Bearer ${token}`
+//           }
+//         }
+//       );
+
+//       if (checkResponse.data.success) {
+//         const checkStatus = checkResponse.data.data.status;
+//         setPaymentStatus(checkStatus);
+
+//         if (checkStatus === 'completed') {
+//           toast.success('Payment confirmed! You are now registered for the event.');
+//           setTimeout(() => {
+//             navigate(`/dashboard/events/${eventId}/success`, {
+//               state: {
+//                 registrationSuccess: true,
+//                 eventId: eventId,
+//                 paymentStatus: 'completed'
+//               }
+//             });
+//           }, 2000);
+//         } else if (checkStatus === 'failed') {
+//           toast.error('Payment failed. Please try again.');
+//         } else {
+//           toast('Payment is still being processed. Please check back later.');
+//         }
+//       }
+//     }
+//   } catch (err) {
+//     console.error('Error checking payment status:', err);
+//     toast.error('Could not check payment status. Please try again later.');
+//   } finally {
+//     setIsPolling(false);
+//   }
+// };
 
   useEffect(() => {
     if (!eventId) {

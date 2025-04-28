@@ -14,8 +14,6 @@ import compression from 'compression';
 import { EventCleanupService } from './services/eventcleanup.service';
 import { paymentChecker } from './utils/paymentchecker.utils';
 
-
-
 const corsOptions = {
   origin: "*"
 }
@@ -102,7 +100,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors(corsOptions))
 setupPassport();
 app.use(passport.initialize());
-
 
 app.use('/', router);
 
