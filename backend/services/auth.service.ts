@@ -348,16 +348,16 @@ async resetPassword(data: ResetPasswordDto): Promise<void> {
       text: 'Your password has been successfully reset. If you did not request this change, please contact our support team immediately.',
       html: `
       <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;">
-        <h2 style="color: #4CAF50; text-align: center;">Password Reset Confirmation</h2>
-        <p>Dear <strong>${user.firstName}</strong>,</p>
-        <p>Your password has been successfully reset. If you did not request this change, please contact our support team immediately.</p>
-        <p style="text-align: center; margin-top: 20px;">
-          <a href="${config.supportUrl}" style="display: inline-block; padding: 10px 20px; color: #fff; background-color: #4CAF50; text-decoration: none; border-radius: 5px;">Contact Support</a>
-        </p>
-        <p>Thank you,</p>
-        <p style="font-weight: bold;">The Comfybase Team</p>
+      <h2 style="color: #4CAF50; text-align: center;">Password Reset Confirmation</h2>
+      <p>Dear <strong>${user.firstName}</strong>,</p>
+      <p>Your password has been successfully reset. If you did not request this change, please contact our support team immediately.</p>
+      <p style="text-align: center; margin-top: 20px;">
+        <a href="${config.supportUrl}" style="display: inline-block; padding: 10px 20px; color: #fff; background-color: #4CAF50; text-decoration: none; border-radius: 5px;">Contact Support</a>
+      </p>
+      <p>Thank you,</p>
+      <p style="font-weight: bold;">The Comfybase Team</p>
       </div>
-      `,
+      `.replace(/\n\s+/g, ''), // Remove extra whitespace and newlines for better rendering
     };
 
     await sgMail.send(msg);
