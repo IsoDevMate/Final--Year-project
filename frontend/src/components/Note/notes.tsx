@@ -62,6 +62,9 @@ interface MediaAttachment {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [showCanvasEditor, setShowCanvasEditor] = useState(false);
+  const [currentDrawing, setCurrentDrawing] = useState<string | null>(null);
+  const [lastDrawingId, setLastDrawingId] = useState<string | null>(null);
+  const [drawingUploading, setDrawingUploading] = useState(false);
 
   const [selectedAttachment, setSelectedAttachment] = useState<MediaAttachment | null>(null);
   const [showMediaPreview, setShowMediaPreview] = useState(false);
@@ -151,11 +154,77 @@ useEffect(() => {
     setTags(tags.filter(tag => tag !== tagToRemove));
   };
 
-   const handleSaveDrawing = (dataUrl) => {
-  // Add the drawing to the note content
-  setContent(prev => `${prev}\n\n![Drawing](${dataUrl})`);
-  setShowCanvasEditor(false);
-};
+const handleSaveDrawing = async (blob, fileName, previewUrl) => {
+  setDrawingUploading(true);
+
+  try {
+    // If we have a noteId and it's not 'new', upload the image via API
+    if (noteId && noteId !== 'new') {
+      // First save the drawing as a temporary preview
+      setCurrentDrawing(previewUrl);
+
+      // Create a form data object to send the file
+      const formData = new FormData();
+      formData.append('file', blob, fileName);
+      formData.append('type', 'image');
+      formData.append('caption', 'Drawing added on ' + new Date().toLocaleString());
+
+      // Upload the drawing as an attachment
+      const token = localStorage.getItem('accessToken');
+      const response = await fetch(`${API_BASE_URL}/api/v1/notes/${noteId}/media`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to upload drawing');
+      }
+
+      // Get the response data
+      const data = await response.json();
+
+      // Update the note content with a proper markdown image link to the uploaded file
+      if (data.success && data.data && data.data.mediaAttachments) {
+        const latestAttachment = data.data.mediaAttachments[data.data.mediaAttachments.length - 1];
+
+        // Update the note with the new attachment
+        setNote(data.data);
+
+        // Add the image to the content as markdown
+        const imageMarkdown = `\n\n![Drawing: ${latestAttachment.caption || 'Note drawing'}](${latestAttachment.url})\n`;
+        setContent(prev => prev + imageMarkdown);
+
+        // Store the ID for reference
+        setLastDrawingId(latestAttachment._id);
+
+        toast.success('Drawing saved successfully');
+      }
+    } else {
+      // For new notes, just store the drawing as a data URL temporarily
+      // We'll need to upload it after the note is created
+      setCurrentDrawing(previewUrl);
+
+      // Add a placeholder in the content
+      const imageMarkdown = `\n\n![Drawing](${previewUrl})\n`;
+      setContent(prev => prev + imageMarkdown);
+
+      toast.success('Drawing added to note');
+    }
+  } catch (error) {
+    console.error('Error saving drawing:', error);
+    toast.error('Failed to save drawing');
+
+    // Still show the drawing in the content as a fallback
+    const imageMarkdown = `\n\n![Drawing](${previewUrl})\n`;
+    setContent(prev => prev + imageMarkdown);
+  } finally {
+    setDrawingUploading(false);
+    setShowCanvasEditor(false);
+  }
+}
 
 const handleCancelDrawing = () => {
   setShowCanvasEditor(false);
@@ -208,86 +277,193 @@ const handleLinkedInShare = async (customMessage?: string) => {
   }
    };
 
-  const handleSave = async () => {
-    console.group('Save Note');
-    console.log('Save Note Started');
-    console.log('Current User:', user);
-    console.log('Is Authenticated:', isAuthenticated);
+  // const handleSave = async () => {
+  //   console.group('Save Note');
+  //   console.log('Save Note Started');
+  //   console.log('Current User:', user);
+  //   console.log('Is Authenticated:', isAuthenticated);
 
-    // Validate user and token
-    if (!user || !isAuthenticated) {
-      console.warn('User not authenticated - cannot save');
-      toast.error('Please log in to save notes');
-      navigate('/auth/login');
-      return;
-    }
+  //   // Validate user and token
+  //   if (!user || !isAuthenticated) {
+  //     console.warn('User not authenticated - cannot save');
+  //     toast.error('Please log in to save notes');
+  //     navigate('/auth/login');
+  //     return;
+  //   }
 
-    // Additional input validation
-    if (!title.trim()) {
-      console.warn('Note title is empty');
-      toast.error('Please enter a note title');
-      return;
-    }
+  //   // Additional input validation
+  //   if (!title.trim()) {
+  //     console.warn('Note title is empty');
+  //     toast.error('Please enter a note title');
+  //     return;
+  //   }
 
-    if (!selectedEventId) {
-      console.warn('No event selected');
-      toast.error('Please select an event for this note');
-      return;
-    }
+  //   if (!selectedEventId) {
+  //     console.warn('No event selected');
+  //     toast.error('Please select an event for this note');
+  //     return;
+  //   }
 
-    setIsSaving(true);
-    try {
-      const noteData = {
-        title,
-        content,
-        tags,
-        isPrivate,
-        event: selectedEventId,
-        session: selectedSessionId,
-      };
+  //   setIsSaving(true);
+  //   try {
+  //     const noteData = {
+  //       title,
+  //       content,
+  //       tags,
+  //       isPrivate,
+  //       event: selectedEventId,
+  //       session: selectedSessionId,
+  //     };
 
-      console.log('Note Data to Save:', noteData);
+  //     console.log('Note Data to Save:', noteData);
 
-      const response = await fetch(
-        `${API_BASE_URL}/api/v1/notes${noteId && noteId !== 'new' ? `/${noteId}` : ''}`,
-        {
-          method: noteId && noteId !== 'new' ? 'PUT' : 'POST',
-          headers: getAuthHeaders(),
-          body: JSON.stringify(noteData)
-        }
-      );
+  //     const response = await fetch(
+  //       `${API_BASE_URL}/api/v1/notes${noteId && noteId !== 'new' ? `/${noteId}` : ''}`,
+  //       {
+  //         method: noteId && noteId !== 'new' ? 'PUT' : 'POST',
+  //         headers: getAuthHeaders(),
+  //         body: JSON.stringify(noteData)
+  //       }
+  //     );
 
-      console.log('Save Response Status:', response.status);
+  //     console.log('Save Response Status:', response.status);
 
-      // Enhanced error handling
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Save Error:', errorData);
-        throw new Error(errorData.message || 'Failed to save note');
+  //     // Enhanced error handling
+  //     if (!response.ok) {
+  //       const errorData = await response.json();
+  //       console.error('Save Error:', errorData);
+  //       throw new Error(errorData.message || 'Failed to save note');
+  //     }
+
+  //     const savedNote = await response.json();
+  //     console.log('Saved Note Response:', savedNote);
+
+  //     // Navigate or update state based on save type
+  //     if (noteId === 'new') {
+  //       console.log('New note created, navigating to note page');
+  //       navigate(`/dashboard/notes/${savedNote.data._id}`);
+  //     } else {
+  //       console.log('Existing note updated');
+  //       setNote(savedNote.data);
+  //     }
+
+  //     toast.success('Note saved successfully');
+  //   } catch (error) {
+  //     console.error('Error saving note:', error);
+  //     toast.error(error instanceof Error ? error.message : 'Failed to save note');
+  //   } finally {
+  //     setIsSaving(false);
+  //     console.groupEnd();
+  //   }
+  // };
+
+
+   // Enhanced handleSave function
+const handleSave = async () => {
+  console.group('Save Note');
+  console.log('Save Note Started');
+  console.log('Current User:', user);
+  console.log('Is Authenticated:', isAuthenticated);
+
+  // Validate user and token
+  if (!user || !isAuthenticated) {
+    console.warn('User not authenticated - cannot save');
+    toast.error('Please log in to save notes');
+    navigate('/auth/login');
+    return;
+  }
+
+  // Additional input validation
+  if (!title.trim()) {
+    console.warn('Note title is empty');
+    toast.error('Please enter a note title');
+    return;
+  }
+
+  if (!selectedEventId) {
+    console.warn('No event selected');
+    toast.error('Please select an event for this note');
+    return;
+  }
+
+  setIsSaving(true);
+  try {
+    const noteData = {
+      title,
+      content,
+      tags,
+      isPrivate,
+      event: selectedEventId,
+      session: selectedSessionId,
+    };
+
+    console.log('Note Data to Save:', noteData);
+
+    const response = await fetch(
+      `${API_BASE_URL}/api/v1/notes${noteId && noteId !== 'new' ? `/${noteId}` : ''}`,
+      {
+        method: noteId && noteId !== 'new' ? 'PUT' : 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(noteData)
       }
+    );
 
-      const savedNote = await response.json();
-      console.log('Saved Note Response:', savedNote);
+    console.log('Save Response Status:', response.status);
 
-      // Navigate or update state based on save type
-      if (noteId === 'new') {
-        console.log('New note created, navigating to note page');
-        navigate(`/dashboard/notes/${savedNote.data._id}`);
-      } else {
-        console.log('Existing note updated');
-        setNote(savedNote.data);
-      }
-
-      toast.success('Note saved successfully');
-    } catch (error) {
-      console.error('Error saving note:', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to save note');
-    } finally {
-      setIsSaving(false);
-      console.groupEnd();
+    // Enhanced error handling
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Save Error:', errorData);
+      throw new Error(errorData.message || 'Failed to save note');
     }
-  };
 
+    const savedNote = await response.json();
+    console.log('Saved Note Response:', savedNote);
+
+    // If this was a new note and we have a drawing pending upload
+    if (noteId === 'new' && currentDrawing) {
+      // Convert data URL back to blob for upload
+      const response = await fetch(currentDrawing);
+      const blob = await response.blob();
+
+      // Now we have a note ID, we can upload the drawing
+      const formData = new FormData();
+      formData.append('file', blob, `drawing-${new Date().getTime()}.png`);
+      formData.append('type', 'image');
+      formData.append('caption', 'Drawing added on ' + new Date().toLocaleString());
+
+      // Upload the drawing as an attachment to the newly created note
+      const uploadResponse = await fetch(`${API_BASE_URL}/api/v1/notes/${savedNote.data._id}/media`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+        },
+        body: formData
+      });
+
+      if (uploadResponse.ok) {
+        console.log('Drawing uploaded successfully for new note');
+      }
+    }
+
+    // Navigate or update state based on save type
+    if (noteId === 'new') {
+      console.log('New note created, navigating to note page');
+      navigate(`/dashboard/notes/${savedNote.data._id}`);
+    } else {
+      console.log('Existing note updated');
+      setNote(savedNote.data);
+    }
+
+    toast.success('Note saved successfully');
+  } catch (error) {
+    console.error('Error saving note:', error);
+    toast.error(error instanceof Error ? error.message : 'Failed to save note');
+  } finally {
+    setIsSaving(false);
+    console.groupEnd();
+  }
+};
 
   const handleDeleteAttachment = async (attachmentId: string) => {
     if (!noteId || !attachmentId) return;
@@ -454,7 +630,8 @@ const openMediaPreview = (attachment: MediaAttachment) => {
             {showCanvasEditor && (
                <SimpleCanvasDrawing
                  onSave={handleSaveDrawing}
-                 onCancel={handleCancelDrawing}
+                onCancel={handleCancelDrawing}
+                initialDrawing={currentDrawing || undefined}
                />
              )}
 
@@ -466,7 +643,6 @@ const openMediaPreview = (attachment: MediaAttachment) => {
                <Pencil className="h-5 w-5 mr-1" />
                Show Drawing Tool
              </button>
-
 
             {/* Text Editor */}
             <div
