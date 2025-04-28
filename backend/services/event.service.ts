@@ -276,7 +276,8 @@ async registerAttendee(eventId: string, userId: string): Promise<{ event: Event 
               eventDate: event.startDate.toDateString(),
               eventLocation: `${event.location.name}, ${event.location.city}`,
               qrCodeUrl,
-              attendeeName: `${attendee.firstName} ${attendee.lastName}`
+              attendeeName: `${attendee.firstName} ${attendee.lastName}`,
+              recipientName: `${attendee.firstName} ${attendee.lastName}`
             }
           );
           console.log(`Registration email sent. User ID: ${userId}, Email: ${attendee.email}`);

@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 import { User, UserRole } from '../models/user.model';
 import { Token } from '../models/token.model';
+import { EmailService } from '../services/email.service';
 import {
   RegisterUserDto,
   LoginUserDto,
@@ -13,11 +14,61 @@ import {
 } from '../interfaces/auth.interface';
 import { AppError } from '../utils/errors.utils';
 import config from '../config/config';
-import sgMail, { MailDataRequired } from '@sendgrid/mail';
+
+
+
+
 
 export class AuthService {
 
-  async register(userData: RegisterUserDto): Promise<User> {
+  //   async register(userData: RegisterUserDto): Promise<User> {
+  //   try {
+  //     const existingUser = await User.findOne({ email: userData.email });
+
+  //     if (existingUser) {
+  //       throw new AppError('Email already in use', 400);
+  //     }
+
+  //     const newUser = new User(userData);
+
+  //     // Hash the password before saving
+  //     const saltRounds = 10;
+  //     const salt = await bcrypt.genSalt(saltRounds);
+  //     newUser.password = await bcrypt.hash(newUser.password, salt);
+
+  //     await newUser.save();
+
+  //     // Remove password from response
+  //     const userObject = newUser.toObject();
+
+  //       process.nextTick(() => {
+  //         try {
+  //     // Send welcome email
+  //     sgMail.setApiKey(config.sendgrid.apiKey);
+  //     const msg = {
+  //       to: newUser.email,
+  //       from: config.sendgrid.fromEmail,
+  //       subject: 'Welcome to Comfybase',
+  //       text: `Hello ${newUser.firstName},\n\nWelcome to Comfybase! We're excited to have you on board.\n\nBest regards,\nThe Comfybase Team`,
+  //       html: `<p>Hello ${newUser.firstName},</p><p>Welcome to Comfybase! We're excited to have you on board.</p><p>Best regards,<br>The Comfybase Team</p>`,
+  //     }
+  //          sgMail.send(msg as MailDataRequired).catch((err: Error) => console.error('Email sending error:', err));
+  //         } catch (err) {
+  //           console.error('Email preparation error:', err);
+  //         }
+  //       });
+
+  //       return userObject as User;
+
+  //   } catch (error) {
+  //     if (error instanceof AppError) throw error;
+  //     console.error('Registration error:', error);
+  //     throw new AppError('Registration failed', 500);
+  //   }
+  // }
+
+
+async register(userData: RegisterUserDto): Promise<User> {
   try {
     const existingUser = await User.findOne({ email: userData.email });
 
@@ -37,25 +88,14 @@ export class AuthService {
     // Remove password from response
     const userObject = newUser.toObject();
 
-      process.nextTick(() => {
-        try {
-    // Send welcome email
-    sgMail.setApiKey(config.sendgrid.apiKey);
-    const msg = {
-      to: newUser.email,
-      from: config.sendgrid.fromEmail,
-      subject: 'Welcome to Comfybase',
-      text: `Hello ${newUser.firstName},\n\nWelcome to Comfybase! We're excited to have you on board.\n\nBest regards,\nThe Comfybase Team`,
-      html: `<p>Hello ${newUser.firstName},</p><p>Welcome to Comfybase! We're excited to have you on board.</p><p>Best regards,<br>The Comfybase Team</p>`,
-    }
-         sgMail.send(msg as MailDataRequired).catch((err: Error) => console.error('Email sending error:', err));
-        } catch (err) {
-          console.error('Email preparation error:', err);
-        }
-      });
+    // Send welcome email asynchronously
+    process.nextTick(() => {
+      EmailService.sendWelcomeEmail(newUser.email, {
+        recipientName: newUser.firstName
+      }).catch(err => console.error('Welcome email error:', err));
+    });
 
-      return userObject as User;
-
+    return userObject as User;
   } catch (error) {
     if (error instanceof AppError) throw error;
     console.error('Registration error:', error);
@@ -63,6 +103,93 @@ export class AuthService {
   }
 }
 
+
+async forgotPassword(data: ForgotPasswordDto): Promise<void> {
+  const user = await User.findOne({ email: data.email });
+
+  if (!user) {
+    // Don't reveal if user exists or not
+    return;
+  }
+
+  // Generate reset token
+  const resetToken = crypto.randomBytes(32).toString('hex');
+
+  // Hash the token using crypto (SHA-256) for consistent lookup
+  const hashedToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+
+  // Save token with expiry (1 hour)
+  const expiryDate = new Date();
+  expiryDate.setHours(expiryDate.getHours() + 1);
+
+  await Token.create({
+    userId: user._id,
+    token: hashedToken,
+    expiresAt: expiryDate
+  });
+
+  const resetUrl = `${config.frontendUrl}/auth/reset-password?token=${resetToken}`;
+
+  // Send reset password email
+  await EmailService.sendPasswordResetEmail(user.email, {
+    recipientName: user.firstName,
+    resetUrl
+  });
+}
+
+
+async resetPassword(data: ResetPasswordDto): Promise<void> {
+  try {
+    const hashedToken = crypto
+      .createHash('sha256')
+      .update(data.token)
+      .digest('hex');
+
+    console.log('Hashed token for lookup:', hashedToken);
+
+    const tokenDoc = await Token.findOne({
+      token: hashedToken,
+      expiresAt: { $gt: new Date() }
+    });
+
+    if (!tokenDoc) {
+      throw new AppError('Invalid or expired token', 400);
+    }
+
+    const user = await User.findById(tokenDoc.userId);
+
+    if (!user) {
+      throw new AppError('User not found', 404);
+    }
+
+    // Hash the new password before saving
+    const saltRounds = 10;
+    const salt = await bcrypt.genSalt(saltRounds);
+    const hashedPassword = await bcrypt.hash(data.newPassword, salt);
+
+    // Update the user with the hashed password
+    user.password = hashedPassword;
+
+    // Save the user with the hashed password
+    await user.save();
+
+    // Delete token
+    await Token.deleteOne({ _id: tokenDoc._id });
+
+    // Send confirmation email
+    await EmailService.sendPasswordResetConfirmationEmail(user.email, {
+      recipientName: user.firstName
+    });
+  } catch (error) {
+    console.error('Password reset error:', error);
+    throw error;
+  }
+}
+
+  
   async login(loginData: LoginUserDto): Promise<{ user: User, tokens: AuthTokens }> {
     try{
     const user = await User.findOne({ email: loginData.email });
@@ -168,204 +295,93 @@ export class AuthService {
     return { accessToken, refreshToken, expiresIn: config.jwt.accessTokenExpiration };
   }
 
-async forgotPassword(data: ForgotPasswordDto): Promise<void> {
-  const user = await User.findOne({ email: data.email });
-
-  if (!user) {
-    // Don't reveal if user exists or not
-    return;
-  }
-
-  // Generate reset token
-  const resetToken = crypto.randomBytes(32).toString('hex');
-
-  // Hash the token using crypto (SHA-256) for consistent lookup
-  const hashedToken = crypto
-    .createHash('sha256')
-    .update(resetToken)
-    .digest('hex');
-
-  // Save token with expiry (1 hour)
-  const expiryDate = new Date();
-  expiryDate.setHours(expiryDate.getHours() + 1);
-
-  await Token.create({
-    userId: user._id,
-    token: hashedToken,
-    expiresAt: expiryDate
-  });
-
-  // In a real application, send email with reset link
-  sgMail.setApiKey(config.sendgrid.apiKey);
-
-  const resetUrl = `${config.frontendUrl}/auth/reset-password?token=${resetToken}`;
-
-  const msg = {
-    to: user.email,
-    from: config.sendgrid.fromEmail,
-    subject: 'Password Reset Request',
-    text: `You requested a password reset. Please use the following link to reset your password: ${resetUrl}`,
-    html: `
-    <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;">
-    <h2 style="color: #4CAF50; text-align: center;">Password Reset Request</h2>
-    <p>Dear <strong>${user.firstName}</strong>,</p>
-    <p>You requested a password reset. Please use the following link to reset your password:</p>
-    <p style="text-align: center; margin-top: 20px;">
-      <a href="${resetUrl}" style="display: inline-block; padding: 10px 20px; color: #fff; background-color: #4CAF50; text-decoration: none; border-radius: 5px;">Reset Password</a>
-    </p>
-    <p>If you did not request this, please ignore this email or contact our support team.</p>
-    <p>Thank you,</p>
-    <p style="font-weight: bold;">The Comfybase Team</p>
-    </div>
-    `,
-  };
-
-  await sgMail.send(msg);
-}
-
-  // async resetPassword(data: ResetPasswordDto): Promise<void> {
-  //   const tokenDoc = await Token.findOne({
-  //     expiresAt: { $gt: new Date() }
-  //   });
-
-  //   if (!tokenDoc) {
-  //     throw new AppError('Invalid or expired token', 400);
-  //   }
-
-  //   // Compare the provided token with the hashed token in the database
-  //   const isTokenValid = await bcrypt.compare(data.token, tokenDoc.token);
-
-  //   if (!isTokenValid) {
-  //     throw new AppError('Invalid or expired token', 400);
-  //   }
-
-  //   const user = await User.findById(tokenDoc.userId);
-  //   console.log("user", user);
-
-  //   if (!user) {
-  //     throw new AppError('User not found', 404);
-  //   }
-
-  //   // Hash the new password before saving
-  //   const saltRounds = 10;
-  //   const salt = await bcrypt.genSalt(saltRounds);
-  //   user.password = await bcrypt.hash(data.newPassword, salt);
-
-  //   const saveduser = await user.save();
-
-  //   console.log("saveduser", saveduser);
-
-  //   // Delete token
-  //   await Token.deleteOne({ _id: tokenDoc._id });
-
-  //   // In a real application, send confirmation email
-  //   sgMail.setApiKey(config.sendgrid.apiKey);
-
-  //   const msg = {
-  //     to: user.email,
-  //     from: config.sendgrid.fromEmail,
-  //     subject: 'Password Reset Confirmation',
-  //     text: 'Your password has been successfully reset. If you did not request this change, please contact our support team immediately.',
-  //     html: `
-  //     <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;">
-  //       <h2 style="color: #4CAF50; text-align: center;">Password Reset Confirmation</h2>
-  //       <p>Dear <strong>${user.firstName}</strong>,</p>
-  //       <p>Your password has been successfully reset. If you did not request this change, please contact our support team immediately.</p>
-  //       <p style="text-align: center; margin-top: 20px;">
-  //         <a href="${config.supportUrl}" style="display: inline-block; padding: 10px 20px; color: #fff; background-color: #4CAF50; text-decoration: none; border-radius: 5px;">Contact Support</a>
-  //       </p>
-  //       <p>Thank you,</p>
-  //       <p style="font-weight: bold;">The Comfybase Team</p>
-  //     </div>
-  //     `,
-  //   };
-
-  //   await sgMail.send(msg);
-  // }
-
-async resetPassword(data: ResetPasswordDto): Promise<void> {
-  try {
-    const hashedToken = crypto
-      .createHash('sha256')
-      .update(data.token)
-      .digest('hex');
-
-    console.log('Hashed token for lookup:', hashedToken);
-
-    const tokenDoc = await Token.findOne({
-      token: hashedToken,
-      expiresAt: { $gt: new Date() }
-    });
-
-    if (!tokenDoc) {
-      throw new AppError('Invalid or expired token', 400);
-    }
-
-    const user = await User.findById(tokenDoc.userId);
-
-    if (!user) {
-      throw new AppError('User not found', 404);
-    }
-
-    // Hash the new password before saving
-    const saltRounds = 10;
-    const salt = await bcrypt.genSalt(saltRounds);
-    const hashedPassword = await bcrypt.hash(data.newPassword, salt);
-
-    console.log('Original password:', data.newPassword);
-    console.log('Hashed password:', hashedPassword);
-
-    // Update the user with the hashed password
-    user.password = hashedPassword;
-
-    // Save the user with the hashed password
-    await user.save();
-
-    // Verify the password was hashed correctly
-    const savedUser = await User.findById(user._id);
-
-    // Verify the hashed password can be compared correctly
-    if (savedUser) {
-      const passwordMatch = await bcrypt.compare(data.newPassword, savedUser.password);
-      console.log('Password verification test:', passwordMatch); // Should be true
-    } else {
-      console.error('User not found after saving:', user._id);
-    }
-
-    // console.log('userin db  in DB:', savedUser?.password);
 
 
-    // Delete token
-    await Token.deleteOne({ _id: tokenDoc._id });
 
-    // Send confirmation email
-    sgMail.setApiKey(config.sendgrid.apiKey);
 
-    const msg = {
-      to: user.email,
-      from: config.sendgrid.fromEmail,
-      subject: 'Password Reset Confirmation',
-      text: 'Your password has been successfully reset. If you did not request this change, please contact our support team immediately.',
-      html: `
-      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;">
-      <h2 style="color: #4CAF50; text-align: center;">Password Reset Confirmation</h2>
-      <p>Dear <strong>${user.firstName}</strong>,</p>
-      <p>Your password has been successfully reset. If you did not request this change, please contact our support team immediately.</p>
-      <p style="text-align: center; margin-top: 20px;">
-        <a href="${config.supportUrl}" style="display: inline-block; padding: 10px 20px; color: #fff; background-color: #4CAF50; text-decoration: none; border-radius: 5px;">Contact Support</a>
-      </p>
-      <p>Thank you,</p>
-      <p style="font-weight: bold;">The Comfybase Team</p>
-      </div>
-      `.replace(/\n\s+/g, ''), // Remove extra whitespace and newlines for better rendering
-    };
+// async resetPassword(data: ResetPasswordDto): Promise<void> {
+//   try {
+//     const hashedToken = crypto
+//       .createHash('sha256')
+//       .update(data.token)
+//       .digest('hex');
 
-    await sgMail.send(msg);
-  } catch (error) {
-    console.error('Password reset error:', error);
-    throw error;
-  }
-}
+//     console.log('Hashed token for lookup:', hashedToken);
+
+//     const tokenDoc = await Token.findOne({
+//       token: hashedToken,
+//       expiresAt: { $gt: new Date() }
+//     });
+
+//     if (!tokenDoc) {
+//       throw new AppError('Invalid or expired token', 400);
+//     }
+
+//     const user = await User.findById(tokenDoc.userId);
+
+//     if (!user) {
+//       throw new AppError('User not found', 404);
+//     }
+
+//     // Hash the new password before saving
+//     const saltRounds = 10;
+//     const salt = await bcrypt.genSalt(saltRounds);
+//     const hashedPassword = await bcrypt.hash(data.newPassword, salt);
+
+//     console.log('Original password:', data.newPassword);
+//     console.log('Hashed password:', hashedPassword);
+
+//     // Update the user with the hashed password
+//     user.password = hashedPassword;
+
+//     // Save the user with the hashed password
+//     await user.save();
+
+//     // Verify the password was hashed correctly
+//     const savedUser = await User.findById(user._id);
+
+//     // Verify the hashed password can be compared correctly
+//     if (savedUser) {
+//       const passwordMatch = await bcrypt.compare(data.newPassword, savedUser.password);
+//       console.log('Password verification test:', passwordMatch); // Should be true
+//     } else {
+//       console.error('User not found after saving:', user._id);
+//     }
+
+//     // console.log('userin db  in DB:', savedUser?.password);
+
+
+//     // Delete token
+//     await Token.deleteOne({ _id: tokenDoc._id });
+
+//     // Send confirmation email
+//     sgMail.setApiKey(config.sendgrid.apiKey);
+
+//     const msg = {
+//       to: user.email,
+//       from: config.sendgrid.fromEmail,
+//       subject: 'Password Reset Confirmation',
+//       text: 'Your password has been successfully reset. If you did not request this change, please contact our support team immediately.',
+//       html: `
+//       <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;">
+//       <h2 style="color: #4CAF50; text-align: center;">Password Reset Confirmation</h2>
+//       <p>Dear <strong>${user.firstName}</strong>,</p>
+//       <p>Your password has been successfully reset. If you did not request this change, please contact our support team immediately.</p>
+//       <p style="text-align: center; margin-top: 20px;">
+//         <a href="${config.supportUrl}" style="display: inline-block; padding: 10px 20px; color: #fff; background-color: #4CAF50; text-decoration: none; border-radius: 5px;">Contact Support</a>
+//       </p>
+//       <p>Thank you,</p>
+//       <p style="font-weight: bold;">The Comfybase Team</p>
+//       </div>
+//       `.replace(/\n\s+/g, ''), // Remove extra whitespace and newlines for better rendering
+//     };
+
+//     await sgMail.send(msg);
+//   } catch (error) {
+//     console.error('Password reset error:', error);
+//     throw error;
+//   }
+// }
 
   async updateProfile(userId: string, updateData: Partial<Omit<User, 'email'>>): Promise<User> {
     const user = await User.findById(userId);
