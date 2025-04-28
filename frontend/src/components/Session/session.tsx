@@ -5,8 +5,6 @@ import axios from 'axios';
 import { useEvent } from '../../contexts/EventContext';
 import { useSession } from '../../contexts/SessionContext';
 
-
-
 interface Speaker {
   userId?: string;
   name: string;
@@ -102,7 +100,8 @@ const SessionsPage = () => {
       fetchData();
     }
   }, [eventId, setCurrentEvent, setSessionList]);
-  // Handle delete session
+
+  
   const handleDeleteSession = async (sessionId: string) => {
     if (window.confirm('Are you sure you want to delete this session?')) {
       try {

@@ -11,6 +11,8 @@ import passport from 'passport';
 import config from './config/config';
 import cron from 'node-cron';
 import compression from 'compression';
+import { EventCleanupService } from './services/eventcleanup.service';
+
 
 const corsOptions = {
   origin: "*"
@@ -31,6 +33,16 @@ app.use((req, res, next) => {
 
   next();
 });
+
+// cleanup every day at midnight
+const scheduleCleanup = () => {
+  setInterval(() => {
+    EventCleanupService.cleanupPastEvents()
+      .catch(err => console.error('Error during event cleanup:', err));
+  }, 24 * 60 * 60 * 1000); // 24 hours
+};
+
+scheduleCleanup();
 
 
 function manageMemory() {
@@ -56,6 +68,7 @@ function manageMemory() {
     }
   }
 }
+
 
 cron.schedule('*/1 * * * *', () => {
   manageMemory();

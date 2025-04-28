@@ -35,7 +35,6 @@ interface Event {
   updatedAt: string;
 }
 
-
 const eventTypes = ['conference', 'workshop', 'meetup', 'webinar', 'training','expo', 'other'];
 const eventStatuses = ['draft', 'published', 'cancelled', 'completed'];
 
@@ -131,17 +130,15 @@ const EventsPage = () => {
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFilters(prev => ({ ...prev, [name]: value }));
-    // Reset to first page when filters change
     setPage(1);
   };
 
-  // Handle search
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     // The useEffect will handle the API call when filters change
   };
 
-  // Handle delete event
 const handleDeleteEvent = async (eventId: string) => {
   if (window.confirm('Are you sure you want to delete this event?')) {
     try {
@@ -206,13 +203,11 @@ const handleDeleteEvent = async (eventId: string) => {
   };
 
   const startRegistration = (event: Event) => {
-    // Check if user is authenticated
     if (!user) {
       navigate('/auth/login');
       return;
     }
 
-    // Check if user is already registered
     const isRegistered = Array.isArray(event.attendees) && event.attendees.includes(userId);
 
     if (isRegistered) {
@@ -660,7 +655,7 @@ const handleDeleteEvent = async (eventId: string) => {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center text-sm text-gray-500">
                           <Users className="h-4 w-4 mr-1" />
-                          {event.attendees.length} / {event.capacity || '∞'}
+                          {event.attendees.length as number} / {event.capacity || '∞'}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -701,18 +696,22 @@ const handleDeleteEvent = async (eventId: string) => {
                           <Users className="h-4 w-4 inline mr-1" />
                           Sessions
                         </button>
-                        <button
-                          onClick={() => navigateToEditEvent(event._id)}
-                          className="text-blue-600 hover:text-blue-900 mr-4"
-                        >
-                          <Edit className="h-4 w-4 inline" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteEvent(event._id)}
-                          className="text-red-600 hover:text-red-900"
-                        >
-                          <Trash2 className="h-4 w-4 inline" />
-                        </button>
+                        {(event.organizer === userId || (typeof event.organizer === 'object' && event.organizer?._id === userId)) && (
+                          <>
+                            <button
+                              onClick={() => navigateToEditEvent(event._id)}
+                              className="text-blue-600 hover:text-blue-900 mr-4"
+                            >
+                              <Edit className="h-4 w-4 inline" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteEvent(event._id)}
+                              className="text-red-600 hover:text-red-900"
+                            >
+                              <Trash2 className="h-4 w-4 inline" />
+                            </button>
+                          </>
+                        )}
                       </td>
                     </tr>
                   ))}

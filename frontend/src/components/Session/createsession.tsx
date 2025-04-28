@@ -279,7 +279,7 @@ const CreateSessionPage: React.FC = () => {
 
 
 
-         if (!cancreatesession) {
+    if (!cancreatesession) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
         <div className="bg-white p-8 rounded-lg shadow-md text-center">
@@ -291,7 +291,6 @@ const CreateSessionPage: React.FC = () => {
       </div>
     );
   }
-
 
   return (
     <div className="container mx-auto px-4 py-8">

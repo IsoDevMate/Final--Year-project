@@ -163,6 +163,29 @@ export class EventService {
   }
 
 
+// async registerAttendee(eventId: string, userId: string): Promise<{ event: Event | null, qrCodeUrl: string }> {
+//   try {
+//     console.log(`Registering attendee. Event ID: ${eventId}, User ID: ${userId}`);
+
+//     if (!Types.ObjectId.isValid(eventId) || !Types.ObjectId.isValid(userId)) {
+//       console.error(`Invalid ID(s). Event ID: ${eventId}, User ID: ${userId}`);
+//       throw new AppError('Invalid ID', 400);
+//     }
+
+//     // Check if event exists
+//     const event = await Event.findById(eventId);
+//     if (!event) {
+//       console.error(`Event not found. Event ID: ${eventId}`);
+//       throw new AppError('Event not found', 404);
+//     }
+//     console.log(`Event found. Event ID: ${eventId}, Title: ${event.title}`);
+
+//     // Check if user is already registered
+//     if (event.attendees.includes(new Types.ObjectId(userId))) {
+//       console.warn(`User already registered. Event ID: ${eventId}, User ID: ${userId}`);
+//       throw new AppError('User already registered for this event', 400);
+//     }
+
 async registerAttendee(eventId: string, userId: string): Promise<{ event: Event | null, qrCodeUrl: string }> {
   try {
     console.log(`Registering attendee. Event ID: ${eventId}, User ID: ${userId}`);
@@ -179,6 +202,12 @@ async registerAttendee(eventId: string, userId: string): Promise<{ event: Event 
       throw new AppError('Event not found', 404);
     }
     console.log(`Event found. Event ID: ${eventId}, Title: ${event.title}`);
+
+    // Check if event has already ended
+    if (event.endDate < new Date()) {
+      console.error(`Event has already ended. Event ID: ${eventId}`);
+      throw new AppError('Cannot register for an event that has already ended', 400);
+    }
 
     // Check if user is already registered
     if (event.attendees.includes(new Types.ObjectId(userId))) {
