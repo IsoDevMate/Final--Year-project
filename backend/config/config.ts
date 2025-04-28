@@ -6,7 +6,7 @@ const config = {
   port: process.env.PORT || 3000,
   mongoUri: process.env.MONGO_URI,
   sessionSecret: process.env.SESSION_SECRET,
-
+  supportUrl: 'oumaoduor5827@gmail.com',
   jwt: {
     accessTokenSecret: process.env.JWT_ACCESS_TOKEN_SECRET,
     accessTokenExpiration: parseInt(process.env.JWT_ACCESS_TOKEN_EXPIRATION || '30', 10) * 24 * 60 * 60,
