@@ -49,7 +49,7 @@ process.on('SIGTERM', () => {
 
 // cleanup every 10 minutes
 const scheduleCleanup = () => {
-  cron.schedule('*/10 * * * *', () => {
+  cron.schedule('0 */6 * * *', () => {
     EventCleanupService.cleanupPastEvents()
       .catch(err => console.error('Error during event cleanup:', err));
   });

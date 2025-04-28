@@ -19,7 +19,7 @@ export class PaymentChecker {
   }
 
   start() {
-    // Check immediately on start
+
     this.checkPendingPayments();
 
     // Then set up interval
