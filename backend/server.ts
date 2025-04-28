@@ -34,16 +34,15 @@ app.use((req, res, next) => {
   next();
 });
 
-// cleanup every day at midnight
+// cleanup every 10 minutes
 const scheduleCleanup = () => {
-  setInterval(() => {
+  cron.schedule('*/10 * * * *', () => {
     EventCleanupService.cleanupPastEvents()
       .catch(err => console.error('Error during event cleanup:', err));
-  }, 24 * 60 * 60 * 1000); // 24 hours
+  });
 };
 
 scheduleCleanup();
-
 
 function manageMemory() {
   const memUsage = process.memoryUsage();

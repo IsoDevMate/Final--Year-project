@@ -450,4 +450,3 @@ const PendingPaymentPage = () => {
 };
 
 export default PendingPaymentPage;
-
