@@ -283,18 +283,21 @@ async forgotPassword(data: ForgotPasswordDto): Promise<void> {
   //   await sgMail.send(msg);
   // }
 
-  async resetPassword(data: ResetPasswordDto): Promise<void> {
-  // Hash the incoming token using the same method as in forgotPassword
+async resetPassword(data: ResetPasswordDto): Promise<void> {
   const hashedToken = crypto
     .createHash('sha256')
     .update(data.token)
     .digest('hex');
 
-  // Find the token document using the hashed token
+  console.log('Token received:', data.token); // Debug log
+  console.log('Hashed token:', hashedToken); // Debug log
+
   const tokenDoc = await Token.findOne({
     token: hashedToken,
     expiresAt: { $gt: new Date() }
   });
+
+  console.log('Token document found:', tokenDoc); // Debug log
 
   if (!tokenDoc) {
     throw new AppError('Invalid or expired token', 400);
