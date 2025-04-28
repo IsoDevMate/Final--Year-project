@@ -69,6 +69,10 @@ export class PaymentChecker {
         // Check with M-Pesa for status
         try {
           console.log(`Checking status for payment ${payment._id} with CheckoutRequestID ${payment.checkoutRequestId}`);
+          if (!payment.checkoutRequestId) {
+            console.warn(`Payment ${payment._id} has no CheckoutRequestID. Skipping status check.`);
+            continue;
+          }
           const stkStatusResponse = await this.mpesaService.querySTKStatus(payment.checkoutRequestId);
 
           const resultCode = stkStatusResponse.ResultCode;
