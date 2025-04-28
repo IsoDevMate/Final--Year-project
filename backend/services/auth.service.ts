@@ -210,54 +210,107 @@ export class AuthService {
     // For now, just return success
   }
 
+  // async resetPassword(data: ResetPasswordDto): Promise<void> {
+  //   const hashedToken = crypto
+  //     .createHash('sha256')
+  //     .update(data.token)
+  //     .digest('hex');
+
+  //   const tokenDoc = await Token.findOne({
+  //     token: hashedToken,
+  //     expiresAt: { $gt: new Date() }
+  //   });
+
+  //   if (!tokenDoc) {
+  //     throw new AppError('Invalid or expired token', 400);
+  //   }
+
+  //   const user = await User.findById(tokenDoc.userId);
+  //   console.log("user",user)
+  //   if (!user) {
+  //     throw new AppError('User not found', 404);
+  //   }
+
+  //   // Update password
+  //   user.password = data.newPassword;
+  //   const saveduser = await user.save();
+
+  //   console.log("saveduser",saveduser)
+
+  //   // Delete token
+  //   await Token.deleteOne({ _id: tokenDoc._id });
+
+  //   // In a real application, send confirmation email
+  //   sgMail.setApiKey(config.sendgrid.apiKey);
+
+  //   const msg = {
+  //       to: user.email,
+  //     from: config.sendgrid.fromEmail,
+  //     subject: 'Password Reset Confirmation',
+  //     text: 'Your password has been successfully reset. If you did not request this change, please contact our support team immediately.',
+  //     html: `
+  //     <p>Dear ${user.firstName},</p>
+  //     <p>Your password has been successfully reset. If you did not request this change, please contact our support team immediately.</p>
+  //     <p>Thank you,</p>
+  //     <p>The Comfybase Team</p>
+  //     `,
+  //   };
+
+  //   await sgMail.send(msg);
+  // }
+
   async resetPassword(data: ResetPasswordDto): Promise<void> {
-    const hashedToken = crypto
-      .createHash('sha256')
-      .update(data.token)
-      .digest('hex');
+  const hashedToken = crypto
+    .createHash('sha256')
+    .update(data.token)
+    .digest('hex');
 
-    const tokenDoc = await Token.findOne({
-      token: hashedToken,
-      expiresAt: { $gt: new Date() }
-    });
+  const tokenDoc = await Token.findOne({
+    token: hashedToken,
+    expiresAt: { $gt: new Date() }
+  });
 
-    if (!tokenDoc) {
-      throw new AppError('Invalid or expired token', 400);
-    }
-
-    const user = await User.findById(tokenDoc.userId);
-    console.log("user",user)
-    if (!user) {
-      throw new AppError('User not found', 404);
-    }
-
-    // Update password
-    user.password = data.newPassword;
-    const saveduser = await user.save();
-
-    console.log("saveduser",saveduser)
-
-    // Delete token
-    await Token.deleteOne({ _id: tokenDoc._id });
-
-    // In a real application, send confirmation email
-    sgMail.setApiKey(config.sendgrid.apiKey);
-
-    const msg = {
-        to: user.email,
-      from: config.sendgrid.fromEmail,
-      subject: 'Password Reset Confirmation',
-      text: 'Your password has been successfully reset. If you did not request this change, please contact our support team immediately.',
-      html: `
-      <p>Dear ${user.firstName},</p>
-      <p>Your password has been successfully reset. If you did not request this change, please contact our support team immediately.</p>
-      <p>Thank you,</p>
-      <p>The Comfybase Team</p>
-      `,
-    };
-
-    await sgMail.send(msg);
+  if (!tokenDoc) {
+    throw new AppError('Invalid or expired token', 400);
   }
+
+  const user = await User.findById(tokenDoc.userId);
+  console.log("user", user);
+
+  if (!user) {
+    throw new AppError('User not found', 404);
+  }
+
+  // Hash the new password before saving
+  const saltRounds = 10;
+  const salt = await bcrypt.genSalt(saltRounds);
+  user.password = await bcrypt.hash(data.newPassword, salt);
+
+  const saveduser = await user.save();
+
+  console.log("saveduser", saveduser);
+
+  // Delete token
+  await Token.deleteOne({ _id: tokenDoc._id });
+
+  // In a real application, send confirmation email
+  sgMail.setApiKey(config.sendgrid.apiKey);
+
+  const msg = {
+    to: user.email,
+    from: config.sendgrid.fromEmail,
+    subject: 'Password Reset Confirmation',
+    text: 'Your password has been successfully reset. If you did not request this change, please contact our support team immediately.',
+    html: `
+    <p>Dear ${user.firstName},</p>
+    <p>Your password has been successfully reset. If you did not request this change, please contact our support team immediately.</p>
+    <p>Thank you,</p>
+    <p>The Comfybase Team</p>
+    `,
+  };
+
+  await sgMail.send(msg);
+}
 
   async updateProfile(userId: string, updateData: Partial<Omit<User, 'email'>>): Promise<User> {
     const user = await User.findById(userId);
