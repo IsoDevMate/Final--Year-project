@@ -103,4 +103,28 @@ export class MPaymentController {
       next(error);
     }
   }
+
+  async checkPaymentStatus(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { id } = eventIdSchema.parse(req.params);
+
+    // Check authentication
+    if (!req.user) {
+      return ResponseUtil.error(res, 401, 'Not authenticated');
+    }
+
+    const userId = (req.user as any).userId;
+    const result = await this.mpaymentService.checkPaymentStatus(id, userId);
+
+    return ResponseUtil.success(res, 200, result, 'Payment status checked successfully');
+  } catch (error) {
+    if (error instanceof ZodError) {
+      return ResponseUtil.error(res, 400, error.errors[0].message);
+    }
+    if (error instanceof AppError) {
+      return ResponseUtil.error(res, error.statusCode, error.message);
+    }
+    next(error);
+  }
+}
 }

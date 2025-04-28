@@ -196,6 +196,80 @@ export class MPaymentService {
     }
   }
 
+  async checkPaymentStatus(eventId: string, userId: string): Promise<any> {
+  try {
+    // Find the payment record
+    const payment = await MpesaPayment.findOne({
+      eventId: new Types.ObjectId(eventId),
+      userId: new Types.ObjectId(userId),
+      status: MpesaPaymentStatus.PENDING
+    });
+
+    if (!payment) {
+      throw new AppError('No pending payment found for this event', 404);
+    }
+
+    // Query M-Pesa for status
+    if (!payment.checkoutRequestId) {
+      throw new AppError('CheckoutRequestID is missing', 400);
+    }
+    const stkStatusResponse = await this.mpesaService.querySTKStatus(payment.checkoutRequestId);
+
+    // Parse response
+    const resultCode = stkStatusResponse.ResultCode;
+    const resultDesc = stkStatusResponse.ResultDesc;
+    const requestId = stkStatusResponse.CheckoutRequestID;
+
+    console.log(`STK query result: Code=${resultCode}, Desc=${resultDesc}, RequestID=${requestId}`);
+
+    // Update payment based on status code
+    if (resultCode === 0) {
+      // Success status (paid)
+      payment.status = MpesaPaymentStatus.COMPLETED;
+      payment.resultCode = resultCode;
+      payment.resultDesc = resultDesc;
+      await payment.save();
+
+      // Register the user for the event
+      await this.eventService.registerAttendee(eventId, userId);
+
+      return {
+        success: true,
+        paymentId: payment._id,
+        status: payment.status,
+        message: 'Payment completed successfully'
+      };
+    } else if (resultCode === 1032) {
+      // Transaction canceled by user or still waiting
+      return {
+        success: false,
+        paymentId: payment._id,
+        status: payment.status,
+        message: 'Payment is still pending or was canceled'
+      };
+    } else {
+      // Failed transaction
+      payment.status = MpesaPaymentStatus.FAILED;
+      payment.resultCode = resultCode;
+      payment.resultDesc = resultDesc;
+      await payment.save();
+
+      return {
+        success: false,
+        paymentId: payment._id,
+        status: payment.status,
+        message: resultDesc || 'Payment failed'
+      };
+    }
+  } catch (error) {
+    console.error('Error checking payment status:', error);
+    if (error instanceof AppError) {
+      throw error;
+    }
+    throw new AppError('Failed to check payment status', 500);
+  }
+}
+
   async getPaymentByEventAndUser(eventId: string, userId: string): Promise<MpesaPayment | null> {
     try {
       return await MpesaPayment.findOne({

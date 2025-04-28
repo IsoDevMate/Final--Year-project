@@ -6,6 +6,8 @@ import { AuthMiddleware } from '../middleware/auth.mddleware';
 const router = Router();
 const paymentController = new MPaymentController();
 
+router.post('/check/:id', AuthMiddleware.verifyToken, paymentController.checkPaymentStatus.bind(paymentController));
+
 // Initiate payment for event registration
 router.post(
   '/event/:id',

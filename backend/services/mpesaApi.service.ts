@@ -207,4 +207,62 @@ export class MpesaService {
       throw new AppError('Failed to get payment status', 500);
     }
   }
+
+  async querySTKStatus(checkoutRequestId: string): Promise<any> {
+  try {
+    const accessToken = await this.getAccessToken();
+
+    // Generate timestamp and password
+    const timestamp = new Date().toISOString().replace(/[^0-9]/g, '').slice(0, 14);
+    const password = Buffer.from(`${this.shortcode}${this.passkey}${timestamp}`).toString('base64');
+
+    const requestData = {
+      BusinessShortCode: this.shortcode,
+      Password: password,
+      Timestamp: timestamp,
+      CheckoutRequestID: checkoutRequestId
+    };
+
+    console.log('Querying STK status with data:', {
+      checkoutRequestId,
+      shortcode: this.shortcode,
+      timestamp
+    });
+
+    const response = await axios.post(
+      `${this.baseUrl}/mpesa/stkpushquery/v1/query`,
+      requestData,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    console.log('STK query response:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error querying STK status:', error);
+    if (axios.isAxiosError(error) && error.response) {
+      throw new AppError(`M-Pesa error: ${error.response.data.errorMessage || 'Failed to query payment status'}`, 400);
+    }
+    throw new AppError('Failed to query payment status', 500);
+  }
+}
+
+  parseSTKQueryResponse(response: any): {
+  resultCode: number;
+  resultDesc: string;
+  successful: boolean;
+} {
+  const resultCode = response.ResultCode !== undefined ? parseInt(response.ResultCode) : -1;
+  const resultDesc = response.ResultDesc || 'Unknown status';
+
+  return {
+    resultCode,
+    resultDesc,
+    successful: resultCode === 0
+  };
+}
 }

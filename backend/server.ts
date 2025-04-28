@@ -12,6 +12,8 @@ import config from './config/config';
 import cron from 'node-cron';
 import compression from 'compression';
 import { EventCleanupService } from './services/eventcleanup.service';
+import { paymentChecker } from './utils/paymentchecker.utils';
+
 
 
 const corsOptions = {
@@ -32,6 +34,17 @@ app.use((req, res, next) => {
   });
 
   next();
+});
+
+paymentChecker.start();
+
+
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received, shutting down gracefully');
+  paymentChecker.stop();
+  // Other cleanup code...
+
+  process.exit(0);
 });
 
 // cleanup every 10 minutes
