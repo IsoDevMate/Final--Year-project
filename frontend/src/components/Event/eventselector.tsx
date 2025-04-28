@@ -29,7 +29,7 @@ export const EventSelector: React.FC<EventSelectorProps> = ({
 
   const API_BASE_URL = 'https://final-year-project-56d5.onrender.com';
 
-   const fetchRegisteredEvents = async () => {
+  const fetchRegisteredEvents = async () => {
     try {
       const token = localStorage.getItem('accessToken');
       if (!token) {
@@ -45,8 +45,8 @@ export const EventSelector: React.FC<EventSelectorProps> = ({
 
       if (response.data.success) {
         setEvents(response.data.data);
-              // If no event is selected and there are events, auto-select the first one
-        if (!selectedEventId && response.data.length > 0) {
+        // If no event is selected and there are events, auto-select the first one
+        if (!selectedEventId && response.data.data.length > 0) {
           onEventSelect(response.data.data[0]._id);
         }
       } else {
@@ -67,7 +67,7 @@ export const EventSelector: React.FC<EventSelectorProps> = ({
     }
 
     fetchRegisteredEvents();
-  }, []);
+  }, [user, selectedEventId]); // Added selectedEventId as dependency
 
   const handleEventChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     onEventSelect(e.target.value);
@@ -104,6 +104,7 @@ export const EventSelector: React.FC<EventSelectorProps> = ({
         onChange={handleEventChange}
         className="w-full p-2 border rounded-md appearance-none bg-white"
       >
+        <option value="" disabled>Select an event</option>
         {events.map(event => (
           <option key={event._id} value={event._id}>
             {event.title} ({new Date(event.startDate).toLocaleDateString()} - {new Date(event.endDate).toLocaleDateString()})

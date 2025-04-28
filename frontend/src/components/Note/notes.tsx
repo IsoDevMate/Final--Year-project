@@ -377,7 +377,6 @@ const openMediaPreview = (attachment: MediaAttachment) => {
         </div>
 
         <div className="flex space-x-3">
-
               {note && note._id  && (
                <LinkedInShareModal
                  note={note}
