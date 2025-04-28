@@ -451,6 +451,3 @@ const PendingPaymentPage = () => {
 
 export default PendingPaymentPage;
 
-};
-
-export default PendingPaymentPage;
