@@ -116,7 +116,7 @@ const LinkedInConnection: React.FC<LinkedInConnectionProps> = ({ user, API_BASE_
           <button
             onClick={connectLinkedIn}
             disabled={isConnecting}
-            className="flex items-center justify-center w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            className="flex items-center justify-center w-full px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600"
           >
             {isConnecting ? (
               <>

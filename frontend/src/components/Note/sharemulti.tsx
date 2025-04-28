@@ -68,7 +68,7 @@ export const MultimediaShareModa: React.FC<MultimediaShareModalProps> = ({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <button className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+        <button className="flex items-center bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
           <Share2 className="mr-2 h-4 w-4" /> Share to LinkedIn
         </button>
       </DialogTrigger>
@@ -135,7 +135,7 @@ export const MultimediaShareModa: React.FC<MultimediaShareModalProps> = ({
           className={`w-full mt-4 py-2 rounded-md flex items-center justify-center ${
             isSharing
               ? 'bg-gray-300 cursor-not-allowed'
-              : 'bg-blue-600 text-white hover:bg-blue-700'
+              : 'bg-indigo-600 text-white hover:bg-indigo-700'
           }`}
         >
           {isSharing ? (

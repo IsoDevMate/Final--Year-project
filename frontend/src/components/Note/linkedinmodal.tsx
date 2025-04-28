@@ -116,7 +116,7 @@
 //   return (
 //     <Dialog>
 //       <DialogTrigger asChild>
-//       <button className="flex items-center px-3 py-2 rounded-md bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors">
+//       <button className="flex items-center px-3 py-2 rounded-md bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-colors">
 //       <Share2 className="mr-2 h-4 w-4" /> Share on LinkedIn
 //       </button>
 //       </DialogTrigger>
@@ -276,7 +276,7 @@ const LinkedInShareModal: React.FC<LinkedInShareModalProps> = ({ note, onShare, 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <button className="flex items-center px-3 py-2 rounded-md bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors">
+        <button className="flex items-center px-3 py-2 rounded-md bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-colors">
           <Share2 className="mr-2 h-4 w-4" /> Share on LinkedIn
         </button>
       </DialogTrigger>
@@ -290,8 +290,8 @@ const LinkedInShareModal: React.FC<LinkedInShareModalProps> = ({ note, onShare, 
             {!isLinkedInConnected ? (
               // LinkedIn Account Connection UI
               <div className="text-center space-y-4">
-                <div className="bg-blue-50 p-6 rounded-lg">
-                  <LinkIcon className="h-12 w-12 text-blue-700 mx-auto mb-3" />
+                <div className="bg-indigo-50 p-6 rounded-lg">
+                  <LinkIcon className="h-12 w-12 text-indigo-700 mx-auto mb-3" />
                   <h3 className="text-lg font-medium text-gray-900 mb-2">
                     Connect Your LinkedIn Account
                   </h3>
@@ -301,7 +301,7 @@ const LinkedInShareModal: React.FC<LinkedInShareModalProps> = ({ note, onShare, 
                   <button
                     onClick={connectLinkedIn}
                     disabled={isConnecting}
-                    className="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 w-full"
+                    className="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 w-full"
                   >
                     {isConnecting ? (
                       <>

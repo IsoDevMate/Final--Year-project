@@ -546,63 +546,71 @@ const openMediaPreview = (attachment: MediaAttachment) => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-
+        {/* Back Button and Title */}
         <div className="flex items-center">
           <button
-            onClick={() => navigate('/dashboard/notes')}
-            className="mr-4 text-gray-600 hover:text-gray-900"
+        onClick={() => navigate('/dashboard/notes')}
+        className="mr-4 text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded"
           >
-            <ChevronLeft size={24} />
+        <ChevronLeft size={24} />
           </button>
           <h1 className="text-2xl font-bold text-gray-900">
-            {noteId === 'new' ? 'Create New Note' : 'Edit Note'}
+        {noteId === 'new' ? 'Create New Note' : 'Edit Note'}
           </h1>
         </div>
 
-        {user && (
-      <LinkedInConnection
-        user={user}
-        API_BASE_URL={API_BASE_URL}
-        onUpdate={() => {
-          // Refresh user data after LinkedIn connection changes
-          setUser({ ...user, socialLinks: { ...user.socialLinks, linkedinAccessToken: null } });
-          toast.success("LinkedIn connection updated successfully!");
-        }}
-      />
-    )}
+        {/* LinkedIn Connection */}
+        <div className="flex gap-4 items-center">
+          {user && (
+        <LinkedInConnection
+          user={user}
+          API_BASE_URL={API_BASE_URL}
+          onUpdate={() => {
+            // Refresh user data after LinkedIn connection changes
+            setUser({ ...user, socialLinks: { ...user.socialLinks, linkedinAccessToken: null } });
+            toast.success("LinkedIn connection updated successfully!");
+          }}
+        />
+          )}
+        </div>
 
-        <div className="flex space-x-3">
-              {note && note._id && user?.socialLinks?.linkedinAccessToken && (
-             <LinkedInShareModal
-               note={note}
-               onShare={handleLinkedInShare}
-               user={user}
-               API_BASE_URL={API_BASE_URL}
-             />
+        {/* Action Buttons */}
+        <div className="flex gap-4">
+          {note && note._id && user?.socialLinks?.linkedinAccessToken && (
+        <LinkedInShareModal
+          note={note}
+          onShare={handleLinkedInShare}
+          user={user}
+          API_BASE_URL={API_BASE_URL}
+        />
           )}
 
           <button
-            onClick={() => navigate('/dashboard/notes')}
-            className="bg-gray-200 text-gray-800 py-2 px-4 rounded-lg hover:bg-gray-300 transition duration-200 flex items-center"
+        onClick={() => navigate('/dashboard/notes')}
+        className="bg-gray-200 text-gray-800 py-2 px-4 rounded-lg hover:bg-gray-300 transition duration-200 flex items-center focus:outline-none focus:ring-2 focus:ring-gray-400"
           >
-            <X className="mr-1 h-5 w-5" /> Cancel
+        <X className="mr-1 h-5 w-5" /> Cancel
           </button>
 
           <button
-            onClick={handleSave}
-            disabled={isSaving}
-            className="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-200 flex items-center"
+        onClick={handleSave}
+        disabled={isSaving}
+        className={`py-2 px-4 rounded-lg flex items-center transition duration-200 focus:outline-none focus:ring-2 ${
+          isSaving
+            ? 'bg-indigo-400 text-white cursor-not-allowed'
+            : 'bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500'
+        }`}
           >
-            {isSaving ? (
-              <>
-                <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
-                Saving...
-              </>
-            ) : (
-              <>
-                <Save className="mr-1 h-5 w-5" /> Save Note
-              </>
-            )}
+        {isSaving ? (
+          <>
+            <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
+            Saving...
+          </>
+        ) : (
+          <>
+            <Save className="mr-1 h-5 w-5" /> Save Note
+          </>
+        )}
           </button>
         </div>
       </div>
