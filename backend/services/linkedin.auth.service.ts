@@ -116,7 +116,7 @@ export class LinkedInService {
           lastName: profile.family_name,
           role: UserRole.ATTENDEE,
           profileImage: profile.picture || '',
-          bio: profile.name || 'Default uuser bio',
+          bio: profile.name || 'Default user bio',
           password: Math.random().toString(36).slice(-10) + Math.random().toString(36).slice(-10),
           socialLinks: {
             linkedinId: profile.sub,
@@ -125,7 +125,7 @@ export class LinkedInService {
             ...(tokenResponse.refresh_token && {
               linkedinRefreshToken: tokenResponse.refresh_token
             }),
-            linkedinTokenExpiry: new Date(Date.now() + tokenResponse.expires_in * 1000)
+            linkedinTokenExpiry: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000) // 60 days
           }
         });
 
@@ -140,7 +140,7 @@ export class LinkedInService {
           ...(tokenResponse.refresh_token && {
             linkedinRefreshToken: tokenResponse.refresh_token
           }),
-          linkedinTokenExpiry: new Date(Date.now() + tokenResponse.expires_in * 1000)
+          linkedinTokenExpiry: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000) // 60 days
         };
         await user.save();
       }
@@ -221,7 +221,7 @@ export class LinkedInService {
 
       // Update user's tokens
       user.socialLinks.linkedinAccessToken = response.data.access_token;
-      user.socialLinks.linkedinTokenExpiry = new Date(Date.now() + response.data.expires_in * 1000);
+      user.socialLinks.linkedinTokenExpiry = new Date(Date.now() + 60 * 24 * 60 * 60 * 1000); // 60 days
 
       // Optional: Update refresh token if a new one is provided
       if (response.data.refresh_token) {

@@ -576,12 +576,12 @@ const openMediaPreview = (attachment: MediaAttachment) => {
 
         {/* Action Buttons */}
         <div className="flex gap-4">
-          {note && note._id && user?.socialLinks?.linkedinAccessToken && (
-        <LinkedInShareModal
-          note={note}
-          onShare={handleLinkedInShare}
-          user={user}
-          API_BASE_URL={API_BASE_URL}
+          {note && note._id &&  (
+           <LinkedInShareModal
+            note={note}
+             onShare={handleLinkedInShare}
+             user={user}
+             API_BASE_URL={API_BASE_URL}
         />
           )}
 
