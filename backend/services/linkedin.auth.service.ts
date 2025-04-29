@@ -193,9 +193,6 @@ export class LinkedInService {
     }
   }
 
-
-
-
   static async refreshLinkedInToken(user: any): Promise<void> {
     // Check if refresh token exists
     if (!user.socialLinks?.linkedinRefreshToken) {
