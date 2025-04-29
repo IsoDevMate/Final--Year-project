@@ -4,12 +4,9 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import RequestDemoPage from './requestdemo';
 import BrandCarousel from './carousel';
-import { Calendar, Users, NotebookPen, Video, Award, ChevronRight, ShieldCheck,
-         Sparkles, Linkedin, QrCode, CreditCard, Camera, BookOpen, Share2 } from 'lucide-react';
+import { NotebookPen,  ChevronRight,  Linkedin, QrCode, BookOpen} from 'lucide-react';
 import ErrorBoundary from '../ErroBoundary';
 import image from '../assets/Screenshot 2025-03-22 123120.png';
-import image2 from '../assets/Screenshot 2025-03-22 130146.png';
-// import axios from 'axios';
 import chooseus from '../assets/ce.jpg'
 import qr from '../assets/qr.jpg'
 import linked from '../assets/linked.avif'
