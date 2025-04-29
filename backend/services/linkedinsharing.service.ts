@@ -157,111 +157,111 @@ export class LinkedInSharingService {
   /**
    * Share an image post to LinkedIn
    */
-   static async shareImagePost(note: any, user: any): Promise<{ success: boolean, shareUrl?: string }> {
-    try {
+  //  static async shareImagePost(note: any, user: any): Promise<{ success: boolean, shareUrl?: string }> {
+  //   try {
 
-       const accessToken = await this.getAccessToken(user);
-      if (!accessToken) {
-        throw new AppError('No LinkedIn access token found', 401);
-      }
+  //      const accessToken = await this.getAccessToken(user);
+  //     if (!accessToken) {
+  //       throw new AppError('No LinkedIn access token found', 401);
+  //     }
 
-      // Get the image URL from the note
-      const imageUrl = note.mediaAttachments[0].url;
+  //     // Get the image URL from the note
+  //     const imageUrl = note.mediaAttachments[0].url;
 
-      // Step 1: Register the image with LinkedIn
-      const registerImageResponse = await axios.post(
-        'https://api.linkedin.com/v2/assets?action=registerUpload',
-        {
-          registerUploadRequest: {
-            recipes: ['urn:li:digitalmediaRecipe:feedshare-image'],
-            owner: `urn:li:person:${user?.socialLinks?.linkedinId}`,
-            serviceRelationships: [
-              {
-                relationshipType: 'OWNER',
-                identifier: 'urn:li:userGeneratedContent'
-              }
-            ]
-          }
-        },
-        {
-          headers: {
-            'Authorization': `Bearer ${await this.getAccessToken(user)}`,
-            'Content-Type': 'application/json',
-            'X-Restli-Protocol-Version': '2.0.0'
-          }
-        }
-      );
+  //     // Step 1: Register the image with LinkedIn
+  //     const registerImageResponse = await axios.post(
+  //       'https://api.linkedin.com/v2/assets?action=registerUpload',
+  //       {
+  //         registerUploadRequest: {
+  //           recipes: ['urn:li:digitalmediaRecipe:feedshare-image'],
+  //           owner: `urn:li:person:${user?.socialLinks?.linkedinId}`,
+  //           serviceRelationships: [
+  //             {
+  //               relationshipType: 'OWNER',
+  //               identifier: 'urn:li:userGeneratedContent'
+  //             }
+  //           ]
+  //         }
+  //       },
+  //       {
+  //         headers: {
+  //           'Authorization': `Bearer ${await this.getAccessToken(user)}`,
+  //           'Content-Type': 'application/json',
+  //           'X-Restli-Protocol-Version': '2.0.0'
+  //         }
+  //       }
+  //     );
 
-      // Step 2: Upload the image using the upload URL from LinkedIn
-      const uploadUrl = registerImageResponse.data.value.uploadMechanism['com.linkedin.digitalmedia.uploading.MediaUploadHttpRequest'].uploadUrl;
-      const asset = registerImageResponse.data.value.asset;
+  //     // Step 2: Upload the image using the upload URL from LinkedIn
+  //     const uploadUrl = registerImageResponse.data.value.uploadMechanism['com.linkedin.digitalmedia.uploading.MediaUploadHttpRequest'].uploadUrl;
+  //     const asset = registerImageResponse.data.value.asset;
 
-      // Fetch the image data from the URL
-      const imageResponse = await axios.get(imageUrl, { responseType: 'arraybuffer' });
-      const imageBuffer = Buffer.from(imageResponse.data, 'binary');
+  //     // Fetch the image data from the URL
+  //     const imageResponse = await axios.get(imageUrl, { responseType: 'arraybuffer' });
+  //     const imageBuffer = Buffer.from(imageResponse.data, 'binary');
 
-      // Upload the image to LinkedIn
-      await axios.put(
-        uploadUrl,
-        imageBuffer,
-        {
-          headers: {
-            'Authorization': `Bearer ${await this.getAccessToken(user)}`,
-            'Content-Type': 'application/octet-stream'
-          }
-        }
-      );
+  //     // Upload the image to LinkedIn
+  //     await axios.put(
+  //       uploadUrl,
+  //       imageBuffer,
+  //       {
+  //         headers: {
+  //           'Authorization': `Bearer ${await this.getAccessToken(user)}`,
+  //           'Content-Type': 'application/octet-stream'
+  //         }
+  //       }
+  //     );
 
-      // Step 3: Share the post with the uploaded image
-      const postData = {
-        author: `urn:li:person:${user?.socialLinks?.linkedinId}`,
-        lifecycleState: 'PUBLISHED',
-        specificContent: {
-          'com.linkedin.ugc.ShareContent': {
-            shareCommentary: {
-              text: `${note.title}\n\n${note.content.substring(0, 800)}${note.content.length > 800 ? '...' : ''}`
-            },
-            shareMediaCategory: 'IMAGE',
-            media: [
-              {
-                status: 'READY',
-                description: {
-                  text: note.mediaAttachments[0].caption || note.title
-                },
-                media: asset,
-                title: {
-                  text: note.title
-                }
-              }
-            ]
-          }
-        },
-        visibility: {
-          'com.linkedin.ugc.MemberNetworkVisibility': 'PUBLIC'
-        }
-      };
+  //     // Step 3: Share the post with the uploaded image
+  //     const postData = {
+  //       author: `urn:li:person:${user?.socialLinks?.linkedinId}`,
+  //       lifecycleState: 'PUBLISHED',
+  //       specificContent: {
+  //         'com.linkedin.ugc.ShareContent': {
+  //           shareCommentary: {
+  //             text: `${note.title}\n\n${note.content.substring(0, 800)}${note.content.length > 800 ? '...' : ''}`
+  //           },
+  //           shareMediaCategory: 'IMAGE',
+  //           media: [
+  //             {
+  //               status: 'READY',
+  //               description: {
+  //                 text: note.mediaAttachments[0].caption || note.title
+  //               },
+  //               media: asset,
+  //               title: {
+  //                 text: note.title
+  //               }
+  //             }
+  //           ]
+  //         }
+  //       },
+  //       visibility: {
+  //         'com.linkedin.ugc.MemberNetworkVisibility': 'PUBLIC'
+  //       }
+  //     };
 
-      const response = await axios.post(
-        'https://api.linkedin.com/v2/ugcPosts',
-        postData,
-        {
-          headers: {
-            'Authorization': `Bearer ${await this.getAccessToken(user)}`,
-            'Content-Type': 'application/json',
-            'X-Restli-Protocol-Version': '2.0.0'
-          }
-        }
-      );
+  //     const response = await axios.post(
+  //       'https://api.linkedin.com/v2/ugcPosts',
+  //       postData,
+  //       {
+  //         headers: {
+  //           'Authorization': `Bearer ${await this.getAccessToken(user)}`,
+  //           'Content-Type': 'application/json',
+  //           'X-Restli-Protocol-Version': '2.0.0'
+  //         }
+  //       }
+  //     );
 
-      return {
-        success: true,
-        shareUrl: response.data.id ? `https://www.linkedin.com/feed/update/${response.data.id}` : undefined
-      };
-    } catch (error) {
-      console.error('LinkedIn image sharing error:', error);
-      throw new AppError('Failed to share image post to LinkedIn', 500);
-    }
-  }
+  //     return {
+  //       success: true,
+  //       shareUrl: response.data.id ? `https://www.linkedin.com/feed/update/${response.data.id}` : undefined
+  //     };
+  //   } catch (error) {
+  //     console.error('LinkedIn image sharing error:', error);
+  //     throw new AppError('Failed to share image post to LinkedIn', 500);
+  //   }
+  // }
 
   /**
    * Share a video post to LinkedIn
@@ -440,14 +440,66 @@ export class LinkedInSharingService {
   /**
    * Helper method to get a fresh access token for the user
    */
- static async getAccessToken(user: any): Promise<string> {
-  try {
+//  static async getAccessToken(user: any): Promise<string> {
+//   try {
 
-    const isTokenValid = user.socialLinks?.linkedinTokenExpiry &&  new Date(user.socialLinks.linkedinTokenExpiry) > new Date();
+//     const isTokenValid = user.socialLinks?.linkedinTokenExpiry &&  new Date(user.socialLinks.linkedinTokenExpiry) > new Date();
+
+//     if (!isTokenValid) {
+//       // Token is expired or about to expire, try to refresh it
+//       console.log('LinkedIn access token expired or invalid, attempting refresh...');
+//       await LinkedInService.refreshLinkedInToken(user);
+
+//       // Reload the user to get updated token info
+//       const updatedUser = await User.findById(user._id);
+//       if (!updatedUser) {
+//         throw new AppError('User not found after token refresh', 404);
+//       }
+
+//       return updatedUser.socialLinks?.linkedinAccessToken || '';
+//     }
+
+//     // Token is still valid, return it
+//     return user.socialLinks?.linkedinAccessToken;
+//   } catch (error) {
+//     console.error('LinkedIn token retrieval error:', error);
+
+//     // Handle specific error cases
+//     if (error instanceof AppError && error.message.includes('No LinkedIn refresh token')) {
+//       throw new AppError('LinkedIn session expired. Please reconnect your LinkedIn account.', 401);
+//     }
+
+//     throw new AppError('Failed to get valid LinkedIn access token', 401);
+//   }
+  // }
+
+
+  // Fix for linkedinsharing.service.ts - getAccessToken method
+
+static async getAccessToken(user: any): Promise<string> {
+  try {
+    // First, verify that user is properly defined
+    if (!user || !user._id) {
+      throw new AppError('User data missing or invalid', 401);
+    }
+
+    // Check if token exists
+    if (!user.socialLinks?.linkedinAccessToken) {
+      throw new AppError('No LinkedIn access token found', 401);
+    }
+
+    const isTokenValid = user.socialLinks?.linkedinTokenExpiry &&
+      new Date(user.socialLinks.linkedinTokenExpiry) > new Date();
 
     if (!isTokenValid) {
       // Token is expired or about to expire, try to refresh it
       console.log('LinkedIn access token expired or invalid, attempting refresh...');
+
+      // Check for refresh token before attempting refresh
+      if (!user.socialLinks?.linkedinRefreshToken) {
+        throw new AppError('LinkedIn session expired. Please reconnect your LinkedIn account.', 401);
+      }
+
       await LinkedInService.refreshLinkedInToken(user);
 
       // Reload the user to get updated token info
@@ -465,13 +517,144 @@ export class LinkedInSharingService {
     console.error('LinkedIn token retrieval error:', error);
 
     // Handle specific error cases
-    if (error instanceof AppError && error.message.includes('No LinkedIn refresh token')) {
-      throw new AppError('LinkedIn session expired. Please reconnect your LinkedIn account.', 401);
+    if (error instanceof AppError) {
+      throw error; // Re-throw AppErrors directly
     }
 
     throw new AppError('Failed to get valid LinkedIn access token', 401);
   }
 }
+
+// Fix for shareImagePost method
+
+static async shareImagePost(note: any, user: any): Promise<{ success: boolean, shareUrl?: string }> {
+  try {
+    // First, verify user data is complete
+    if (!user || !user._id) {
+      throw new AppError('Invalid user data provided', 400);
+    }
+
+    // Get access token with improved error handling
+    const accessToken = await this.getAccessToken(user);
+    if (!accessToken) {
+      throw new AppError('No LinkedIn access token found', 401);
+    }
+
+    // Get the image URL from the note
+    if (!note.mediaAttachments || !note.mediaAttachments.length || !note.mediaAttachments[0].url) {
+      throw new AppError('No image attachment found in note', 400);
+    }
+
+    const imageUrl = note.mediaAttachments[0].url;
+
+    // Step 1: Register the image with LinkedIn
+    const registerImageResponse = await axios.post(
+      'https://api.linkedin.com/v2/assets?action=registerUpload',
+      {
+        registerUploadRequest: {
+          recipes: ['urn:li:digitalmediaRecipe:feedshare-image'],
+          owner: `urn:li:person:${user?.socialLinks?.linkedinId}`,
+          serviceRelationships: [
+            {
+              relationshipType: 'OWNER',
+              identifier: 'urn:li:userGeneratedContent'
+            }
+          ]
+        }
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+          'X-Restli-Protocol-Version': '2.0.0'
+        }
+      }
+    );
+
+    // Step 2: Upload the image using the upload URL from LinkedIn
+    const uploadUrl = registerImageResponse.data.value.uploadMechanism['com.linkedin.digitalmedia.uploading.MediaUploadHttpRequest'].uploadUrl;
+    const asset = registerImageResponse.data.value.asset;
+
+    // Fetch the image data from the URL
+    const imageResponse = await axios.get(imageUrl, { responseType: 'arraybuffer' });
+    const imageBuffer = Buffer.from(imageResponse.data, 'binary');
+
+    // Upload the image to LinkedIn
+    await axios.put(
+      uploadUrl,
+      imageBuffer,
+      {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/octet-stream'
+        }
+      }
+    );
+
+    // Step 3: Share the post with the uploaded image
+    const postData = {
+      author: `urn:li:person:${user?.socialLinks?.linkedinId}`,
+      lifecycleState: 'PUBLISHED',
+      specificContent: {
+        'com.linkedin.ugc.ShareContent': {
+          shareCommentary: {
+            text: `${note.title}\n\n${note.content.substring(0, 800)}${note.content.length > 800 ? '...' : ''}`
+          },
+          shareMediaCategory: 'IMAGE',
+          media: [
+            {
+              status: 'READY',
+              description: {
+                text: note.mediaAttachments[0].caption || note.title
+              },
+              media: asset,
+              title: {
+                text: note.title
+              }
+            }
+          ]
+        }
+      },
+      visibility: {
+        'com.linkedin.ugc.MemberNetworkVisibility': 'PUBLIC'
+      }
+    };
+
+    const response = await axios.post(
+      'https://api.linkedin.com/v2/ugcPosts',
+      postData,
+      {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+          'X-Restli-Protocol-Version': '2.0.0'
+        }
+      }
+    );
+
+    return {
+      success: true,
+      shareUrl: response.data.id ? `https://www.linkedin.com/feed/update/${response.data.id}` : undefined
+    };
+  } catch (error) {
+    console.error('LinkedIn image sharing error:', error);
+
+    // More specific error handling
+    if (error instanceof AppError) {
+      throw error;
+    } else if (axios.isAxiosError(error)) {
+      const statusCode = error.response?.status || 500;
+      const message = error.response?.data?.message || 'LinkedIn API error';
+      throw new AppError(`LinkedIn API error: ${message}`, statusCode);
+    }
+
+    throw new AppError('Failed to share image post to LinkedIn', 500);
+  }
+}
+
+
 }
 
 export const linkedInSharingService = new LinkedInSharingService();
+
+

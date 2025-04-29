@@ -5,7 +5,6 @@ import config from '../config/config';
 import crypto from 'crypto';
 import { User } from '../models/user.model';
 
-
 export class LinkedInController {
 
    constructor(
@@ -53,7 +52,7 @@ static async handleCallback(req: Request, res: Response, next: NextFunction) {
       return ResponseUtil.error(res, 400, 'Authorization code not provided');
     }
 
-    
+
 
     const result = await LinkedInService.authenticate(code.toString());
 

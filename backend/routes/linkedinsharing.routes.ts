@@ -1,6 +1,7 @@
 import express from 'express';
 import { AuthMiddleware } from '../middleware/auth.mddleware';
 import LinkedInSharingController from '../controllers/linkedinsharing.controller';
+import { LinkedInController } from '../controllers/linkedin.controller';
 
 const router = express.Router();
 
@@ -25,5 +26,8 @@ router.post('/share/article', LinkedInSharingController.shareArticlePost);
 
 // Get LinkedIn access token
 router.post('/access-token', LinkedInSharingController.getAccessToken);
+
+//diconnect linkedin account
+router.post('/disconnect', LinkedInController.disconnectLinkedIn)
 
 export default router;

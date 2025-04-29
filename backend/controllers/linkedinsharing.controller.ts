@@ -45,18 +45,6 @@ export class LinkedInSharingController {
   /**
    * Validate LinkedIn token
    */
-  static validateLinkedInToken(user: any): boolean {
-    // Check if tokens exist and are not expired
-    const hasAccessToken = !!user.socialLinks?.linkedinAccessToken;
-    const hasTokenExpiry = user.socialLinks?.linkedinTokenExpiry;
-
-    if (!hasAccessToken || !hasTokenExpiry) {
-      return false;
-    }
-
-    // Check if token is still valid (not expired)
-    return new Date(user.socialLinks.linkedinTokenExpiry) > new Date();
-  }
 
 
   /**
@@ -94,15 +82,15 @@ export class LinkedInSharingController {
   } catch (error) {
     next(error);
   }
-  }
+}
 
-  /**
-   * Share content to LinkedIn based on content type
-   */
-  static async shareContent(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { note, user } = req.body;
-      const userId = (req.user as any)?.userId;
+/**
+ * Share content to LinkedIn based on content type
+*/
+static async shareContent(req: Request, res: Response, next: NextFunction) {
+  try {
+     const { note, user } = req.body;
+     const userId = (req.user as any)?.userId;
 
       if (!userId) {
         return ResponseUtil.error(res, 401, 'User not authenticated');
@@ -138,30 +126,119 @@ export class LinkedInSharingController {
 
   /**
    * Specific method to share image post
-   */
-  static async shareImagePost(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { note, user } = req.body;
-      const userId = (req.user as any)?.userId;
+  */
+ // static async shareImagePost(req: Request, res: Response, next: NextFunction) {
+  //   try {
+    //     const { note, user } = req.body;
+    //     const userId = (req.user as any)?.userId;
 
-      if (!userId) {
-        return ResponseUtil.error(res, 401, 'User not authenticated');
-      }
+    //     if (!userId) {
+      //       return ResponseUtil.error(res, 401, 'User not authenticated');
+      //     }
 
-      const result = await LinkedInSharingService.shareImagePost(note, user);
+      //     const result = await LinkedInSharingService.shareImagePost(note, user);
 
-      return ResponseUtil.success(res, 200, result, 'Image post successfully shared to LinkedIn');
-    } catch (error) {
-      next(error);
-    }
-  }
+      //     return ResponseUtil.success(res, 200, result, 'Image post successfully shared to LinkedIn');
+      //   } catch (error) {
+        //     next(error);
+        //   }
+        // }
+
+        // static validateLinkedInToken(user: any): boolean {
+        //   // Check if tokens exist and are not expired
+        //   const hasAccessToken = !!user.socialLinks?.linkedinAccessToken;
+        //   const hasTokenExpiry = user.socialLinks?.linkedinTokenExpiry;
+
+        //   if (!hasAccessToken || !hasTokenExpiry) {
+        //     return false;
+        //   }
+
+        //   // Check if token is still valid (not expired)
+        //   return new Date(user.socialLinks.linkedinTokenExpiry) > new Date();
+        // }
+
 
   /**
-   * Specific method to share video post
-   */
-  static async shareVideoPost(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { note, user } = req.body;
+ * Fix for shareImagePost method in LinkedInSharingController
+ */
+static async shareImagePost(req: Request, res: Response, next: NextFunction) {
+  try {
+    const userId = (req.user as any)?.userId;
+
+    if (!userId) {
+      return ResponseUtil.error(res, 401, 'User not authenticated');
+    }
+
+    // First retrieve the full user record to ensure we have complete data
+    const user = await User.findById(userId);
+    if (!user) {
+      return ResponseUtil.error(res, 404, 'User not found');
+    }
+
+    // Check if LinkedIn account is connected
+    if (!user.socialLinks?.linkedinId) {
+      return ResponseUtil.error(res, 400, 'LinkedIn account not connected. Please connect your LinkedIn account first.');
+    }
+
+    // Check if token exists and is valid
+    const isTokenValid = LinkedInSharingController.validateLinkedInToken(user);
+    if (!isTokenValid && !user.socialLinks?.linkedinRefreshToken) {
+      return ResponseUtil.error(res, 401, 'LinkedIn session expired. Please reconnect your LinkedIn account.');
+    }
+
+    // Now pass the full user object instead of just req.body.user
+    const result = await LinkedInSharingService.shareImagePost(req.body.note, user);
+
+    return ResponseUtil.success(res, 200, result, 'Image post successfully shared to LinkedIn');
+  } catch (error) {
+    console.error('Controller error:', error);
+
+    // Handle specific error types
+    if (error instanceof AppError) {
+      return ResponseUtil.error(res, error.statusCode || 500, error.message);
+    }
+
+    next(error);
+  }
+}
+
+/**
+ * Fix for validateLinkedInToken method in LinkedInSharingController
+ */
+static validateLinkedInToken(user: any): boolean {
+  if (!user || !user.socialLinks) {
+    return false;
+  }
+
+  // Check if tokens exist and are not expired
+  const hasAccessToken = !!user.socialLinks.linkedinAccessToken;
+  const hasTokenExpiry = user.socialLinks.linkedinTokenExpiry;
+
+  if (!hasAccessToken || !hasTokenExpiry) {
+    return false;
+  }
+
+  // Check if token is still valid (not expired)
+  const expiryDate = new Date(user.socialLinks.linkedinTokenExpiry);
+  const now = new Date();
+
+  // Add some logging for debugging
+  console.log('Token expiry check:', {
+    expiryDate,
+    now,
+    isValid: expiryDate > now
+  });
+  
+  return expiryDate > now;
+}
+
+
+        /**
+         * Specific method to share video post
+        */
+       static async shareVideoPost(req: Request, res: Response, next: NextFunction) {
+         try {
+           const { note, user } = req.body;
       const userId = (req.user as any)?.userId;
 
       if (!userId) {
