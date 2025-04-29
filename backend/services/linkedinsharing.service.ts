@@ -159,6 +159,12 @@ export class LinkedInSharingService {
    */
    static async shareImagePost(note: any, user: any): Promise<{ success: boolean, shareUrl?: string }> {
     try {
+
+       const accessToken = await this.getAccessToken(user);
+      if (!accessToken) {
+        throw new AppError('No LinkedIn access token found', 401);
+      }
+
       // Get the image URL from the note
       const imageUrl = note.mediaAttachments[0].url;
 
@@ -263,6 +269,10 @@ export class LinkedInSharingService {
    static async shareVideoPost(note: any, user: any): Promise<{ success: boolean, shareUrl?: string }> {
      try {
 
+        const accessToken = await this.getAccessToken(user);
+      if (!accessToken) {
+        throw new AppError('No LinkedIn access token found', 401);
+      }
 
       // Get the video URL from the note
       const videoUrl = note.mediaAttachments[0].url;
@@ -367,6 +377,12 @@ export class LinkedInSharingService {
    */
    static async shareArticlePost(note: any, user: any): Promise<{ success: boolean, shareUrl?: string }> {
     try {
+
+       const accessToken = await this.getAccessToken(user);
+      if (!accessToken) {
+        throw new AppError('No LinkedIn access token found', 401);
+      }
+
       // For articles, we'll create a post with a link to the document
       const documentUrl = note.mediaAttachments[0].url;
 
