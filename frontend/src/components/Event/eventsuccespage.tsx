@@ -843,6 +843,16 @@ const RegistrationSuccessPage = () => {
             <h4 className="text-lg font-medium text-gray-900 mb-2">About the Event</h4>
             <p className="text-gray-600 whitespace-pre-line">{event.description}</p>
           </div>
+
+          {/* navigate to the events page */}
+          <div className="p-6 text-center">
+            <Link
+              to="/dashboard/events"
+              className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700"
+            >
+              Back to Events
+            </Link>
+            </div>
         </div>
       </div>
     </div>
