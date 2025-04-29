@@ -312,8 +312,15 @@ const CreateEventPage: React.FC = () => {
         <div className="bg-white p-8 rounded-lg shadow-md text-center">
           <h2 className="text-2xl font-bold mb-4">Unauthorized Access</h2>
           <p className="text-gray-600">
-            Only Organizers and Administrators can create events.
+            Only Organizers can create events. Please create an account as an  organizer to proceed.
           </p>
+          {/* naigate to events page  */}
+          <button
+            onClick={() => navigate('/dashboard/events')}
+            className="mt-4 bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600 transition-colors"
+          >
+            Back to Events
+          </button>
         </div>
       </div>
     );
