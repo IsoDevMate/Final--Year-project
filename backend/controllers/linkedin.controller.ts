@@ -4,6 +4,7 @@ import { ResponseUtil } from '../utils/response.utils';
 import config from '../config/config';
 import crypto from 'crypto';
 import { User } from '../models/user.model';
+import { AppError } from '../utils/errors.utils';
 
 export class LinkedInController {
 
@@ -81,6 +82,40 @@ static async handleCallback(req: Request, res: Response, next: NextFunction) {
    * Disconnect LinkedIn account
    */
 
+  // static async disconnectLinkedIn(req: Request, res: Response, next: NextFunction) {
+  //   try {
+  //     const userId = (req.user as any)?.userId;
+
+  //     if (!userId) {
+  //       return ResponseUtil.error(res, 401, 'User not authenticated');
+  //     }
+
+  //     // Find the user and remove LinkedIn-related information
+  //     const user = await User.findByIdAndUpdate(
+  //       userId,
+  //       {
+  //         $unset: {
+  //           'socialLinks.linkedin': 1,
+  //           'socialLinks.linkedinAccessToken': 1,
+  //           'socialLinks.linkedinRefreshToken': 1,
+  //           'socialLinks.linkedinTokenExpiry': 1
+  //         }
+  //       },
+  //       { new: true }
+  //     );
+
+  //     if (!user) {
+  //       return ResponseUtil.error(res, 404, 'User not found');
+  //     }
+
+  //     return ResponseUtil.success(res, 200, {
+  //       hasLinkedInConnection: false
+  //     }, 'LinkedIn account disconnected successfully');
+  //   } catch (error) {
+  //     next(error);
+  //   }
+  // }
+
   static async disconnectLinkedIn(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = (req.user as any)?.userId;
@@ -89,29 +124,35 @@ static async handleCallback(req: Request, res: Response, next: NextFunction) {
         return ResponseUtil.error(res, 401, 'User not authenticated');
       }
 
-      // Find the user and remove LinkedIn-related information
-      const user = await User.findByIdAndUpdate(
-        userId,
-        {
-          $unset: {
-            'socialLinks.linkedin': 1,
-            'socialLinks.linkedinAccessToken': 1,
-            'socialLinks.linkedinRefreshToken': 1,
-            'socialLinks.linkedinTokenExpiry': 1
-          }
-        },
-        { new: true }
-      );
-
+      // Find the user
+      const user = await User.findById(userId);
       if (!user) {
         return ResponseUtil.error(res, 404, 'User not found');
       }
 
+      // Check if LinkedIn is connected
+      if (!user.socialLinks?.linkedinId && !user.socialLinks?.linkedinAccessToken) {
+        return ResponseUtil.error(res, 400, 'LinkedIn account not connected');
+      }
+
+      // Remove LinkedIn related information
+      if (user.socialLinks) {
+        user.socialLinks.linkedinId = undefined;
+        user.socialLinks.linkedinAccessToken = undefined;
+        user.socialLinks.linkedinRefreshToken = undefined;
+        user.socialLinks.linkedinTokenExpiry = undefined;
+      }
+
+      // Save the updated user
+      await user.save();
+
+      // Return successful response with a clear status flag
       return ResponseUtil.success(res, 200, {
         hasLinkedInConnection: false
       }, 'LinkedIn account disconnected successfully');
     } catch (error) {
-      next(error);
+      console.error('LinkedIn disconnect error:', error);
+      next(error instanceof AppError ? error : new AppError('Failed to disconnect LinkedIn account', 500));
     }
   }
 }

@@ -68,6 +68,31 @@ export class LinkedInStatusService {
       return false;
     }
   }
+
+// Disconnect LinkedIn account
+  static async disconnectLinkedIn(userId: string): Promise<boolean> {
+    try {
+      const user = await User.findById(userId);
+
+      if (!user) {
+        throw new AppError('User not found', 404);
+      }
+
+      // Clear LinkedIn connection data
+      if (user.socialLinks) {
+        user.socialLinks.linkedinId = undefined;
+        user.socialLinks.linkedinAccessToken = undefined;
+        user.socialLinks.linkedinRefreshToken = undefined;
+        user.socialLinks.linkedinTokenExpiry = undefined;
+      }
+
+      await user.save();
+      return true;
+    } catch (error) {
+      console.error('LinkedIn disconnect error:', error);
+      return false;
+    }
+  }
 }
 
 export default LinkedInStatusService;
