@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg">
+  <!-- Gradient definitions -->
+  <defs>
+    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4338ca" /> <!-- indigo-700 -->
+      <stop offset="100%" stop-color="#312e81" /> <!-- darker indigo -->
+    </linearGradient>
+    <filter id="shadowEffect" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
+      <feOffset dx="2" dy="2" result="offsetBlur" />
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.3" />
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Main background shape - stylized "C" -->
+  <path d="M200 40 
+           A80 80 0 0 0 120 120
+           A80 80 0 0 0 200 200
+           L200 180
+           A60 60 0 0 1 140 120
+           A60 60 0 0 1 200 60
+           Z" 
+        fill="url(#logoGradient)" 
+        filter="url(#shadowEffect)" />
+
+  <!-- Stylized comfortable seating element -->
+  <path d="M220 70
+           C270 70, 290 85, 290 120
+           C290 155, 270 170, 220 170
+           L220 150
+           C255 150, 270 140, 270 120
+           C270 100, 255 90, 220 90
+           Z" 
+        fill="#f5f5dc" /> <!-- cream color -->
+
+  <!-- Small accent details -->
+  <circle cx="180" cy="120" r="8" fill="#f5f5dc" /> <!-- cream accent -->
+  <circle cx="250" cy="120" r="6" fill="#4338ca" /> <!-- indigo accent -->
+
+  <!-- Text for "comfybase" -->
+  <text x="200" y="240" font-family="Arial, sans-serif" font-size="28" font-weight="700" text-anchor="middle" fill="#000000">
+    <tspan fill="#4338ca">comfy</tspan><tspan fill="#1e1e1e">base</tspan>
+  </text>
+
+  <!-- Tagline -->
+  <text x="200" y="265" font-family="Arial, sans-serif" font-size="12" font-weight="400" text-anchor="middle" fill="#666666">Transform Your Event Experience</text>
+</svg>
