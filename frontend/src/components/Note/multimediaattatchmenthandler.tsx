@@ -230,6 +230,184 @@ export const MediaAttachmentHandler = {
   }),
 
   // MediaPreviewModal component - IMPROVED ERROR HANDLING
+  // MediaPreviewModal: React.memo(({
+  //   selectedAttachment,
+  //   showMediaPreview,
+  //   setShowMediaPreview,
+  //   note,
+  //   handleDeleteAttachment
+  // }: {
+  //   selectedAttachment: MediaAttachment | null,
+  //   showMediaPreview: boolean,
+  //   setShowMediaPreview: (show: boolean) => void,
+  //   note: Note | null,
+  //   handleDeleteAttachment: (attachmentId: string) => Promise<void>
+  // }) => {
+  //   if (!showMediaPreview || !selectedAttachment) return null;
+
+  //   // In the handleShareAttachment function in MediaPreviewModal
+  //   const handleShareAttachment = async (customMessage = '') => {
+  //     if (!note || !selectedAttachment) return;
+
+  //     // Get token from localStorage directly instead of user object
+  //     const token = localStorage.getItem('accessToken');
+  //     if (!token) {
+  //       toast.error('Authentication token missing');
+  //       return;
+  //     }
+
+  //     // Get LinkedIn token from user object
+  //     const userFromStorage = localStorage.getItem('user');
+  //     if (!userFromStorage) {
+  //       toast.error('User information not found');
+  //       return;
+  //     }
+
+  //     const parsedUser = JSON.parse(userFromStorage);
+  //     const linkedInToken = parsedUser?.socialLinks?.linkedinAccessToken;
+
+  //     if (!linkedInToken) {
+  //       toast.error('LinkedIn not connected. Please connect your LinkedIn account first.');
+  //       return;
+  //     }
+
+  //     const API_BASE_URL = "https://final-year-project-56d5.onrender.com";
+
+  //     try {
+  //       // Use your API endpoint but with proper error handling
+  //       const sharingEndpoint = (() => {
+  //         switch (selectedAttachment.type) {
+  //           case 'image': return `${API_BASE_URL}/api/v1/linkedin/share/image`;
+  //           case 'video': return `${API_BASE_URL}/api/v1/linkedin/share/video`;
+  //           case 'document': return `${API_BASE_URL}/api/v1/linkedin/share/article`;
+  //           default: return `${API_BASE_URL}/api/v1/linkedin/share/content`;
+  //         }
+  //       })();
+
+  //       const payload = {
+  //         note: {
+  //           title: note.title,
+  //           content: customMessage || `Check out this ${selectedAttachment.type}`,
+  //           mediaAttachments: [
+  //             {
+  //               type: selectedAttachment.type,
+  //               url: selectedAttachment.url,
+  //               caption: customMessage || selectedAttachment.caption || note.title
+  //             }
+  //           ]
+  //         },
+  //         user: {
+  //           socialLinks: {
+  //             linkedinAccessToken: linkedInToken,
+  //             linkedinId: parsedUser.socialLinks?.linkedinId
+  //           }
+  //         }
+  //       };
+
+  //       const response = await axios.post(sharingEndpoint, payload, {
+  //         headers: {
+  //           'Authorization': `Bearer ${token}`,
+  //           'Content-Type': 'application/json'
+  //         }
+  //       });
+
+  //       if (response.status >= 200 && response.status < 300) {
+  //         toast.success('Successfully shared to LinkedIn!');
+  //         return response.data;
+  //       } else {
+  //         throw new Error('Failed to share');
+  //       }
+  //     } catch (error) {
+  //       console.error('Error sharing to LinkedIn:', error);
+  //       // Don't automatically logout on error
+  //       if (axios.isAxiosError(error) && error.response && error.response.status === 401) {
+  //         toast.error('Your session has expired. Please login again.');
+  //         // Only logout if absolutely necessary
+  //         // navigate('/auth/login');
+  //       } else {
+  //         toast.error('Failed to share to LinkedIn');
+  //       }
+  //       throw error;
+  //     }
+  //   };
+
+  //   // Improved deletion handler with validation
+  //   const handleDeleteClick = () => {
+  //     if (selectedAttachment && selectedAttachment._id && note && note._id) {
+  //       handleDeleteAttachment(selectedAttachment._id);
+  //     } else {
+  //       toast.error('Cannot delete: Missing attachment or note ID');
+  //       console.error('Delete error - IDs:', {
+  //         attachmentId: selectedAttachment?._id,
+  //         noteId: note?._id
+  //       });
+  //     }
+  //   };
+
+  //   return (
+  //     <div className="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-70 flex items-center justify-center p-4">
+  //       <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+  //         <div className="p-4 border-b flex justify-between items-center">
+  //           <h3 className="text-lg font-medium">{selectedAttachment.fileName || 'Unnamed file'}</h3>
+  //           <div className="flex items-center space-x-2">
+  //             <MultimediaShareModa
+  //               attachment={selectedAttachment}
+  //               onShare={(customMessage) => handleShareAttachment(customMessage)}
+  //             />
+  //             <button
+  //               onClick={handleDeleteClick}
+  //               className="text-red-500 hover:text-red-700"
+  //             >
+  //               <Trash2 className="h-5 w-5" />
+  //             </button>
+  //             <button
+  //               onClick={() => setShowMediaPreview(false)}
+  //               className="text-gray-500 hover:text-gray-700"
+  //             >
+  //               <X className="h-6 w-6" />
+  //             </button>
+  //           </div>
+  //         </div>
+
+  //         <div className="flex-1 overflow-auto p-4 flex items-center justify-center">
+  //           {selectedAttachment.type === 'image' && (
+  //             <img
+  //               src={selectedAttachment.url}
+  //               alt={selectedAttachment.fileName || 'Image file'}
+  //               className="max-w-full max-h-[70vh] object-contain"
+  //               onError={(e) => {
+  //                 e.currentTarget.src = '/path/to/fallback/image.png';
+  //               }}
+  //             />
+  //           )}
+  //           {selectedAttachment.type === 'audio' && (
+  //             <audio controls className="w-full">
+  //               <source src={selectedAttachment.url} />
+  //               Your browser does not support the audio element.
+  //             </audio>
+  //           )}
+  //           {selectedAttachment.type === 'video' && (
+  //             <video controls className="max-w-full max-h-[70vh]">
+  //               <source src={selectedAttachment.url} />
+  //               Your browser does not support the video element.
+  //             </video>
+  //           )}
+  //           {selectedAttachment.type === 'document' && (
+  //             <iframe
+  //               src={selectedAttachment.url}
+  //               width="100%"
+  //               height="600px"
+  //               className="border-none"
+  //             >
+  //               Document preview not available
+  //             </iframe>
+  //           )}
+  //         </div>
+  //       </div>
+  //     </div>
+  //   );
+  // })
+
   MediaPreviewModal: React.memo(({
     selectedAttachment,
     showMediaPreview,
@@ -313,6 +491,8 @@ export const MediaAttachmentHandler = {
 
         if (response.status >= 200 && response.status < 300) {
           toast.success('Successfully shared to LinkedIn!');
+          // Close the modal after successful sharing
+          setShowMediaPreview(false);
           return response.data;
         } else {
           throw new Error('Failed to share');
@@ -345,7 +525,7 @@ export const MediaAttachmentHandler = {
     };
 
     return (
-      <div className="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-70 flex items-center justify-center p-4">
+      <div className="fixed inset-0 z-50 overflow-y-auto bg-gray-800 bg-opacity-60 backdrop-blur-sm flex items-center justify-center p-4">
         <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
           <div className="p-4 border-b flex justify-between items-center">
             <h3 className="text-lg font-medium">{selectedAttachment.fileName || 'Unnamed file'}</h3>
@@ -369,7 +549,7 @@ export const MediaAttachmentHandler = {
             </div>
           </div>
 
-          <div className="flex-1 overflow-auto p-4 flex items-center justify-center">
+          <div className="flex-1 overflow-auto p-4 flex items-center justify-center bg-gray-50">
             {selectedAttachment.type === 'image' && (
               <img
                 src={selectedAttachment.url}
@@ -407,4 +587,5 @@ export const MediaAttachmentHandler = {
       </div>
     );
   })
-};
+  
+}

@@ -238,6 +238,53 @@ const handleCancelDrawing = () => {
 };
 
    // Add this method to your NotesPage component
+// const handleLinkedInShare = async (customMessage?: string) => {
+//   if (!note) return;
+
+//   //check if user object contains linkedin token
+//   if (!user || !user.socialLinks?.linkedinAccessToken) {
+//     toast.error('Please connect your LinkedIn account to share notes.');
+//     return;
+//   }
+
+//   try {
+//     const response = await fetch(`${API_BASE_URL}/api/v1/linkedin/share/note/${note._id}`, {
+//       method: 'POST',
+//       headers: getAuthHeaders(),
+//       body: JSON.stringify({
+//         customMessage,
+//         // You can pass additional metadata if needed
+//         noteMetadata: {
+//           title: note.title,
+//           content: note.content,
+//           event: note.event?.title,
+//           session: note.session?.title
+//         }
+//       })
+//     });
+
+//     if (!response.ok) {
+//       if (response.status === 401) {
+//         navigate('/auth/login');
+//         return;
+//       }
+//       throw new Error('Failed to share to LinkedIn');
+//     }
+
+//     const result = await response.json();
+//     alert('Successfully shared to LinkedIn!');
+
+//     // Optionally open the shared post
+//     if (result.data.shareUrl) {
+//       window.open(result.data.shareUrl, '_blank');
+//     }
+//   } catch (error) {
+//     console.error('LinkedIn sharing error:', error);
+//     alert('Failed to share to LinkedIn');
+//   }
+   //    };
+
+   // Update the handleLinkedInShare function in the NotesPage component
 const handleLinkedInShare = async (customMessage?: string) => {
   if (!note) return;
 
@@ -272,17 +319,20 @@ const handleLinkedInShare = async (customMessage?: string) => {
     }
 
     const result = await response.json();
-    alert('Successfully shared to LinkedIn!');
+    toast.success('Successfully shared to LinkedIn!');
 
-    // Optionally open the shared post
+   // open the shared post - consider if this is needed
     if (result.data.shareUrl) {
       window.open(result.data.shareUrl, '_blank');
     }
+
+    return result;
   } catch (error) {
     console.error('LinkedIn sharing error:', error);
-    alert('Failed to share to LinkedIn');
+    toast.error('Failed to share to LinkedIn');
+    throw error;  // Re-throw to allow handling in the modal
   }
-   };
+};
 
   // const handleSave = async () => {
   //   console.group('Save Note');
