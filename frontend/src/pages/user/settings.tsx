@@ -64,7 +64,7 @@ const SettingsPage: React.FC = () => {
                 Account
               </button>
 
-              {/* <button
+               <button
                 onClick={() => setActiveTab('security')}
                 className={`flex items-center px-3 py-2 text-sm font-medium rounded-md w-full text-left ${
                   activeTab === 'security'
@@ -74,9 +74,9 @@ const SettingsPage: React.FC = () => {
               >
                 <Shield className="mr-3 h-5 w-5" />
                 Security
-              </button> */}
+              </button>
 
-              {/* <button
+               <button
                 onClick={() => setActiveTab('notifications')}
                 className={`flex items-center px-3 py-2 text-sm font-medium rounded-md w-full text-left ${
                   activeTab === 'notifications'
@@ -86,7 +86,7 @@ const SettingsPage: React.FC = () => {
               >
                 <Bell className="mr-3 h-5 w-5" />
                 Notifications
-              </button> */}
+              </button>
 
               <button
                 onClick={() => setActiveTab('billing')}
@@ -98,9 +98,9 @@ const SettingsPage: React.FC = () => {
               >
                 <CreditCard className="mr-3 h-5 w-5" />
                 Billing
-              </button> 
+              </button>
 
-              {/* <button
+              <button
                 onClick={() => setActiveTab('integrations')}
                 className={`flex items-center px-3 py-2 text-sm font-medium rounded-md w-full text-left ${
                   activeTab === 'integrations'
@@ -110,7 +110,7 @@ const SettingsPage: React.FC = () => {
               >
                 <Globe className="mr-3 h-5 w-5" />
                 Integrations
-              </button> */}
+              </button>
             </nav>
           </div>
 
@@ -146,7 +146,7 @@ const AccountSettings: React.FC = () => {
           </div>
         </div>
 
-        {/* <div className="bg-gray-50 p-4 rounded-lg">
+        <div className="bg-gray-50 p-4 rounded-lg">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-sm font-medium text-gray-900">Email Preferences</h3>
@@ -168,175 +168,177 @@ const AccountSettings: React.FC = () => {
               Delete
             </button>
           </div>
-        </div> */}
+        </div>
       </div>
     </div>
   );
 };
 
-// // Security Settings Tab
-// const SecuritySettings: React.FC = () => {
-//   return (
-//     <div>
-//       <h2 className="text-lg font-medium text-gray-900 mb-4">Security Settings</h2>
+// Security Settings Tab
+const SecuritySettings: React.FC = () => {
+  return (
+    <div>
+      <h2 className="text-lg font-medium text-gray-900 mb-4">Security Settings</h2>
 
-//       <div className="space-y-6">
-//         <div className="bg-gray-50 p-4 rounded-lg">
-//           <div className="flex items-center justify-between">
-//             <div>
-//               <h3 className="text-sm font-medium text-gray-900">Change Password</h3>
-//               <p className="text-sm text-gray-500">Update your password for enhanced security</p>
-//             </div>
-//             <button className="text-sm text-indigo-600 hover:text-indigo-500 flex items-center">
-//               <Key className="mr-1 h-4 w-4" />
-//               Change
-//             </button>
-//           </div>
-//         </div>
+      <div className="space-y-6">
+        <div className="bg-gray-50 p-4 rounded-lg">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-medium text-gray-900">Change Password</h3>
+              <p className="text-sm text-gray-500">Update your password for enhanced security</p>
+            </div>
+            <button className="text-sm text-indigo-600 hover:text-indigo-500 flex items-center">
+              <Key className="mr-1 h-4 w-4" />
+              Change
+            </button>
+          </div>
+        </div>
 
-//         <div className="bg-gray-50 p-4 rounded-lg">
-//           <div className="flex items-center justify-between">
-//             <div>
-//               <h3 className="text-sm font-medium text-gray-900">Two-Factor Authentication</h3>
-//               <p className="text-sm text-gray-500">Add an extra layer of security to your account</p>
-//             </div>
-//             <button className="text-sm text-indigo-600 hover:text-indigo-500 flex items-center">
-//               <Lock className="mr-1 h-4 w-4" />
-//               Enable
-//             </button>
-//           </div>
-//         </div>
+        <div className="bg-gray-50 p-4 rounded-lg">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-medium text-gray-900">Two-Factor Authentication</h3>
+              <p className="text-sm text-gray-500">Add an extra layer of security to your account</p>
+            </div>
+            <button className="text-sm text-indigo-600 hover:text-indigo-500 flex items-center">
+              <Lock className="mr-1 h-4 w-4" />
+              Enable
+            </button>
+          </div>
+        </div>
 
-//         <div className="bg-gray-50 p-4 rounded-lg">
-//           <div className="flex items-center justify-between">
-//             <div>
-//               <h3 className="text-sm font-medium text-gray-900">Active Sessions</h3>
-//               <p className="text-sm text-gray-500">Manage and logout from active devices</p>
-//             </div>
-//             <button className="text-sm text-indigo-600 hover:text-indigo-500">
-//               Manage
-//             </button>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
+        <div className="bg-gray-50 p-4 rounded-lg">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-medium text-gray-900">Active Sessions</h3>
+              <p className="text-sm text-gray-500">Manage and logout from active devices</p>
+            </div>
+            <button className="text-sm text-indigo-600 hover:text-indigo-500">
+              Manage
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
-// // Notification Settings Tab
-// const NotificationSettingsTab: React.FC = () => {
-//   const [emailNotifications, setEmailNotifications] = useState<NotificationSettings>({
-//     events: true,
-//     reminders: true,
-//     updates: false,
-//     marketing: false
-//   });
+// Notification Settings Tab
+const NotificationSettingsTab: React.FC = () => {
+  const [emailNotifications, setEmailNotifications] = useState<NotificationSettings>({
+    events: true,
+    reminders: true,
+    updates: false,
+    marketing: false
+  });
 
-//   const handleToggle = (key: keyof NotificationSettings) => {
-//     setEmailNotifications(prev => ({
-//       ...prev,
-//       [key]: !prev[key]
-//     }));
-//   };
+  const handleToggle = (key: keyof NotificationSettings) => {
+    setEmailNotifications(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }));
+  };
 
-//   return (
-//     <div>
-//       <h2 className="text-lg font-medium text-gray-900 mb-4">Notification Settings</h2>
+  return (
+    <div>
+      <h2 className="text-lg font-medium text-gray-900 mb-4">Notification Settings</h2>
 
-//       <div className="space-y-6">
-//         <div>
-//           <h3 className="text-sm font-medium text-gray-900 mb-4">Email Notifications</h3>
+      <div className="space-y-6">
+        <div>
+          <h3 className="text-sm font-medium text-gray-900 mb-4">Email Notifications</h3>
 
-//           <div className="space-y-4">
-//             <div className="flex items-center justify-between">
-//               <div>
-//                 <p className="text-sm font-medium text-gray-700">Event Updates</p>
-//                 <p className="text-xs text-gray-500">Receive notifications about your events</p>
-//               </div>
-//               <div className="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
-//                 <input
-//                   type="checkbox"
-//                   name="event-toggle"
-//                   id="event-toggle"
-//                   checked={emailNotifications.events}
-//                   onChange={() => handleToggle('events')}
-//                   className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"
-//                 />
-//                 <label
-//                   htmlFor="event-toggle"
-//                   className={`toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer ${emailNotifications.events ? 'bg-indigo-600' : ''}`}
-//                 ></label>
-//               </div>
-//             </div>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-700">Event Updates</p>
+                <p className="text-xs text-gray-500">Receive notifications about your events</p>
+              </div>
+              <div className="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                <input
+                  type="checkbox"
+                  name="event-toggle"
+                  id="event-toggle"
+                  checked={emailNotifications.events}
+                  onChange={() => handleToggle('events')}
+                  className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"
+                />
+                <label
+                  htmlFor="event-toggle"
+                  className={`toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer ${emailNotifications.events ? 'bg-indigo-600' : ''}`}
+                ></label>
+              </div>
+            </div>
 
-//             <div className="flex items-center justify-between">
-//               <div>
-//                 <p className="text-sm font-medium text-gray-700">Reminders</p>
-//                 <p className="text-xs text-gray-500">Get reminders for upcoming events</p>
-//               </div>
-//               <div className="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
-//                 <input
-//                   type="checkbox"
-//                   name="reminder-toggle"
-//                   id="reminder-toggle"
-//                   checked={emailNotifications.reminders}
-//                   onChange={() => handleToggle('reminders')}
-//                   className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"
-//                 />
-//                 <label
-//                   htmlFor="reminder-toggle"
-//                   className={`toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer ${emailNotifications.reminders ? 'bg-indigo-600' : ''}`}
-//                 ></label>
-//               </div>
-//             </div>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-700">Reminders</p>
+                <p className="text-xs text-gray-500">Get reminders for upcoming events</p>
+              </div>
+              <div className="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                <input
+                  type="checkbox"
+                  name="reminder-toggle"
+                  id="reminder-toggle"
+                  checked={emailNotifications.reminders}
+                  onChange={() => handleToggle('reminders')}
+                  className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"
+                />
+                <label
+                  htmlFor="reminder-toggle"
+                  className={`toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer ${emailNotifications.reminders ? 'bg-indigo-600' : ''}`}
+                ></label>
+              </div>
+            </div>
 
-//             <div className="flex items-center justify-between">
-//               <div>
-//                 <p className="text-sm font-medium text-gray-700">Product Updates</p>
-//                 <p className="text-xs text-gray-500">Stay updated with the latest features</p>
-//               </div>
-//               <div className="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
-//                 <input
-//                   type="checkbox"
-//                   name="update-toggle"
-//                   id="update-toggle"
-//                   checked={emailNotifications.updates}
-//                   onChange={() => handleToggle('updates')}
-//                   className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"
-//                 />
-//                 <label
-//                   htmlFor="update-toggle"
-//                   className={`toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer ${emailNotifications.updates ? 'bg-indigo-600' : ''}`}
-//                 ></label>
-//               </div>
-//             </div>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-700">Product Updates</p>
+                <p className="text-xs text-gray-500">Stay updated with the latest features</p>
+              </div>
+              <div className="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                <input
+                  type="checkbox"
+                  name="update-toggle"
+                  id="update-toggle"
+                  checked={emailNotifications.updates}
+                  onChange={() => handleToggle('updates')}
+                  className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"
+                />
+                <label
+                  htmlFor="update-toggle"
+                  className={`toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer ${emailNotifications.updates ? 'bg-indigo-600' : ''}`}
+                ></label>
+              </div>
+            </div>
 
-//             <div className="flex items-center justify-between">
-//               <div>
-//                 <p className="text-sm font-medium text-gray-700">Marketing Emails</p>
-//                 <p className="text-xs text-gray-500">Receive promotional emails from us</p>
-//               </div>
-//               <div className="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
-//                 <input
-//                   type="checkbox"
-//                   name="marketing-toggle"
-//                   id="marketing-toggle"
-//                   checked={emailNotifications.marketing}
-//                   onChange={() => handleToggle('marketing')}
-//                   className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"
-//                 />
-//                 <label
-//                   htmlFor="marketing-toggle"
-//                   className={`toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer ${emailNotifications.marketing ? 'bg-indigo-600' : ''}`}
-//                 ></label>
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-700">Marketing Emails</p>
+                <p className="text-xs text-gray-500">Receive promotional emails from us</p>
+              </div>
+              <div className="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                <input
+                  type="checkbox"
+                  name="marketing-toggle"
+                  id="marketing-toggle"
+                  checked={emailNotifications.marketing}
+                  onChange={() => handleToggle('marketing')}
+                  className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"
+                />
+                <label
+                  htmlFor="marketing-toggle"
+                  className={`toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer ${emailNotifications.marketing ? 'bg-indigo-600' : ''}`}
+                ></label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
 
 // Billing Settings Tab
 const BillingSettings: React.FC = () => {
@@ -388,7 +390,7 @@ const BillingSettings: React.FC = () => {
           </div>
         </div>
 
-        {/* <div className="bg-gray-50 p-4 rounded-lg">
+        <div className="bg-gray-50 p-4 rounded-lg">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-sm font-medium text-gray-900">Billing History</h3>
@@ -402,7 +404,7 @@ const BillingSettings: React.FC = () => {
               View
             </Link>
           </div>
-        </div> */}
+        </div>
 
         <div className="bg-gray-50 p-4 rounded-lg">
           <div className="flex flex-col">
@@ -460,49 +462,49 @@ const BillingSettings: React.FC = () => {
   );
 };
 
-// // Integrations Settings Tab
-// const IntegrationsSettings: React.FC = () => {
-//   const [integrations] = useState([
-//     { id: 'slack', name: 'Slack', connected: true, icon: <Globe className="h-8 w-8 text-gray-400" /> },
-//     { id: 'github', name: 'GitHub', connected: true, icon: <Globe className="h-8 w-8 text-gray-400" /> },
-//     { id: 'google', name: 'Google Calendar', connected: false, icon: <Globe className="h-8 w-8 text-gray-400" /> },
-//     { id: 'dropbox', name: 'Dropbox', connected: false, icon: <Globe className="h-8 w-8 text-gray-400" /> }
-//   ]);
+// Integrations Settings Tab
+const IntegrationsSettings: React.FC = () => {
+  const [integrations] = useState([
+    { id: 'slack', name: 'Slack', connected: true, icon: <Globe className="h-8 w-8 text-gray-400" /> },
+    { id: 'github', name: 'GitHub', connected: true, icon: <Globe className="h-8 w-8 text-gray-400" /> },
+    { id: 'google', name: 'Google Calendar', connected: false, icon: <Globe className="h-8 w-8 text-gray-400" /> },
+    { id: 'dropbox', name: 'Dropbox', connected: false, icon: <Globe className="h-8 w-8 text-gray-400" /> }
+  ]);
 
-//   return (
-//     <div>
-//       <h2 className="text-lg font-medium text-gray-900 mb-4">Integrations</h2>
+  return (
+    <div>
+      <h2 className="text-lg font-medium text-gray-900 mb-4">Integrations</h2>
 
-//       <p className="text-sm text-gray-500 mb-6">
-//         Connect your account with these services to enhance your workflow
-//       </p>
+      <p className="text-sm text-gray-500 mb-6">
+        Connect your account with these services to enhance your workflow
+      </p>
 
-//       <div className="space-y-4">
-//         {integrations.map((integration) => (
-//           <div key={integration.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-//             <div className="flex items-center">
-//               {integration.icon}
-//               <div className="ml-4">
-//                 <h3 className="text-sm font-medium text-gray-900">{integration.name}</h3>
-//                 <p className="text-xs text-gray-500">
-//                   {integration.connected ? 'Connected' : 'Not connected'}
-//                 </p>
-//               </div>
-//             </div>
-//             <button
-//               className={`px-3 py-1 text-sm font-medium rounded ${
-//                 integration.connected
-//                   ? 'text-red-600 border border-red-600 hover:bg-red-50'
-//                   : 'text-indigo-600 border border-indigo-600 hover:bg-indigo-50'
-//               }`}
-//             >
-//               {integration.connected ? 'Disconnect' : 'Connect'}
-//             </button>
-//           </div>
-//         ))}
-//       </div>
-//     </div>
-//   );
-// };
+      <div className="space-y-4">
+        {integrations.map((integration) => (
+          <div key={integration.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+            <div className="flex items-center">
+              {integration.icon}
+              <div className="ml-4">
+                <h3 className="text-sm font-medium text-gray-900">{integration.name}</h3>
+                <p className="text-xs text-gray-500">
+                  {integration.connected ? 'Connected' : 'Not connected'}
+                </p>
+              </div>
+            </div>
+            <button
+              className={`px-3 py-1 text-sm font-medium rounded ${
+                integration.connected
+                  ? 'text-red-600 border border-red-600 hover:bg-red-50'
+                  : 'text-indigo-600 border border-indigo-600 hover:bg-indigo-50'
+              }`}
+            >
+              {integration.connected ? 'Disconnect' : 'Connect'}
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 export default SettingsPage;
