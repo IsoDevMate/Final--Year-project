@@ -109,7 +109,11 @@ export class LinkedInSharingService {
    * Share a text post to LinkedIn
    */
    static async shareTextPost(note: any, user: any): Promise<{ success: boolean, shareUrl?: string }> {
-    try {
+     try {
+      const accessToken = await this.getAccessToken(user);
+      if (!accessToken) {
+        throw new AppError('No LinkedIn access token found', 401);
+      }
       // Prepare the content for LinkedIn's UGC Post API
       const postData = {
         author: `urn:li:person:${user?.socialLinks?.linkedinId}`,
@@ -257,7 +261,9 @@ export class LinkedInSharingService {
    * Share a video post to LinkedIn
    */
    static async shareVideoPost(note: any, user: any): Promise<{ success: boolean, shareUrl?: string }> {
-    try {
+     try {
+
+
       // Get the video URL from the note
       const videoUrl = note.mediaAttachments[0].url;
 

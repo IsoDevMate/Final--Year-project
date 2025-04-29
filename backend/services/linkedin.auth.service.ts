@@ -193,44 +193,88 @@ export class LinkedInService {
     }
   }
 
+  // static async refreshLinkedInToken(user: any): Promise<void> {
+  //   // Check if refresh token exists
+  //   if (!user.socialLinks?.linkedinRefreshToken) {
+  //     console.warn('No LinkedIn refresh token available for user:', user._id);
+  //     throw new AppError('No LinkedIn refresh token available. Please reconnect your LinkedIn account.', 401);
+  //   }
+
+  //   try {
+  //     const response = await axios.post('https://www.linkedin.com/oauth/v2/accessToken', null, {
+  //       params: {
+  //         grant_type: 'refresh_token',
+  //         refresh_token: user.socialLinks.linkedinRefreshToken,
+  //         client_id: config.linkedin.clientId,
+  //         client_secret: config.linkedin.clientSecret
+  //       },
+  //       headers: {
+  //         'Content-Type': 'application/x-www-form-urlencoded'
+  //       }
+  //     });
+
+  //     // Log the response to understand what's being returned
+  //     console.log('LinkedIn Refresh Token Response:', response.data);
+
+  //     // Update user's tokens
+  //     user.socialLinks.linkedinAccessToken = response.data.access_token;
+  //     user.socialLinks.linkedinTokenExpiry = new Date(Date.now() + 60 * 24 * 60 * 60 * 1000); // 60 days
+
+  //     // Optional: Update refresh token if a new one is provided
+  //     if (response.data.refresh_token) {
+  //       user.socialLinks.linkedinRefreshToken = response.data.refresh_token;
+  //     }
+
+  //     await user.save();
+  //   } catch (error) {
+  //     console.error('LinkedIn token refresh failed:', error);
+  //     throw new AppError('Failed to refresh LinkedIn token. Please reconnect your account.', 401);
+  //   }
+  // }
+
+
   static async refreshLinkedInToken(user: any): Promise<void> {
-    // Check if refresh token exists
-    if (!user.socialLinks?.linkedinRefreshToken) {
-      console.warn('No LinkedIn refresh token available for user:', user._id);
-      throw new AppError('No LinkedIn refresh token available. Please reconnect your LinkedIn account.', 401);
-    }
-
-    try {
-      const response = await axios.post('https://www.linkedin.com/oauth/v2/accessToken', null, {
-        params: {
-          grant_type: 'refresh_token',
-          refresh_token: user.socialLinks.linkedinRefreshToken,
-          client_id: config.linkedin.clientId,
-          client_secret: config.linkedin.clientSecret
-        },
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      });
-
-      // Log the response to understand what's being returned
-      console.log('LinkedIn Refresh Token Response:', response.data);
-
-      // Update user's tokens
-      user.socialLinks.linkedinAccessToken = response.data.access_token;
-      user.socialLinks.linkedinTokenExpiry = new Date(Date.now() + 60 * 24 * 60 * 60 * 1000); // 60 days
-
-      // Optional: Update refresh token if a new one is provided
-      if (response.data.refresh_token) {
-        user.socialLinks.linkedinRefreshToken = response.data.refresh_token;
-      }
-
-      await user.save();
-    } catch (error) {
-      console.error('LinkedIn token refresh failed:', error);
-      throw new AppError('Failed to refresh LinkedIn token. Please reconnect your account.', 401);
-    }
+  // Check if refresh token exists
+  if (!user.socialLinks?.linkedinRefreshToken) {
+    console.warn('No LinkedIn refresh token available for user:', user._id);
+    throw new AppError('No LinkedIn refresh token available. Please reconnect your LinkedIn account.', 401);
   }
+
+  try {
+    const response = await axios.post('https://www.linkedin.com/oauth/v2/accessToken', null, {
+      params: {
+        grant_type: 'refresh_token',
+        refresh_token: user.socialLinks.linkedinRefreshToken,
+        client_id: config.linkedin.clientId,
+        client_secret: config.linkedin.clientSecret,
+        redirect_uri: config.linkedin.callbackUrl // Include redirect_uri if required
+      },
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    });
+
+    // Update user's tokens
+    user.socialLinks.linkedinAccessToken = response.data.access_token;
+    user.socialLinks.linkedinTokenExpiry = new Date(Date.now() + response.data.expires_in * 1000);
+
+    // Update refresh token if a new one is provided (some OAuth providers issue new refresh tokens)
+    if (response.data.refresh_token) {
+      user.socialLinks.linkedinRefreshToken = response.data.refresh_token;
+    }
+
+    await user.save();
+  } catch (error) {
+    console.error('LinkedIn token refresh failed:', error);
+
+    // Handle specific error cases
+    if (axios.isAxiosError(error) && error.response?.data?.error === 'invalid_grant') {
+      throw new AppError('LinkedIn session expired. Please reconnect your account.', 401);
+    }
+
+    throw new AppError('Failed to refresh LinkedIn token. Please reconnect your account.', 401);
+  }
+}
 
 
   /**

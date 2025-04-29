@@ -6,7 +6,7 @@ import axios from 'axios';
 import { useAuth } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
 import MyEventsPage from './eventsregistered';
- import PaymentModal from './registerpayment';
+import PaymentModal from './registerpayment';
 
 interface Location {
   name: string;
