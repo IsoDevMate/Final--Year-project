@@ -79,7 +79,6 @@ function manageMemory() {
   }
 }
 
-
 cron.schedule('*/1 * * * *', () => {
   manageMemory();
 });

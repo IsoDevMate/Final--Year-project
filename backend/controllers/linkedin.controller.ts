@@ -43,7 +43,6 @@ static getAuthUrl(req: Request, res: Response) {
    * Handle LinkedIn callback
    */
 
-// In linkedin.controller.ts
 static async handleCallback(req: Request, res: Response, next: NextFunction) {
   const { code, state } = req.query;
   try {

@@ -10,7 +10,6 @@ const LinkedInCallback: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const { checkAuthStatus } = useAuth();
 
-
 useEffect(() => {
   const accessToken = searchParams.get('accessToken');
   const refreshToken = searchParams.get('refreshToken');
