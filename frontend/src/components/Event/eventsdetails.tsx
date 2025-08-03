@@ -58,7 +58,7 @@ try {
           return;
         }
   console.log("Attempting to fetch event with ID:", _id);
-  const response = await axios.get(`https://final-year-project-56d5.onrender.com/api/v1/events/${_id}`);
+  const response = await axios.get(`https://final-year-project-5d85.onrender.com/api/v1/events/${_id}`);
   console.log("API Response:", response.data);
 
   if (response.data.success) {
@@ -181,7 +181,7 @@ try {
       }
 
       const response = await axios.post(
-        `https://final-year-project-56d5.onrender.com/api/v1/events/register/${event._id}`,
+        `https://final-year-project-5d85.onrender.com/api/v1/events/register/${event._id}`,
         {},
         {
           headers: {
@@ -226,7 +226,7 @@ try {
         }
 
         const response = await axios.delete(
-          `https://final-year-project-56d5.onrender.com/api/v1/events/register/${event._id}`,
+          `https://final-year-project-5d85.onrender.com/api/v1/events/register/${event._id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`
@@ -266,7 +266,7 @@ try {
 
       // Initiate M-Pesa payment
       const paymentResponse = await axios.post(
-        `https://final-year-project-56d5.onrender.com/api/v1/mpesa/event/${event._id}`,
+        `https://final-year-project-5d85.onrender.com/api/v1/mpesa/event/${event._id}`,
         {
           phoneNumber: phoneNumber,
           amount: event.ticketPrice
@@ -291,7 +291,7 @@ try {
 
           try {
             const statusResponse = await axios.get(
-              `https://final-year-project-56d5.onrender.com/api/v1/mpesa/event/${event._id}`,
+              `https://final-year-project-5d85.onrender.com/api/v1/mpesa/event/${event._id}`,
               {
                 headers: {
                   Authorization: `Bearer ${token}`

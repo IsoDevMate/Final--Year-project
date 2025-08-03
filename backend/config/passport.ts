@@ -8,7 +8,7 @@ export const setupPassport = () => {
   passport.use(new LinkedInStrategy({
     clientID: config.linkedin.clientId || '',
     clientSecret: config.linkedin.clientSecret || '',
-    callbackURL: 'https://final-year-project-56d5.onrender.com/api/v1/auth/linkedin/callback',
+    callbackURL: 'https://final-year-project-5d85.onrender.com/api/v1/auth/linkedin/callback',
     scope: ['openid profile email  w_member_social']
   }, async (accessToken, refreshToken, profile, done) => {
     try {

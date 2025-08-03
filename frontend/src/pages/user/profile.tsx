@@ -51,7 +51,7 @@ const ProfilePage: React.FC = () => {
 
     try {
         const token = localStorage.getItem('accessToken');
-        const response = await axios.put('https://final-year-project-56d5.onrender.com/api/v1/auth/update-profile', formData, {
+        const response = await axios.put('https://final-year-project-5d85.onrender.com/api/v1/auth/update-profile', formData, {
             headers: {
                 Authorization: `Bearer ${token}`
             }

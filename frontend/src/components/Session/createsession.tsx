@@ -112,7 +112,7 @@ const CreateSessionPage: React.FC = () => {
     const fetchEvents = async () => {
       try {
         // Assuming you have an endpoint to fetch events
-        const response = await axios.get('https://final-year-project-56d5.onrender.com/api/v1/events');
+        const response = await axios.get('https://final-year-project-5d85.onrender.com/api/v1/events');
         if (response.data.success) {
         setEvents(response.data.data.events);
         }
@@ -255,7 +255,7 @@ const CreateSessionPage: React.FC = () => {
     };
 
     try {
-      const response = await axios.post('https://final-year-project-56d5.onrender.com/api/v1/sessions/create', submissionData);
+      const response = await axios.post('https://final-year-project-5d85.onrender.com/api/v1/sessions/create', submissionData);
 
       if (response.data.success) {
         navigate(`/dashboard/events/${selectedEvent}/sessions`);

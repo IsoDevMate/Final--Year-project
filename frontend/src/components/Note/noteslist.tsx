@@ -69,7 +69,7 @@ const NotesListPage: React.FC = () => {
     tags: [],
   });
 
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://final-year-project-56d5.onrender.com';
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://final-year-project-5d85.onrender.com';
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem('accessToken');

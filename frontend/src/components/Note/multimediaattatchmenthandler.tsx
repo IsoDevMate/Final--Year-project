@@ -271,7 +271,7 @@ export const MediaAttachmentHandler = {
   //       return;
   //     }
 
-  //     const API_BASE_URL = "https://final-year-project-56d5.onrender.com";
+  //     const API_BASE_URL = "https://final-year-project-5d85.onrender.com";
 
   //     try {
   //       // Use your API endpoint but with proper error handling
@@ -449,7 +449,7 @@ export const MediaAttachmentHandler = {
         return;
       }
 
-      const API_BASE_URL = "https://final-year-project-56d5.onrender.com";
+      const API_BASE_URL = "https://final-year-project-5d85.onrender.com";
 
       try {
         // Use your API endpoint but with proper error handling

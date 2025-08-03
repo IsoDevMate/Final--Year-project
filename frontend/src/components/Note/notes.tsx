@@ -76,7 +76,7 @@ interface MediaAttachment {
 
   const editorRef = useRef<HTMLDivElement>(null);
 
-   const API_BASE_URL = 'https://final-year-project-56d5.onrender.com';
+   const API_BASE_URL = 'https://final-year-project-5d85.onrender.com';
 
 
    const getAuthHeaders = () => {

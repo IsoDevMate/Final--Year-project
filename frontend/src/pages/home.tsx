@@ -152,7 +152,7 @@ const ShowcaseFeature = ({ title, description, image, reverse = false }) => (
 const HomePage = () => {
    const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('upcoming');
-  //  const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://final-year-project-56d5.onrender.com';
+  //  const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://final-year-project-5d85.onrender.com';
   // Mock upcoming events data
   const upcomingEvents = [
     {
