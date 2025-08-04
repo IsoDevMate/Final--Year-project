@@ -20,7 +20,7 @@ const config = {
     linkedin: {
         clientId: process.env.LINKEDIN_CLIENT_ID,
         clientSecret: process.env.LINKEDIN_CLIENT_SECRET,
-        callbackUrl: process.env.LINKEDIN_CALLBACK_URL || 'http://localhost:3000/api/auth/linkedin/callback',
+        callbackUrl: process.env.LINKEDIN_CALLBACK_URL || 'https://final-year-project-5d85.onrender.com/api/auth/linkedin/callback',
         scope: 'openid profile email'
     },
     storagebucketnameis: process.env.STORAGE_BUCKET_NAME || 'gs://uploadtimes-2d6d3.appspot.com',
@@ -37,7 +37,7 @@ const config = {
     },
     frontendUrl: process.env.FRONTEND_URL,
     cors: {
-        origin: process.env.CORS_ORIGIN || 'http://localhost:3000'
+        origin: process.env.CORS_ORIGIN || 'https://final-year-project-5d85.onrender.com'
     },
     sendgrid: {
         apiKey: process.env.SENDGRID_API_KEY || 'SG.......VkaY....KYU',
