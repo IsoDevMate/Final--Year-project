@@ -3,3 +3,6 @@ node_modules/
 coverage/
 uploadtimes-2d6d3-firebase-adminsdk-8reyp-86b4c10c24.json
 config/config.ts
+dist/
+*.js
+**/*.js
