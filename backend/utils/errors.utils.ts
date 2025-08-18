@@ -24,3 +24,20 @@ export const errorHandler = (err: Error, req: Request, res: Response, next: Next
 export const notFoundHandler = (req: Request, res: Response) => {
   return ResponseUtil.error(res, 404, `Route ${req.originalUrl} not found`);
 };
+
+// Utility function to format validation errors
+export const formatValidationErrors = (errors: any[]): string => {
+  return errors.map(error => {
+    const field = error.path ? error.path.join('.') : 'unknown field';
+    return `${field}: ${error.message}`;
+  }).join(', ');
+};
+
+// Utility function to format Mongoose validation errors
+export const formatMongooseErrors = (validationError: any): string => {
+  const errorMessages = Object.keys(validationError.errors).map(key => {
+    const error = validationError.errors[key];
+    return `${key}: ${error.message}`;
+  });
+  return errorMessages.join(', ');
+};

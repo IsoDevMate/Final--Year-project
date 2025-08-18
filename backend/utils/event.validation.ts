@@ -3,48 +3,76 @@ import { EventType, EventStatus } from '../models/event.model';
 
 // Location schema
 const locationSchema = z.object({
-  name: z.string().min(1, 'Location name is required'),
-  address: z.string().min(1, 'Address is required'),
-  city: z.string().min(1, 'City is required'),
-  country: z.string().min(1, 'Country is required'),
+  name: z.string()
+    .min(1, 'Location name is required')
+    .max(100, 'Location name cannot exceed 100 characters'),
+  address: z.string()
+    .min(1, 'Address is required')
+    .max(200, 'Address cannot exceed 200 characters'),
+  city: z.string()
+    .min(1, 'City is required')
+    .max(50, 'City name cannot exceed 50 characters'),
+  country: z.string()
+    .min(1, 'Country is required')
+    .max(50, 'Country name cannot exceed 50 characters'),
   coordinates: z.object({
-    latitude: z.number(),
+    latitude: z.number()
+      .min(-90, 'Latitude must be between -90 and 90')
+      .max(90, 'Latitude must be between -90 and 90'),
     longitude: z.number()
+      .min(-180, 'Longitude must be between -180 and 180')
+      .max(180, 'Longitude must be between -180 and 180')
   }).optional()
 });
 
 // Create event schema
 export const createEventSchema = z.object({
-  title: z.string().min(3, 'Title must be at least 3 characters'),
-  description: z.string().min(10, 'Description must be at least 10 characters'),
+  title: z.string()
+    .min(3, 'Title must be at least 3 characters')
+    .max(100, 'Title cannot exceed 100 characters'),
+  description: z.string()
+    .min(10, 'Description must be at least 10 characters')
+    .max(1000, 'Description cannot exceed 1000 characters'),
   type: z.enum([
     EventType.CONFERENCE,
     EventType.SEMINAR,
     EventType.WORKSHOP,
     EventType.EXPO,
     EventType.OTHER
-  ]),
+  ], { errorMap: () => ({ message: 'Event type must be one of: conference, seminar, workshop, expo, other' }) }),
   status: z.enum([
     EventStatus.DRAFT,
     EventStatus.PUBLISHED,
     EventStatus.ONGOING,
     EventStatus.COMPLETED,
     EventStatus.CANCELLED
-  ]).default(EventStatus.DRAFT),
-  startDate: z.string().refine(
-    (date) => !isNaN(Date.parse(date)),
-    { message: 'Start date must be a valid date' }
-  ),
-  endDate: z.string().refine(
-    (date) => !isNaN(Date.parse(date)),
-    { message: 'End date must be a valid date' }
-  ),
+  ], { errorMap: () => ({ message: 'Event status must be one of: draft, published, ongoing, completed, cancelled' }) }).default(EventStatus.DRAFT),
+  startDate: z.string()
+    .min(1, 'Start date is required')
+    .refine(
+      (date) => !isNaN(Date.parse(date)),
+      { message: 'Start date must be a valid date format (YYYY-MM-DD or ISO string)' }
+    )
+    .refine(
+      (date) => new Date(date) > new Date(),
+      { message: 'Start date must be in the future' }
+    ),
+  endDate: z.string()
+    .min(1, 'End date is required')
+    .refine(
+      (date) => !isNaN(Date.parse(date)),
+      { message: 'End date must be a valid date format (YYYY-MM-DD or ISO string)' }
+    ),
   location: locationSchema,
-  capacity: z.number().int()
-    .refine(value => value >= 30, { message: 'Minimum event capacity is 30' })
-    .refine(value => value <= 5000, { message: 'Maximum event capacity is 5000' })
+  capacity: z.number()
+    .int('Capacity must be a whole number')
+    .min(30, 'Minimum event capacity is 30 people')
+    .max(5000, 'Maximum event capacity is 5000 people')
     .optional(),
-  ticketPrice: z.number().min(0).optional()
+  ticketPrice: z.number()
+    .min(0, 'Ticket price cannot be negative')
+    .max(10000, 'Ticket price cannot exceed $10,000')
+    .optional()
 }).refine(
   (data) => new Date(data.startDate) < new Date(data.endDate),
   {

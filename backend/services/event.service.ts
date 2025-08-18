@@ -1,6 +1,6 @@
 import { Types } from 'mongoose';
 import { Event } from '../models/event.model';
-import { AppError } from '../utils/errors.utils';
+import { AppError, formatMongooseErrors } from '../utils/errors.utils';
 import { CreateEventDto, UpdateEventDto, EventQueryDto } from '../interfaces/event.interface';
 import { QRCodeService } from './qrcode.service';
 import { EmailService } from './email.service';
@@ -17,13 +17,55 @@ export class EventService {
 
   async createEvent(eventData: CreateEventDto): Promise<Event> {
     try {
+      // Additional business logic validation
+      if (eventData.startDate >= eventData.endDate) {
+        throw new AppError('End date must be after start date', 400);
+      }
+
+      if (eventData.startDate <= new Date()) {
+        throw new AppError('Start date must be in the future', 400);
+      }
+
+      if (eventData.capacity && eventData.capacity < 30) {
+        throw new AppError('Event capacity must be at least 30 people', 400);
+      }
+
+      if (eventData.ticketPrice && eventData.ticketPrice < 0) {
+        throw new AppError('Ticket price cannot be negative', 400);
+      }
+
       const event = new Event(eventData);
       await event.save();
       return event;
     } catch (error) {
+      // Handle Mongoose validation errors
+      if (error instanceof Error && (error as any).name === 'ValidationError') {
+        const validationError = error as any;
+        const formattedErrors = formatMongooseErrors(validationError);
+        throw new AppError(`Validation failed: ${formattedErrors}`, 400);
+      }
+
+      // Handle duplicate key errors
+      if (error instanceof Error && (error as any).code === 11000) {
+        throw new AppError('An event with this title already exists', 400);
+      }
+
+      // Handle cast errors (invalid ObjectId, etc.)
+      if (error instanceof Error && (error as any).name === 'CastError') {
+        const castError = error as any;
+        throw new AppError(`Invalid ${castError.path}: ${castError.value}`, 400);
+      }
+
+      // Handle AppError instances (from our business logic validation)
+      if (error instanceof AppError) {
+        throw error;
+      }
+
+      // Handle other specific errors
       if (error instanceof Error) {
         throw new AppError(error.message, 400);
       }
+
       throw new AppError('Failed to create event', 500);
     }
   }

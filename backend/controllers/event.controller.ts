@@ -8,7 +8,7 @@ import {
   eventIdSchema
 } from '../utils/event.validation';
 import { ResponseUtil } from '../utils/response.utils';
-import { AppError } from '../utils/errors.utils';
+import { AppError, formatValidationErrors } from '../utils/errors.utils';
 import { UserRole } from '../models/user.model';
 import { StorageService } from '../services/upload.service';
 import { Types } from 'mongoose';
@@ -42,10 +42,20 @@ export class EventController {
       });
 
       return ResponseUtil.success(res, 201, event, 'Event created successfully');
-    } catch (error) {
+    } catch (error: unknown) {
+      // Handle Zod validation errors with detailed messages
       if (error instanceof ZodError) {
-        return ResponseUtil.error(res, 400, error.errors[0].message);
+        const formattedErrors = formatValidationErrors(error.errors);
+        return ResponseUtil.error(res, 400, `Validation failed: ${formattedErrors}`);
       }
+
+      // Handle AppError instances
+      if (error instanceof AppError) {
+        return ResponseUtil.error(res, error.statusCode, error.message);
+      }
+
+      // Handle other errors
+      console.error('Event creation error:', error);
       next(error);
     }
   }
@@ -56,33 +66,14 @@ export class EventController {
       const events = await this.eventService.getEvents(validatedQuery);
 
       return ResponseUtil.success(res, 200, events, 'Events retrieved successfully');
-    } catch (error) {
+    } catch (error:unknown) {
       if (error instanceof ZodError) {
-        return ResponseUtil.error(res, 400, error.errors[0].message);
+        return ResponseUtil.error(res, 400, (error as ZodError).errors[0].message);
       }
       next(error);
     }
   }
 
-  // async getEventById(req: Request, res: Response, next: NextFunction) {
-  //   try {
-  //     const { id } = eventIdSchema.parse(req.params);
-  //     const event = await this.eventService.getEventById(id);
-
-  //     if (!event) {
-  //       return ResponseUtil.error(res, 404, 'Event not found');
-  //     }
-
-  //     return ResponseUtil.success(res, 200, event, 'Event retrieved successfully');
-  //   } catch (error) {
-  //     if (error instanceof ZodError) {
-  //       return ResponseUtil.error(res, 400, error.errors[0].message);
-  //     }
-  //     next(error);
-  //   }
-  // }
-
-  // In event.controller.ts
 async getEventById(req: Request, res: Response, next: NextFunction) {
   try {
     const { id } = req.params;
@@ -206,9 +197,9 @@ async getEventById(req: Request, res: Response, next: NextFunction) {
       const registrationResult = await this.eventService.registerAttendee(id, userId);
       console.log(`Registration result: ${JSON.stringify(registrationResult)}`);
       return ResponseUtil.success(res, 200, registrationResult, 'Registered for event successfully');
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof ZodError) {
-        return ResponseUtil.error(res, 400, error.errors[0].message);
+        return ResponseUtil.error(res, 400, (error as ZodError).errors[0].message);
       }
       if (error instanceof AppError) {
         return ResponseUtil.error(res, error.statusCode, error.message);
@@ -232,9 +223,9 @@ async unregisterFromEvent(req: Request, res: Response, next: NextFunction) {
     const unregistrationResult = await this.eventService.unregisterAttendee(id, userId);
 
     return ResponseUtil.success(res, 200, unregistrationResult, 'Unregistered from event successfully');
-  } catch (error) {
+  } catch (error:unknown) {
     if (error instanceof ZodError) {
-      return ResponseUtil.error(res, 400, error.errors[0].message);
+      return ResponseUtil.error(res, 400, (error as ZodError).errors[0].message);
     }
     if (error instanceof AppError) {
       return ResponseUtil.error(res, error.statusCode, error.message);
