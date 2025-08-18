@@ -27,17 +27,23 @@ export const notFoundHandler = (req: Request, res: Response) => {
 
 // Utility function to format validation errors
 export const formatValidationErrors = (errors: any[]): string => {
-  return errors.map(error => {
+  console.log('Formatting Zod validation errors:', errors);
+  const formatted = errors.map(error => {
     const field = error.path ? error.path.join('.') : 'unknown field';
     return `${field}: ${error.message}`;
   }).join(', ');
+  console.log('Formatted validation errors:', formatted);
+  return formatted;
 };
 
 // Utility function to format Mongoose validation errors
 export const formatMongooseErrors = (validationError: any): string => {
+  console.log('Formatting Mongoose validation errors:', validationError);
   const errorMessages = Object.keys(validationError.errors).map(key => {
     const error = validationError.errors[key];
     return `${key}: ${error.message}`;
   });
-  return errorMessages.join(', ');
+  const formatted = errorMessages.join(', ');
+  console.log('Formatted Mongoose errors:', formatted);
+  return formatted;
 };

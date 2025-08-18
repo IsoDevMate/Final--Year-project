@@ -23,17 +23,25 @@ export class EventController {
   }
 
   async createEvent(req: Request, res: Response, next: NextFunction) {
+    const requestId = Math.random().toString(36).substring(7);
+    console.log(`[${requestId}] Event creation started - User: ${(req.user as any)?.userId || 'unknown'}`);
+
     try {
+      console.log(`[${requestId}] Validating request body...`);
       const validatedData = createEventSchema.parse(req.body);
+      console.log(`[${requestId}] Request validation successful`);
 
       // Check if user object exists (should be set by auth middleware)
       if (!req.user) {
+        console.log(`[${requestId}] Authentication failed - No user object found`);
         return ResponseUtil.error(res, 401, 'Not authenticated');
       }
 
       // Get user ID from request (set by auth middleware)
       const organizer = (req.user as any).userId;
+      console.log(`[${requestId}] User authenticated - Organizer ID: ${organizer}`);
 
+      console.log(`[${requestId}] Calling event service to create event...`);
       const event = await this.eventService.createEvent({
         ...validatedData,
         startDate: new Date(validatedData.startDate),
@@ -41,21 +49,26 @@ export class EventController {
         organizer
       });
 
+      console.log(`[${requestId}] Event created successfully - Event ID: ${event._id}`);
       return ResponseUtil.success(res, 201, event, 'Event created successfully');
     } catch (error: unknown) {
+      console.log(`[${requestId}] Error occurred during event creation`);
+
       // Handle Zod validation errors with detailed messages
       if (error instanceof ZodError) {
         const formattedErrors = formatValidationErrors(error.errors);
+        console.log(`[${requestId}] Zod validation error: ${formattedErrors}`);
         return ResponseUtil.error(res, 400, `Validation failed: ${formattedErrors}`);
       }
 
       // Handle AppError instances
       if (error instanceof AppError) {
+        console.log(`[${requestId}] AppError: ${error.message} (Status: ${error.statusCode})`);
         return ResponseUtil.error(res, error.statusCode, error.message);
       }
 
       // Handle other errors
-      console.error('Event creation error:', error);
+      console.error(`[${requestId}] Unexpected error during event creation:`, error);
       next(error);
     }
   }

@@ -16,56 +16,88 @@ export class EventService {
   }
 
   async createEvent(eventData: CreateEventDto): Promise<Event> {
+    const requestId = Math.random().toString(36).substring(7);
+    console.log(`[${requestId}] EventService.createEvent started - Organizer: ${eventData.organizer}`);
+    console.log(`[${requestId}] Event data:`, {
+      title: eventData.title,
+      type: eventData.type,
+      startDate: eventData.startDate,
+      endDate: eventData.endDate,
+      capacity: eventData.capacity,
+      ticketPrice: eventData.ticketPrice
+    });
+
     try {
+      console.log(`[${requestId}] Starting business logic validation...`);
+
       // Additional business logic validation
       if (eventData.startDate >= eventData.endDate) {
+        console.log(`[${requestId}] Business validation failed: End date must be after start date`);
         throw new AppError('End date must be after start date', 400);
       }
 
       if (eventData.startDate <= new Date()) {
+        console.log(`[${requestId}] Business validation failed: Start date must be in the future`);
         throw new AppError('Start date must be in the future', 400);
       }
 
       if (eventData.capacity && eventData.capacity < 30) {
+        console.log(`[${requestId}] Business validation failed: Capacity ${eventData.capacity} is below minimum of 30`);
         throw new AppError('Event capacity must be at least 30 people', 400);
       }
 
       if (eventData.ticketPrice && eventData.ticketPrice < 0) {
+        console.log(`[${requestId}] Business validation failed: Ticket price ${eventData.ticketPrice} is negative`);
         throw new AppError('Ticket price cannot be negative', 400);
       }
 
+      console.log(`[${requestId}] Business logic validation passed`);
+      console.log(`[${requestId}] Creating Event model instance...`);
+
       const event = new Event(eventData);
+      console.log(`[${requestId}] Event model instance created, attempting to save...`);
+
       await event.save();
+      console.log(`[${requestId}] Event saved successfully to database - Event ID: ${event._id}`);
+
       return event;
     } catch (error) {
+      console.log(`[${requestId}] Error occurred in EventService.createEvent`);
+
       // Handle Mongoose validation errors
       if (error instanceof Error && (error as any).name === 'ValidationError') {
         const validationError = error as any;
         const formattedErrors = formatMongooseErrors(validationError);
+        console.log(`[${requestId}] Mongoose validation error: ${formattedErrors}`);
         throw new AppError(`Validation failed: ${formattedErrors}`, 400);
       }
 
       // Handle duplicate key errors
       if (error instanceof Error && (error as any).code === 11000) {
+        console.log(`[${requestId}] Duplicate key error: Event with title "${eventData.title}" already exists`);
         throw new AppError('An event with this title already exists', 400);
       }
 
       // Handle cast errors (invalid ObjectId, etc.)
       if (error instanceof Error && (error as any).name === 'CastError') {
         const castError = error as any;
+        console.log(`[${requestId}] Cast error: Invalid ${castError.path}: ${castError.value}`);
         throw new AppError(`Invalid ${castError.path}: ${castError.value}`, 400);
       }
 
       // Handle AppError instances (from our business logic validation)
       if (error instanceof AppError) {
+        console.log(`[${requestId}] AppError re-thrown: ${error.message}`);
         throw error;
       }
 
       // Handle other specific errors
       if (error instanceof Error) {
+        console.log(`[${requestId}] Generic error: ${error.message}`);
         throw new AppError(error.message, 400);
       }
 
+      console.log(`[${requestId}] Unknown error type, throwing generic error`);
       throw new AppError('Failed to create event', 500);
     }
   }

@@ -83,6 +83,10 @@ router.get('/', eventController.getEvents.bind(eventController));
 // Organizer routes - only event organizers and admins
 router.post(
   '/',
+  (req, res, next) => {
+    console.log('🎯 Event creation route hit!');
+    next();
+  },
   AuthMiddleware.verifyToken,
   AuthMiddleware.hasRole([UserRole.ORGANIZER, UserRole.ADMIN]),
   eventController.createEvent.bind(eventController)

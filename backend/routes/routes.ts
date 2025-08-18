@@ -12,6 +12,12 @@ const router = Router();
 // API version prefix
 const API_PREFIX = '/api/v1';
 
+// Test endpoint to verify logging
+router.get('/test-logging', (req, res) => {
+  console.log('🧪 Test logging endpoint hit!');
+  res.json({ message: 'Logging test successful', timestamp: new Date().toISOString() });
+});
+
 // Authentication routes
 router.use(`${API_PREFIX}/auth`, authRoutes);
 router.use(`${API_PREFIX}/events`, eventRoutes);

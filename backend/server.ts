@@ -13,6 +13,7 @@ import cron from 'node-cron';
 import compression from 'compression';
 import { EventCleanupService } from './services/eventcleanup.service';
 import { paymentChecker } from './utils/paymentchecker.utils';
+import { loggerMiddleware } from './middleware/logger.middleware';
 
 const corsOptions = {
   origin: "*"
@@ -94,9 +95,10 @@ async function gracefulShutdown() {
   process.exit(0);
 }
 
+app.use(cors(corsOptions))
+app.use(loggerMiddleware); // Add comprehensive logging middleware BEFORE JSON parsing
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors(corsOptions))
 setupPassport();
 app.use(passport.initialize());
 
@@ -128,6 +130,7 @@ app.use((err: any, req: any, res: any, next: any) => {
 
 async function startServer() {
   try {
+    console.log("🚀 Starting server with enhanced logging...");
     const connectionStatus = await databaseService.testConnection();
     console.log("here is the connectionstatus message", connectionStatus.message);
 
