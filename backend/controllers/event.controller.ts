@@ -42,8 +42,12 @@ export class EventController {
       console.log(`[${requestId}] User authenticated - Organizer ID: ${organizer}`);
 
       console.log(`[${requestId}] Calling event service to create event...`);
+
+      // Clean up the data - remove fields that shouldn't be sent by client
+      const { coverImage, sessions, attendees, ...cleanData } = validatedData;
+
       const event = await this.eventService.createEvent({
-        ...validatedData,
+        ...cleanData,
         startDate: new Date(validatedData.startDate),
         endDate: new Date(validatedData.endDate),
         organizer
