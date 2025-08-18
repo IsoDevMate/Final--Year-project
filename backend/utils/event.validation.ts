@@ -22,7 +22,7 @@ const locationSchema = z.object({
     longitude: z.number()
       .min(-180, 'Longitude must be between -180 and 180')
       .max(180, 'Longitude must be between -180 and 180')
-  }).optional()
+  }).nullable().optional()
 });
 
 // Create event schema
@@ -67,12 +67,15 @@ export const createEventSchema = z.object({
   capacity: z.number()
     .int('Capacity must be a whole number')
     .min(30, 'Minimum event capacity is 30 people')
-    .max(5000, 'Maximum event capacity is 5000 people')
-    .optional(),
+    .max(5000, 'Maximum event capacity is 5000 people'),
   ticketPrice: z.number()
     .min(0, 'Ticket price cannot be negative')
     .max(10000, 'Ticket price cannot exceed $10,000')
-    .optional()
+    .optional(),
+  // Allow these fields but ignore them (they shouldn't be sent by client)
+  coverImage: z.any().optional(),
+  sessions: z.any().optional(),
+  attendees: z.any().optional()
 }).refine(
   (data) => new Date(data.startDate) < new Date(data.endDate),
   {
@@ -108,9 +111,10 @@ export const updateEventSchema = z.object({
     { message: 'End date must be a valid date' }
   ).optional(),
   location: locationSchema.partial().optional(),
-   capacity: z.number().int()
-    .refine(value => value >= 30, { message: 'Minimum event capacity is 30' })
-    .refine(value => value <= 5000, { message: 'Maximum event capacity is 5000' })
+   capacity: z.number()
+    .int('Capacity must be a whole number')
+    .min(30, 'Minimum event capacity is 30 people')
+    .max(5000, 'Maximum event capacity is 5000 people')
     .optional(),
   ticketPrice: z.number().min(0).optional()
 });

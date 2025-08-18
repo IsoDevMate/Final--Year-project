@@ -41,7 +41,12 @@ export class EventService {
         throw new AppError('Start date must be in the future', 400);
       }
 
-      if (eventData.capacity && eventData.capacity < 30) {
+      if (!eventData.capacity) {
+        console.log(`[${requestId}] Business validation failed: Capacity is required`);
+        throw new AppError('Event capacity is required', 400);
+      }
+
+      if (eventData.capacity < 30) {
         console.log(`[${requestId}] Business validation failed: Capacity ${eventData.capacity} is below minimum of 30`);
         throw new AppError('Event capacity must be at least 30 people', 400);
       }

@@ -8,7 +8,7 @@ export interface LocationDto {
   coordinates?: {
     latitude: number;
     longitude: number;
-  };
+  } | null;
 }
 
 export interface CreateEventDto {
@@ -20,7 +20,7 @@ export interface CreateEventDto {
   startDate: Date;
   endDate: Date;
   location: LocationDto;
-  capacity?: number;
+  capacity: number;
   ticketPrice?: number;
 }
 
