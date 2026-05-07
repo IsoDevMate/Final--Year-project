@@ -178,7 +178,7 @@ export const App: React.FC = () => {
                   element={<div>Session Details</div>}
                 />
 
-                <Route path="/dashboard/events/:eventId/edit " element={<UpdateEventPage />} />
+                <Route path="/dashboard/events/:eventId/edit" element={<UpdateEventPage />} />
 
                 <Route element={<RoleProtectedRoute allowedRoles={['organizer', 'admin']} />}>
                  <Route
