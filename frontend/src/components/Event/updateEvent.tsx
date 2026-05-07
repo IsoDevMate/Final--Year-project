@@ -77,7 +77,8 @@ interface EventData {
 }
 
 const UpdateEventPage: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { eventId } = useParams<{ eventId: string }>();
+  const id = eventId;
   const navigate = useNavigate();
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
