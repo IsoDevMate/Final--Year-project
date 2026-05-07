@@ -7,7 +7,7 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { Eye, EyeOff, Mail, User, UserPlus } from 'lucide-react';
 
-const AUTH_ACTIONS_DISABLED = true;
+const AUTH_ACTIONS_DISABLED = false;
 
 // Schema matching your backend validation
 const registerSchema = z.object({

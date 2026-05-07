@@ -8,7 +8,7 @@ import { toast } from 'react-hot-toast';
 import { Eye, EyeOff, Mail, LogIn } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
-const AUTH_ACTIONS_DISABLED = true;
+const AUTH_ACTIONS_DISABLED = false;
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
