@@ -69,7 +69,7 @@ const CreateEventPage: React.FC = () => {
       address: '',
       city: '',
       country: '',
-      postalCode: '',
+      mapLink: '',
       coordinates: {
         latitude: 0,
         longitude: 0
@@ -173,9 +173,6 @@ const CreateEventPage: React.FC = () => {
       case 'location.name':
         return !value.trim() ? 'Venue name is required' : null;
 
-      case 'location.address':
-        return !value.trim() ? 'Address is required' : null;
-
       case 'location.city':
         return !value.trim() ? 'City is required' : null;
 
@@ -239,7 +236,7 @@ const CreateEventPage: React.FC = () => {
       if (key === 'location') {
         // Handle nested location fields
         for (const [locKey, locValue] of Object.entries(eventData.location)) {
-          if (locKey !== 'coordinates' && locKey !== 'postalCode') {
+          if (locKey !== 'coordinates' && locKey !== 'postalCode' && locKey !== 'address' && locKey !== 'mapLink') {
             const locError = validateField(`location.${locKey}`, locValue);
             if (locError) {
               newErrors[`location.${locKey}`] = locError;
@@ -378,27 +375,6 @@ const CreateEventPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Event Status */}
-        <div>
-          <label htmlFor="status" className="block mb-2 font-semibold">
-            <Calendar className="inline-block mr-2" /> Event Status
-          </label>
-          <select
-            id="status"
-            name="status"
-            required
-            className="w-full p-2 border rounded"
-            value={eventData.status}
-            onChange={handleChange}
-          >
-            {eventStatuses.map(status => (
-              <option key={status} value={status}>
-                {status.charAt(0).toUpperCase() + status.slice(1)}
-              </option>
-            ))}
-          </select>
-        </div>
-
         {/* Date and Capacity */}
         <div className="grid md:grid-cols-2 gap-4">
           <div>
@@ -513,38 +489,19 @@ const CreateEventPage: React.FC = () => {
           </div>
 
           <div>
-            <label htmlFor="location.address" className="block mb-2 font-semibold">
-              <MapPin className="inline-block mr-2" /> Full Address
+            <label htmlFor="location.mapLink" className="block mb-2 font-semibold">
+              <MapPin className="inline-block mr-2" /> Google Maps Link
             </label>
             <input
-              type="text"
-              id="location.address"
-              name="location.address"
-              required
-              className={`w-full p-2 border rounded ${formErrors['location.address'] ? 'border-red-500' : ''}`}
-              value={eventData.location.address}
+              type="url"
+              id="location.mapLink"
+              name="location.mapLink"
+              className="w-full p-2 border rounded"
+              value={eventData.location.mapLink}
               onChange={handleChange}
-              placeholder="Enter full address"
+              placeholder="https://maps.google.com/..."
             />
-            {formErrors['location.address'] && (
-              <p className="text-red-500 text-sm mt-1">{formErrors['location.address']}</p>
-            )}
           </div>
-        </div>
-
-        <div>
-          <label htmlFor="location.postalCode" className="block mb-2 font-semibold">
-            <MapPin className="inline-block mr-2" /> Postal Code
-          </label>
-          <input
-            type="text"
-            id="location.postalCode"
-            name="location.postalCode"
-            className="w-full p-2 border rounded"
-            value={eventData.location.postalCode}
-            onChange={handleChange}
-            placeholder="Enter postal code (optional)"
-          />
         </div>
 
         {/* Additional Event Details */}
