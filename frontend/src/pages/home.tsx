@@ -1,4 +1,4 @@
-
+﻿
 import React, { Suspense, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -15,15 +15,15 @@ import dashboard from '../assets/ntes.png'
 // Loading Spinner Component
 const LoadingSpinner = () => (
   <div className="flex justify-center items-center h-24">
-    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
-    <p className="ml-3 text-indigo-600 font-medium">Loading...</p>
+    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-tiffany-600"></div>
+    <p className="ml-3 text-tiffany-600 font-medium">Loading...</p>
   </div>
 );
 
 // Feature Card Component with Icon
 const FeatureCard = ({ icon, title, description }: { icon: React.ReactNode, title: string, description: string }) => (
   <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition duration-300">
-    <div className="bg-indigo-100 rounded-full p-3 w-14 h-14 flex items-center justify-center mb-4">
+    <div className="bg-tiffany-100 rounded-full p-3 w-14 h-14 flex items-center justify-center mb-4">
       {icon}
     </div>
     <h3 className="text-xl font-bold mb-2">{title}</h3>
@@ -40,21 +40,21 @@ const EventCard = ({ title, date, location, imageUrl, categories }) => (
         alt={title}
         className="w-full h-full object-cover"
       />
-      <div className="absolute top-3 right-3 bg-indigo-600 text-white text-xs font-bold px-2 py-1 rounded-full">
+      <div className="absolute top-3 right-3 bg-tiffany-600 text-white text-xs font-bold px-2 py-1 rounded-full">
         {new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
       </div>
     </div>
     <div className="p-4">
       <div className="flex flex-wrap gap-2 mb-2">
         {categories.map((category, index) => (
-          <span key={index} className="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full">
+          <span key={index} className="text-xs bg-tiffany-100 text-tiffany-700 px-2 py-1 rounded-full">
             {category}
           </span>
         ))}
       </div>
       <h3 className="text-lg font-bold mb-1">{title}</h3>
       <p className="text-gray-600 text-sm mb-2">{location}</p>
-      <Link to={`/events/${title.toLowerCase().replace(/\s+/g, '-')}`} className="text-indigo-600 text-sm font-medium flex items-center">
+      <Link to={`/events/${title.toLowerCase().replace(/\s+/g, '-')}`} className="text-tiffany-600 text-sm font-medium flex items-center">
         View Details <ChevronRight className="h-4 w-4 ml-1" />
       </Link>
     </div>
@@ -65,7 +65,7 @@ const EventCard = ({ title, date, location, imageUrl, categories }) => (
 const SessionCard = ({ title, speaker, time, day }) => (
   <div className="bg-white p-4 rounded-lg shadow hover:shadow-md transition-shadow">
     <div className="flex items-start">
-      <div className="bg-indigo-100 text-indigo-700 font-bold rounded p-2 text-center mr-4 w-16">
+      <div className="bg-tiffany-100 text-tiffany-700 font-bold rounded p-2 text-center mr-4 w-16">
         <div className="text-xs">{day}</div>
         <div className="text-sm">{time}</div>
       </div>
@@ -89,9 +89,9 @@ const PricingCard = ({
   features: string[],
   highlighted?: boolean
 }) => (
-  <div className={`${highlighted ? 'bg-indigo-900 text-white' : 'bg-gray-900 text-white'} p-8 rounded-xl ${highlighted ? 'border-2 border-indigo-500' : ''}`}>
+  <div className={`${highlighted ? 'bg-tiffany-900 text-white' : 'bg-gray-900 text-white'} p-8 rounded-xl ${highlighted ? 'border-2 border-tiffany-500' : ''}`}>
     <h3 className="text-3xl mb-4">{title}</h3>
-    {highlighted && <div className="text-xs font-semibold bg-indigo-600 text-white rounded-full px-2 py-1 mb-2 w-fit">POPULAR</div>}
+    {highlighted && <div className="text-xs font-semibold bg-tiffany-600 text-white rounded-full px-2 py-1 mb-2 w-fit">POPULAR</div>}
     <p className="text-2xl font-bold mb-6">{price} <span className="text-sm font-normal">per two days</span></p>
     <ul className="space-y-3">
       {features.map((feature, index) => (
@@ -101,7 +101,7 @@ const PricingCard = ({
         </li>
       ))}
     </ul>
-    <button className={`w-full mt-8 py-3 px-4 rounded-full font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 ${highlighted ? 'bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500' : 'bg-white text-gray-900 hover:bg-gray-100 focus:ring-white'}`}>
+    <button className={`w-full mt-8 py-3 px-4 rounded-full font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 ${highlighted ? 'bg-tiffany-600 hover:bg-tiffany-700 focus:ring-tiffany-500' : 'bg-white text-gray-900 hover:bg-gray-100 focus:ring-white'}`}>
       Select Plan
     </button>
   </div>
@@ -112,8 +112,8 @@ const Testimonial = ({ quote, name, role }: { quote: string, name: string, role:
   <div className="bg-gray-50 p-6 rounded-xl">
     <p className="text-gray-700 mb-4 italic">"{quote}"</p>
     <div className="flex items-center">
-      <div className="bg-indigo-100 rounded-full w-10 h-10 flex items-center justify-center mr-3">
-        <span className="text-indigo-600 font-bold">{name.charAt(0)}</span>
+      <div className="bg-tiffany-100 rounded-full w-10 h-10 flex items-center justify-center mr-3">
+        <span className="text-tiffany-600 font-bold">{name.charAt(0)}</span>
       </div>
       <div>
         <p className="font-medium">{name}</p>
@@ -136,7 +136,7 @@ const ShowcaseFeature = ({ title, description, image, reverse = false }) => (
     <div className="md:w-1/2">
       <h3 className="text-2xl font-bold mb-4">{title}</h3>
       <p className="text-gray-600 mb-6">{description}</p>
-      <Link to="/features" className="text-indigo-600 font-medium flex items-center">
+      <Link to="/features" className="text-tiffany-600 font-medium flex items-center">
         Learn more <ChevronRight className="ml-1 h-5 w-5" />
       </Link>
     </div>
@@ -152,7 +152,7 @@ const ShowcaseFeature = ({ title, description, image, reverse = false }) => (
 const HomePage = () => {
    const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('upcoming');
-  //  const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://final-year-project-5d85.onrender.com';
+  //  const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://final-year-project-jy2j.onrender.com';
   // Mock upcoming events data
   const upcomingEvents = [
     {
@@ -213,23 +213,23 @@ const HomePage = () => {
         <nav className="bg-white py-4 shadow-sm sticky top-0 z-50">
           <div className="container mx-auto px-4 flex justify-between items-center">
             <div className="flex items-center">
-              <div className="bg-indigo-700 rounded-full p-2 mr-2">
+              <div className="bg-tiffany-700 rounded-full p-2 mr-2">
                 <span className="text-white text-xl font-bold">C</span>
               </div>
-              <span className="text-2xl font-bold text-indigo-700">comfybase</span>
+              <span className="text-2xl font-bold text-tiffany-700">eventbase</span>
             </div>
             <div className="hidden md:flex space-x-6">
-              <a href="#features" className="text-gray-600 hover:text-indigo-700">Features</a>
-              <a href="#events" className="text-gray-600 hover:text-indigo-700">Events</a>
-              <a href="#pricing" className="text-gray-600 hover:text-indigo-700">Pricing</a>
-              <a href="#about" className="text-gray-600 hover:text-indigo-700">About</a>
-              <a href="#testimonials" className="text-gray-600 hover:text-indigo-700">Testimonials</a>
+              <a href="#features" className="text-gray-600 hover:text-tiffany-700">Features</a>
+              <a href="#events" className="text-gray-600 hover:text-tiffany-700">Events</a>
+              <a href="#pricing" className="text-gray-600 hover:text-tiffany-700">Pricing</a>
+              <a href="#about" className="text-gray-600 hover:text-tiffany-700">About</a>
+              <a href="#testimonials" className="text-gray-600 hover:text-tiffany-700">Testimonials</a>
             </div>
             <div className="flex items-center space-x-4">
                 {!user && (
-                <Link to="/auth/login" className="text-indigo-700 hover:text-indigo-800 font-medium">Sign In</Link>
+                <Link to="/auth/login" className="text-tiffany-700 hover:text-tiffany-800 font-medium">Sign In</Link>
                 )}
-              <Link to="/auth/signup" className="bg-indigo-600 text-white py-2 px-4 rounded-full hover:bg-indigo-700">
+              <Link to="/auth/signup" className="bg-tiffany-600 text-white py-2 px-4 rounded-full hover:bg-tiffany-700">
                 Get Started
               </Link>
             </div>
@@ -238,26 +238,26 @@ const HomePage = () => {
 
         {/* Hero Section */}
         <Suspense fallback={<LoadingSpinner />}>
-          <section className="bg-gradient-to-b from-indigo-700 to-indigo-400 text-white py-20">
+          <section className="bg-gradient-to-b from-tiffany-700 to-tiffany-400 text-white py-20">
             <div className="container mx-auto px-4 flex flex-col md:flex-row items-center">
               <div className="md:w-1/2 mb-10 md:mb-0">
                 <h1 className="text-4xl md:text-5xl font-bold mb-6">
                   Transform Your Event Experience
                 </h1>
-                <p className="text-xl mb-8 text-indigo-100">
-                  ComfyBase helps attendees engage better and organizers manage smarter with interactive tools, multimedia notes, and seamless identity verification.
+                <p className="text-xl mb-8 text-tiffany-100">
+                  EventBase helps attendees engage better and organizers manage smarter with interactive tools, multimedia notes, and seamless identity verification.
                 </p>
                 <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-                  <Link to="/auth/signup" className="bg-white text-indigo-700 py-3 px-6 rounded-full font-medium hover:bg-gray-100 text-center">
+                  <Link to="/auth/signup" className="bg-white text-tiffany-700 py-3 px-6 rounded-full font-medium hover:bg-gray-100 text-center">
                     Create Your Event
                   </Link>
-                  <a href="#features" className="bg-transparent border-2 border-white py-3 px-6 rounded-full font-medium hover:bg-white hover:text-indigo-700 transition-colors flex items-center justify-center">
+                  <a href="#features" className="bg-transparent border-2 border-white py-3 px-6 rounded-full font-medium hover:bg-white hover:text-tiffany-700 transition-colors flex items-center justify-center">
                     Learn More <ChevronRight className="ml-2 h-5 w-5" />
                   </a>
                 </div>
               </div>
               <div className="md:w-1/2">
-                <div className="bg-indigo-800 p-6 rounded-xl shadow-xl">
+                <div className="bg-tiffany-800 p-6 rounded-xl shadow-xl">
                   <img
                     src={image}
                     alt="Event dashboard preview"
@@ -275,39 +275,39 @@ const HomePage = () => {
             <div className="text-center mb-16">
               <h2 className="text-3xl font-bold mb-4">Everything You Need For Successful Events</h2>
               <p className="text-gray-600 max-w-2xl mx-auto">
-                ComfyBase offers a comprehensive suite of tools designed to enhance attendee engagement
+                EventBase offers a comprehensive suite of tools designed to enhance attendee engagement
                 and streamline event management from start to finish.
               </p>
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               <FeatureCard
-                icon={<NotebookPen className="h-6 w-6 text-indigo-600" />}
+                icon={<NotebookPen className="h-6 w-6 text-tiffany-600" />}
                 title="Interactive Notes"
                 description="Take multimedia-enhanced notes during sessions and attach images, audio clips, and sticky notes for better information retention."
               />
               {/* <FeatureCard
-                icon={<Video className="h-6 w-6 text-indigo-600" />}
+                icon={<Video className="h-6 w-6 text-tiffany-600" />}
                 title="Live Streaming"
                 description="Access live streams of sessions, workshops and keynotes with real-time interaction capabilities for remote attendees."
               /> */}
               <FeatureCard
-                icon={<QrCode className="h-6 w-6 text-indigo-600" />}
+                icon={<QrCode className="h-6 w-6 text-tiffany-600" />}
                 title="QR Code Access"
                 description="Seamless venue access and identity verification with just a scan - no more wristbands or physical tickets needed."
               />
               <FeatureCard
-                icon={<Linkedin className="h-6 w-6 text-indigo-600" />}
+                icon={<Linkedin className="h-6 w-6 text-tiffany-600" />}
                 title="LinkedIn Integration"
                 description="Share your event insights, notes, and networking connections directly to LinkedIn with one-click posting."
               />
               {/* <FeatureCard
-                icon={<Camera className="h-6 w-6 text-indigo-600" />}
+                icon={<Camera className="h-6 w-6 text-tiffany-600" />}
                 title="Flashback Stories"
                 description="Capture event moments that transform into personalized flashback memories in the days following your event."
               /> */}
               <FeatureCard
-                icon={<BookOpen className="h-6 w-6 text-indigo-600" />}
+                icon={<BookOpen className="h-6 w-6 text-tiffany-600" />}
                 title="Multimedia Library"
                 description="Access speaker materials, slides, and resources in your personal multimedia library during and after the event."
               />
@@ -321,19 +321,19 @@ const HomePage = () => {
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold mb-4">Discover Amazing Events</h2>
               <p className="text-gray-600 max-w-2xl mx-auto">
-                Browse upcoming events and featured sessions powered by ComfyBase
+                Browse upcoming events and featured sessions powered by EventBase
               </p>
             </div>
 
             <div className="flex border-b border-gray-200 mb-8">
               <button
-                className={`py-2 px-4 font-medium ${activeTab === 'upcoming' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500'}`}
+                className={`py-2 px-4 font-medium ${activeTab === 'upcoming' ? 'text-tiffany-600 border-b-2 border-tiffany-600' : 'text-gray-500'}`}
                 onClick={() => setActiveTab('upcoming')}
               >
                 Upcoming Events
               </button>
               <button
-                className={`py-2 px-4 font-medium ${activeTab === 'featured' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500'}`}
+                className={`py-2 px-4 font-medium ${activeTab === 'featured' ? 'text-tiffany-600 border-b-2 border-tiffany-600' : 'text-gray-500'}`}
                 onClick={() => setActiveTab('featured')}
               >
                 Featured Sessions
@@ -355,7 +355,7 @@ const HomePage = () => {
             )}
 
             <div className="text-center mt-12">
-              <Link to="/dashboard/events" className="bg-indigo-100 text-indigo-700 py-2 px-6 rounded-full font-medium hover:bg-indigo-200 inline-flex items-center">
+              <Link to="/dashboard/events" className="bg-tiffany-100 text-tiffany-700 py-2 px-6 rounded-full font-medium hover:bg-tiffany-200 inline-flex items-center">
                 View All Events <ChevronRight className="ml-1 h-5 w-5" />
               </Link>
             </div>
@@ -367,7 +367,7 @@ const HomePage = () => {
           <div className="container mx-auto px-4">
             <ShowcaseFeature
               title="Seamless QR Code Authentication"
-              description="No more long lines or security checks. ComfyBase's QR code system provides quick, secure access to venues, sessions, and exclusive areas. Attendees can enter with a simple scan while organizers get real-time attendance tracking."
+              description="No more long lines or security checks. EventBase's QR code system provides quick, secure access to venues, sessions, and exclusive areas. Attendees can enter with a simple scan while organizers get real-time attendance tracking."
               image={qr}
             />
 
@@ -466,25 +466,25 @@ const HomePage = () => {
           <div className="container mx-auto px-4">
             <div className="flex flex-col md:flex-row items-center">
               <div className="md:w-1/2 mb-10 md:mb-0">
-                <h2 className="text-3xl font-bold mb-6">Why ComfyBase?</h2>
+                <h2 className="text-3xl font-bold mb-6">Why EventBase?</h2>
                 <p className="text-gray-600 mb-6">
-                  ComfyBase is not just another event app; it's a solution crafted to transform the
+                  EventBase is not just another event app; it's a solution crafted to transform the
                   attendee experience from start to finish. By enabling real-time interactions, QR code-based
-                  identity confirmation, interactive note-taking, and live streaming, ComfyBase brings
+                  identity confirmation, interactive note-taking, and live streaming, EventBase brings
                   a fresh, dynamic approach to events.
                 </p>
                 <div className="space-y-4">
                   <div className="flex items-start">
-                    <div className="bg-indigo-100 rounded-full p-1 mr-3 mt-1">
-                      <ChevronRight className="h-4 w-4 text-indigo-600" />
+                    <div className="bg-tiffany-100 rounded-full p-1 mr-3 mt-1">
+                      <ChevronRight className="h-4 w-4 text-tiffany-600" />
                     </div>
                     <p className="text-gray-600">
                       <span className="font-medium">For Attendees:</span> Enhanced engagement, better information retention, and a more valuable event experience.
                     </p>
                   </div>
                   <div className="flex items-start">
-                    <div className="bg-indigo-100 rounded-full p-1 mr-3 mt-1">
-                      <ChevronRight className="h-4 w-4 text-indigo-600" />
+                    <div className="bg-tiffany-100 rounded-full p-1 mr-3 mt-1">
+                      <ChevronRight className="h-4 w-4 text-tiffany-600" />
                     </div>
                     <p className="text-gray-600">
                       <span className="font-medium">For Organizers:</span> Real-time feedback, streamlined management, and comprehensive data reporting.
@@ -495,7 +495,7 @@ const HomePage = () => {
               <div className="md:w-1/2 md:pl-10">
                 <img
                   src={chooseus}
-                  alt="ComfyBase in action"
+                  alt="EventBase in action"
                   className="rounded-xl shadow-lg"
                 />
               </div>
@@ -509,13 +509,13 @@ const HomePage = () => {
             <div className="text-center mb-16">
               <h2 className="text-3xl font-bold mb-4">What People Say</h2>
               <p className="text-gray-600 max-w-2xl mx-auto">
-                Don't just take our word for it - hear from event organizers and attendees who have experienced ComfyBase.
+                Don't just take our word for it - hear from event organizers and attendees who have experienced EventBase.
               </p>
             </div>
 
             <div className="grid md:grid-cols-3 gap-8">
               <Testimonial
-                quote="ComfyBase transformed how our attendees engage with content. The multimedia note-taking feature is a game-changer!"
+                quote="EventBase transformed how our attendees engage with content. The multimedia note-taking feature is a game-changer!"
                 name="Sarah Johnson"
                 role="Conference Director"
               />
@@ -525,7 +525,7 @@ const HomePage = () => {
                 role="Event Manager"
               />
               {/* <Testimonial
-                quote="The live streaming feature allowed us to reach a wider audience. Highly recommend ComfyBase!"
+                quote="The live streaming feature allowed us to reach a wider audience. Highly recommend EventBase!"
                 name="Emily Davis"
                 role="Marketing Specialist"
               /> */}
@@ -539,7 +539,7 @@ const HomePage = () => {
             <div className="text-center mb-16">
               <h2 className="text-3xl font-bold mb-4">Trusted by Leading Brands</h2>
               <p className="text-gray-600 max-w-2xl mx-auto">
-          ComfyBase is trusted by top brands and organizations for their event management needs.
+          EventBase is trusted by top brands and organizations for their event management needs.
               </p>
             </div>
 
@@ -555,27 +555,27 @@ const HomePage = () => {
           <BrandLogo name="NextGen" />
               </div>
               <button className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white p-2 rounded-full shadow-md">
-          <ChevronRight className="h-6 w-6 text-indigo-600 rotate-180" />
+          <ChevronRight className="h-6 w-6 text-tiffany-600 rotate-180" />
               </button>
               <button className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white p-2 rounded-full shadow-md">
-          <ChevronRight className="h-6 w-6 text-indigo-600" />
+          <ChevronRight className="h-6 w-6 text-tiffany-600" />
               </button>
             </div>
           </div>
         </section>
 
         {/* Call to Action */}
-        <section className="bg-indigo-700 text-white py-16">
+        <section className="bg-tiffany-700 text-white py-16">
           <div className="container mx-auto px-4 text-center">
             <h2 className="text-3xl font-bold mb-6">Ready to Transform Your Event Experience?</h2>
-            <p className="text-xl text-indigo-100 mb-8 max-w-3xl mx-auto">
-              Join thousands of event organizers who are creating memorable, engaging experiences with ComfyBase.
+            <p className="text-xl text-tiffany-100 mb-8 max-w-3xl mx-auto">
+              Join thousands of event organizers who are creating memorable, engaging experiences with EventBase.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Link to="/auth/signup" className="bg-white text-indigo-700 py-3 px-8 rounded-full font-medium hover:bg-gray-100">
+              <Link to="/auth/signup" className="bg-white text-tiffany-700 py-3 px-8 rounded-full font-medium hover:bg-gray-100">
                 Get Started Free
               </Link>
-              <Link to="/demo" className="bg-transparent border-2 border-white py-3 px-8 rounded-full font-medium hover:bg-white hover:text-indigo-700 transition-colors">
+              <Link to="/demo" className="bg-transparent border-2 border-white py-3 px-8 rounded-full font-medium hover:bg-white hover:text-tiffany-700 transition-colors">
                 Request Demo
               </Link>
             </div>
@@ -588,10 +588,10 @@ const HomePage = () => {
             <div className="grid md:grid-cols-4 gap-8 mb-8">
               <div>
                 <div className="flex items-center mb-4">
-                  <div className="bg-indigo-600 rounded-full p-2 mr-2">
+                  <div className="bg-tiffany-600 rounded-full p-2 mr-2">
                     <span className="text-white text-xl font-bold">C</span>
                   </div>
-                  <span className="text-2xl font-bold">comfybase</span>
+                  <span className="text-2xl font-bold">eventbase</span>
                 </div>
                 <p className="text-gray-400">
                   Transforming events with innovative technology for better engagement and seamless management.
@@ -631,7 +631,7 @@ const HomePage = () => {
             </div>
 
             <div className="border-t border-gray-800 pt-8 mt-8 text-center text-gray-400">
-              <p>© 2025 ComfyBase. All rights reserved.</p>
+              <p>© 2025 EventBase. All rights reserved.</p>
             </div>
           </div>
         </footer>

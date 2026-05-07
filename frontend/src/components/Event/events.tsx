@@ -1,4 +1,4 @@
-
+﻿
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Calendar, MapPin, Users, Clock, Filter, Search, Plus, Trash2, Edit, Loader } from 'lucide-react';
@@ -99,7 +99,7 @@ const EventsPage = () => {
         if (filters.startDate) params.append('startDate', filters.startDate);
         if (filters.endDate) params.append('endDate', filters.endDate);
 
-        const response = await axios.get(`https://final-year-project-5d85.onrender.com/api/v1/events?${params.toString()}`);
+        const response = await axios.get(`https://final-year-project-jy2j.onrender.com/api/v1/events?${params.toString()}`);
 
         if (response.data.success) {
           setEvents(response.data.data.events);
@@ -145,7 +145,7 @@ const handleDeleteEvent = async (eventId: string) => {
       const token = localStorage.getItem('accessToken');
       console.log('Using token for delete:', token?.substring(0, 10) + '...');
 
-      const response = await axios.delete(`https://final-year-project-5d85.onrender.com/api/v1/events/${eventId}`, {
+      const response = await axios.delete(`https://final-year-project-jy2j.onrender.com/api/v1/events/${eventId}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -237,7 +237,7 @@ const handleDeleteEvent = async (eventId: string) => {
       }
 
       const response = await axios.post(
-        `https://final-year-project-5d85.onrender.com/api/v1/events/register/${eventId}`,
+        `https://final-year-project-jy2j.onrender.com/api/v1/events/register/${eventId}`,
         {},
         {
           headers: {
@@ -299,7 +299,7 @@ const handleDeleteEvent = async (eventId: string) => {
 
       // Initiate M-Pesa payment
       const paymentResponse = await axios.post(
-        `https://final-year-project-5d85.onrender.com/api/v1/mpesa/event/${eventId}`,
+        `https://final-year-project-jy2j.onrender.com/api/v1/mpesa/event/${eventId}`,
         {
           phoneNumber: phoneNumber,
           amount: selectedEvent.ticketPrice
@@ -324,7 +324,7 @@ const handleDeleteEvent = async (eventId: string) => {
 
           try {
             const statusResponse = await axios.get(
-              `https://final-year-project-5d85.onrender.com/api/v1/mpesa/event/${eventId}`,
+              `https://final-year-project-jy2j.onrender.com/api/v1/mpesa/event/${eventId}`,
               {
                 headers: {
                   Authorization: `Bearer ${token}`
@@ -409,7 +409,7 @@ const handleDeleteEvent = async (eventId: string) => {
         <h1 className="text-2xl font-bold text-gray-900">Events</h1>
         <button
           onClick={navigateToCreateEvent}
-          className="flex items-center bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-200"
+          className="flex items-center bg-tiffany-600 text-white py-2 px-4 rounded-lg hover:bg-tiffany-700 transition duration-200"
         >
           <Plus className="h-5 w-5 mr-2" />
           Create Event
@@ -439,7 +439,7 @@ const handleDeleteEvent = async (eventId: string) => {
                   name="title"
                   value={filters.title}
                   onChange={handleFilterChange}
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-tiffany-500"
                   placeholder="Search by title"
                 />
                 <Search className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" />
@@ -456,7 +456,7 @@ const handleDeleteEvent = async (eventId: string) => {
                 name="type"
                 value={filters.type}
                 onChange={handleFilterChange}
-                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-tiffany-500"
               >
                 <option value="">All Types</option>
                 {eventTypes.map(type => (
@@ -477,7 +477,7 @@ const handleDeleteEvent = async (eventId: string) => {
                 name="status"
                 value={filters.status}
                 onChange={handleFilterChange}
-                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-tiffany-500"
               >
                 <option value="">All Statuses</option>
                 {eventStatuses.map(status => (
@@ -499,7 +499,7 @@ const handleDeleteEvent = async (eventId: string) => {
                 name="city"
                 value={filters.city}
                 onChange={handleFilterChange}
-                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-tiffany-500"
                 placeholder="Filter by city"
               />
             </div>
@@ -515,7 +515,7 @@ const handleDeleteEvent = async (eventId: string) => {
                 name="startDate"
                 value={filters.startDate}
                 onChange={handleFilterChange}
-                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-tiffany-500"
               />
             </div>
 
@@ -530,7 +530,7 @@ const handleDeleteEvent = async (eventId: string) => {
                 name="endDate"
                 value={filters.endDate}
                 onChange={handleFilterChange}
-                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-tiffany-500"
               />
             </div>
           </div>
@@ -552,7 +552,7 @@ const handleDeleteEvent = async (eventId: string) => {
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+              className="px-4 py-2 bg-tiffany-600 text-white rounded-lg hover:bg-tiffany-700"
             >
               Apply Filters
             </button>
@@ -564,14 +564,14 @@ const handleDeleteEvent = async (eventId: string) => {
       <div className="bg-white rounded-xl shadow-sm">
         {isLoading ? (
           <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-tiffany-600"></div>
           </div>
         ) : error ? (
           <div className="p-6 text-center text-red-600">
             <p>{error}</p>
             <button
               onClick={() => window.location.reload()}
-              className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+              className="mt-4 px-4 py-2 bg-tiffany-600 text-white rounded-lg hover:bg-tiffany-700"
             >
               Try Again
             </button>
@@ -622,7 +622,7 @@ const handleDeleteEvent = async (eventId: string) => {
                           </div>
                           <div className="ml-4">
                             <div className="font-medium text-gray-900">
-                             <Link to={`/dashboard/events/${event._id}`} className="hover:text-indigo-600">
+                             <Link to={`/dashboard/events/${event._id}`} className="hover:text-tiffany-600">
                              {event.title}
                            </Link>
                             </div>
@@ -632,7 +632,7 @@ const handleDeleteEvent = async (eventId: string) => {
                                 : event.description}
                             </div>
                              {event.ticketPrice && event.ticketPrice > 0 && (
-                              <div className="text-sm font-medium text-indigo-600 mt-1">
+                              <div className="text-sm font-medium text-tiffany-600 mt-1">
                                 KES {event.ticketPrice.toFixed(2)}
                               </div>
                             )}
@@ -668,7 +668,7 @@ const handleDeleteEvent = async (eventId: string) => {
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <button
                           onClick={() => startRegistration(event)}
-                          className="text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-1 rounded-md mr-4 flex items-center justify-center min-w-24"
+                          className="text-white bg-tiffany-600 hover:bg-tiffany-700 px-3 py-1 rounded-md mr-4 flex items-center justify-center min-w-24"
                           disabled={
                             (Array.isArray(event.attendees) && event.attendees.includes(userId)) ||
                             registeringEvents[event._id] ||
@@ -690,7 +690,7 @@ const handleDeleteEvent = async (eventId: string) => {
                         </button>
                         <button
                           onClick={() => navigateToSessions(event._id)}
-                          className="text-indigo-600 hover:text-indigo-900 mr-4"
+                          className="text-tiffany-600 hover:text-tiffany-900 mr-4"
                         >
                           <Users className="h-4 w-4 inline mr-1" />
                           Sessions

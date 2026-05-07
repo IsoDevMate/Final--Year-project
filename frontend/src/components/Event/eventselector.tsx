@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import axios from 'axios';
@@ -27,7 +27,7 @@ export const EventSelector: React.FC<EventSelectorProps> = ({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const API_BASE_URL = 'https://final-year-project-5d85.onrender.com';
+  const API_BASE_URL = 'https://final-year-project-jy2j.onrender.com';
 
   const fetchRegisteredEvents = async () => {
     try {

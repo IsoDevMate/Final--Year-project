@@ -1,4 +1,4 @@
-// import React from 'react';
+﻿// import React from 'react';
 // import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 // import { CheckCircle, Calendar, Clock, MapPin, User, Download, Share2 } from 'lucide-react';
 // import { useState, useEffect } from 'react';
@@ -73,7 +73,7 @@
 
 //         // Get event details
 //         const eventResponse = await axios.get(
-//           `https://final-year-project-5d85.onrender.com/api/v1/events/${eventId}`,
+//           `https://final-year-project-jy2j.onrender.com/api/v1/events/${eventId}`,
 //           {
 //             headers: {
 //               Authorization: `Bearer ${token}`
@@ -129,7 +129,7 @@
 //           // Fetch QR code (optional)
 //           try {
 //             const qrResponse = await axios.get(
-//               `https://final-year-project-5d85.onrender.com/api/v1/events/${eventId}/qrcode`,
+//               `https://final-year-project-jy2j.onrender.com/api/v1/events/${eventId}/qrcode`,
 //               {
 //                 headers: {
 //                   Authorization: `Bearer ${token}`
@@ -247,7 +247,7 @@
 //   if (loading) {
 //     return (
 //       <div className="flex justify-center items-center min-h-screen bg-gray-50">
-//         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
+//         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-tiffany-600"></div>
 //       </div>
 //     );
 //   }
@@ -264,7 +264,7 @@
 //           <div className="flex justify-center">
 //             <Link
 //               to="/events"
-//               className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700"
+//               className="bg-tiffany-600 text-white px-4 py-2 rounded-lg hover:bg-tiffany-700"
 //             >
 //               Browse Events
 //             </Link>
@@ -302,8 +302,8 @@
 //                     className="w-full h-48 object-cover rounded-lg"
 //                   />
 //                 ) : (
-//                   <div className="w-full h-48 bg-indigo-100 rounded-lg flex items-center justify-center">
-//                     <Calendar className="h-16 w-16 text-indigo-400" />
+//                   <div className="w-full h-48 bg-tiffany-100 rounded-lg flex items-center justify-center">
+//                     <Calendar className="h-16 w-16 text-tiffany-400" />
 //                   </div>
 //                 )}
 
@@ -329,7 +329,7 @@
 
 //                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
 //                   <div className="flex items-start">
-//                     <Calendar className="h-5 w-5 text-indigo-500 mt-0.5 mr-3 flex-shrink-0" />
+//                     <Calendar className="h-5 w-5 text-tiffany-500 mt-0.5 mr-3 flex-shrink-0" />
 //                     <div>
 //                       <p className="text-sm font-medium text-gray-900">Date & Time</p>
 //                       <p className="text-sm text-gray-600">{formatDate(event.startDate)}</p>
@@ -340,7 +340,7 @@
 //                   </div>
 
 //                   <div className="flex items-start">
-//                     <MapPin className="h-5 w-5 text-indigo-500 mt-0.5 mr-3 flex-shrink-0" />
+//                     <MapPin className="h-5 w-5 text-tiffany-500 mt-0.5 mr-3 flex-shrink-0" />
 //                     <div>
 //                       <p className="text-sm font-medium text-gray-900">Location</p>
 //                       <p className="text-sm text-gray-600">{event.location.name}</p>
@@ -352,16 +352,16 @@
 //                 </div>
 
 //                 {/* Countdown */}
-//                 <div className="bg-indigo-50 rounded-lg p-4 mb-6">
+//                 <div className="bg-tiffany-50 rounded-lg p-4 mb-6">
 //                   <div className="grid grid-cols-3 gap-2 text-center">
 //                     <div>
-//                       <p className="text-2xl font-bold text-indigo-600">
+//                       <p className="text-2xl font-bold text-tiffany-600">
 //                         {getDaysRemaining(event.startDate)}
 //                       </p>
 //                       <p className="text-xs text-gray-600">Days Left</p>
 //                     </div>
 //                     <div>
-//                       <p className="text-2xl font-bold text-indigo-600">
+//                       <p className="text-2xl font-bold text-tiffany-600">
 //                         {typeof event.attendees === 'object' && Array.isArray(event.attendees)
 //                           ? event.attendees.length
 //                           : '0'}
@@ -369,7 +369,7 @@
 //                       <p className="text-xs text-gray-600">Attendees</p>
 //                     </div>
 //                     <div>
-//                       <p className="text-2xl font-bold text-indigo-600">
+//                       <p className="text-2xl font-bold text-tiffany-600">
 //                         {event.type.slice(0, 1).toUpperCase() + event.type.slice(1)}
 //                       </p>
 //                       <p className="text-xs text-gray-600">Event Type</p>
@@ -399,7 +399,7 @@
 
 //                   <Link
 //                     to="/dashboard/events"
-//                     className="flex items-center bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700"
+//                     className="flex items-center bg-tiffany-600 text-white px-4 py-2 rounded-lg hover:bg-tiffany-700"
 //                   >
 //                     <User className="h-4 w-4 mr-2" />
 //                     My Events
@@ -501,7 +501,7 @@ const RegistrationSuccessPage = () => {
 
         // Get event details
         const eventResponse = await axios.get(
-          `https://final-year-project-5d85.onrender.com/api/v1/events/${eventId}`,
+          `https://final-year-project-jy2j.onrender.com/api/v1/events/${eventId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`
@@ -558,7 +558,7 @@ const RegistrationSuccessPage = () => {
           // Fetch QR code (optional)
           // try {
           //   const qrResponse = await axios.get(
-          //     `https://final-year-project-5d85.onrender.com/api/v1/events/${eventId}/qrcode`,
+          //     `https://final-year-project-jy2j.onrender.com/api/v1/events/${eventId}/qrcode`,
           //     {
           //       headers: {
           //         Authorization: `Bearer ${token}`
@@ -676,7 +676,7 @@ const RegistrationSuccessPage = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-tiffany-600"></div>
       </div>
     );
   }
@@ -693,7 +693,7 @@ const RegistrationSuccessPage = () => {
           <div className="flex justify-center">
             <Link
               to="/dashboard/events"
-              className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700"
+              className="bg-tiffany-600 text-white px-4 py-2 rounded-lg hover:bg-tiffany-700"
             >
               Browse Events
             </Link>
@@ -731,8 +731,8 @@ const RegistrationSuccessPage = () => {
                     className="w-full h-48 object-cover rounded-lg"
                   />
                 ) : (
-                  <div className="w-full h-48 bg-indigo-100 rounded-lg flex items-center justify-center">
-                    <Calendar className="h-16 w-16 text-indigo-400" />
+                  <div className="w-full h-48 bg-tiffany-100 rounded-lg flex items-center justify-center">
+                    <Calendar className="h-16 w-16 text-tiffany-400" />
                   </div>
                 )}
 
@@ -758,7 +758,7 @@ const RegistrationSuccessPage = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                   <div className="flex items-start">
-                    <Calendar className="h-5 w-5 text-indigo-500 mt-0.5 mr-3 flex-shrink-0" />
+                    <Calendar className="h-5 w-5 text-tiffany-500 mt-0.5 mr-3 flex-shrink-0" />
                     <div>
                       <p className="text-sm font-medium text-gray-900">Date & Time</p>
                       <p className="text-sm text-gray-600">{formatDate(event.startDate)}</p>
@@ -769,7 +769,7 @@ const RegistrationSuccessPage = () => {
                   </div>
 
                   <div className="flex items-start">
-                    <MapPin className="h-5 w-5 text-indigo-500 mt-0.5 mr-3 flex-shrink-0" />
+                    <MapPin className="h-5 w-5 text-tiffany-500 mt-0.5 mr-3 flex-shrink-0" />
                     <div>
                       <p className="text-sm font-medium text-gray-900">Location</p>
                       <p className="text-sm text-gray-600">{event.location.name}</p>
@@ -781,16 +781,16 @@ const RegistrationSuccessPage = () => {
                 </div>
 
                 {/* Countdown */}
-                <div className="bg-indigo-50 rounded-lg p-4 mb-6">
+                <div className="bg-tiffany-50 rounded-lg p-4 mb-6">
                   <div className="grid grid-cols-3 gap-2 text-center">
                     <div>
-                      <p className="text-2xl font-bold text-indigo-600">
+                      <p className="text-2xl font-bold text-tiffany-600">
                         {getDaysRemaining(event.startDate)}
                       </p>
                       <p className="text-xs text-gray-600">Days Left</p>
                     </div>
                     <div>
-                      <p className="text-2xl font-bold text-indigo-600">
+                      <p className="text-2xl font-bold text-tiffany-600">
                         {typeof event.attendees === 'object' && Array.isArray(event.attendees)
                           ? event.attendees.length
                           : '0'}
@@ -798,7 +798,7 @@ const RegistrationSuccessPage = () => {
                       <p className="text-xs text-gray-600">Attendees</p>
                     </div>
                     <div>
-                      <p className="text-2xl font-bold text-indigo-600">
+                      <p className="text-2xl font-bold text-tiffany-600">
                         {event.type.slice(0, 1).toUpperCase() + event.type.slice(1)}
                       </p>
                       <p className="text-xs text-gray-600">Event Type</p>
@@ -828,7 +828,7 @@ const RegistrationSuccessPage = () => {
 
                   <Link
                     to="/dashboard/events"
-                    className="flex items-center bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700"
+                    className="flex items-center bg-tiffany-600 text-white px-4 py-2 rounded-lg hover:bg-tiffany-700"
                   >
                     <User className="h-4 w-4 mr-2" />
                     My Events
@@ -848,7 +848,7 @@ const RegistrationSuccessPage = () => {
           <div className="p-6 text-center">
             <Link
               to="/dashboard/events"
-              className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700"
+              className="bg-tiffany-600 text-white px-4 py-2 rounded-lg hover:bg-tiffany-700"
             >
               Back to Events
             </Link>

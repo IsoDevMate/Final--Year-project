@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Bell, Shield, Mail, CreditCard, Globe, Key, Lock, ExternalLink, Package, DollarSign, Zap } from 'lucide-react';
 
@@ -56,7 +56,7 @@ const SettingsPage: React.FC = () => {
                 onClick={() => setActiveTab('account')}
                 className={`flex items-center px-3 py-2 text-sm font-medium rounded-md w-full text-left ${
                   activeTab === 'account'
-                    ? 'bg-indigo-50 text-indigo-700'
+                    ? 'bg-tiffany-50 text-tiffany-700'
                     : 'text-gray-700 hover:bg-gray-100'
                 }`}
               >
@@ -68,7 +68,7 @@ const SettingsPage: React.FC = () => {
                 onClick={() => setActiveTab('security')}
                 className={`flex items-center px-3 py-2 text-sm font-medium rounded-md w-full text-left ${
                   activeTab === 'security'
-                    ? 'bg-indigo-50 text-indigo-700'
+                    ? 'bg-tiffany-50 text-tiffany-700'
                     : 'text-gray-700 hover:bg-gray-100'
                 }`}
               >
@@ -80,7 +80,7 @@ const SettingsPage: React.FC = () => {
                 onClick={() => setActiveTab('notifications')}
                 className={`flex items-center px-3 py-2 text-sm font-medium rounded-md w-full text-left ${
                   activeTab === 'notifications'
-                    ? 'bg-indigo-50 text-indigo-700'
+                    ? 'bg-tiffany-50 text-tiffany-700'
                     : 'text-gray-700 hover:bg-gray-100'
                 }`}
               >
@@ -92,7 +92,7 @@ const SettingsPage: React.FC = () => {
                 onClick={() => setActiveTab('billing')}
                 className={`flex items-center px-3 py-2 text-sm font-medium rounded-md w-full text-left ${
                   activeTab === 'billing'
-                    ? 'bg-indigo-50 text-indigo-700'
+                    ? 'bg-tiffany-50 text-tiffany-700'
                     : 'text-gray-700 hover:bg-gray-100'
                 }`}
               >
@@ -104,7 +104,7 @@ const SettingsPage: React.FC = () => {
                 onClick={() => setActiveTab('integrations')}
                 className={`flex items-center px-3 py-2 text-sm font-medium rounded-md w-full text-left ${
                   activeTab === 'integrations'
-                    ? 'bg-indigo-50 text-indigo-700'
+                    ? 'bg-tiffany-50 text-tiffany-700'
                     : 'text-gray-700 hover:bg-gray-100'
                 }`}
               >
@@ -139,7 +139,7 @@ const AccountSettings: React.FC = () => {
             </div>
             <Link
               to="/dashboard/profile"
-              className="text-sm text-indigo-600 hover:text-indigo-500"
+              className="text-sm text-tiffany-600 hover:text-tiffany-500"
             >
               Update
             </Link>
@@ -152,7 +152,7 @@ const AccountSettings: React.FC = () => {
               <h3 className="text-sm font-medium text-gray-900">Email Preferences</h3>
               <p className="text-sm text-gray-500">Manage the emails you receive from us</p>
             </div>
-            <button className="text-sm text-indigo-600 hover:text-indigo-500">
+            <button className="text-sm text-tiffany-600 hover:text-tiffany-500">
               Manage
             </button>
           </div>
@@ -187,7 +187,7 @@ const SecuritySettings: React.FC = () => {
               <h3 className="text-sm font-medium text-gray-900">Change Password</h3>
               <p className="text-sm text-gray-500">Update your password for enhanced security</p>
             </div>
-            <button className="text-sm text-indigo-600 hover:text-indigo-500 flex items-center">
+            <button className="text-sm text-tiffany-600 hover:text-tiffany-500 flex items-center">
               <Key className="mr-1 h-4 w-4" />
               Change
             </button>
@@ -200,7 +200,7 @@ const SecuritySettings: React.FC = () => {
               <h3 className="text-sm font-medium text-gray-900">Two-Factor Authentication</h3>
               <p className="text-sm text-gray-500">Add an extra layer of security to your account</p>
             </div>
-            <button className="text-sm text-indigo-600 hover:text-indigo-500 flex items-center">
+            <button className="text-sm text-tiffany-600 hover:text-tiffany-500 flex items-center">
               <Lock className="mr-1 h-4 w-4" />
               Enable
             </button>
@@ -213,7 +213,7 @@ const SecuritySettings: React.FC = () => {
               <h3 className="text-sm font-medium text-gray-900">Active Sessions</h3>
               <p className="text-sm text-gray-500">Manage and logout from active devices</p>
             </div>
-            <button className="text-sm text-indigo-600 hover:text-indigo-500">
+            <button className="text-sm text-tiffany-600 hover:text-tiffany-500">
               Manage
             </button>
           </div>
@@ -264,7 +264,7 @@ const NotificationSettingsTab: React.FC = () => {
                 />
                 <label
                   htmlFor="event-toggle"
-                  className={`toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer ${emailNotifications.events ? 'bg-indigo-600' : ''}`}
+                  className={`toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer ${emailNotifications.events ? 'bg-tiffany-600' : ''}`}
                 ></label>
               </div>
             </div>
@@ -285,7 +285,7 @@ const NotificationSettingsTab: React.FC = () => {
                 />
                 <label
                   htmlFor="reminder-toggle"
-                  className={`toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer ${emailNotifications.reminders ? 'bg-indigo-600' : ''}`}
+                  className={`toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer ${emailNotifications.reminders ? 'bg-tiffany-600' : ''}`}
                 ></label>
               </div>
             </div>
@@ -306,7 +306,7 @@ const NotificationSettingsTab: React.FC = () => {
                 />
                 <label
                   htmlFor="update-toggle"
-                  className={`toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer ${emailNotifications.updates ? 'bg-indigo-600' : ''}`}
+                  className={`toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer ${emailNotifications.updates ? 'bg-tiffany-600' : ''}`}
                 ></label>
               </div>
             </div>
@@ -327,7 +327,7 @@ const NotificationSettingsTab: React.FC = () => {
                 />
                 <label
                   htmlFor="marketing-toggle"
-                  className={`toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer ${emailNotifications.marketing ? 'bg-indigo-600' : ''}`}
+                  className={`toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer ${emailNotifications.marketing ? 'bg-tiffany-600' : ''}`}
                 ></label>
               </div>
             </div>
@@ -382,7 +382,7 @@ const BillingSettings: React.FC = () => {
             </div>
             <Link
               to="/dashboard/payments"
-              className="text-sm text-indigo-600 hover:text-indigo-500 flex items-center"
+              className="text-sm text-tiffany-600 hover:text-tiffany-500 flex items-center"
             >
               <CreditCard className="mr-1 h-4 w-4" />
               Check
@@ -398,7 +398,7 @@ const BillingSettings: React.FC = () => {
             </div>
             <Link
               to="/dashboard/billing/history"
-              className="text-sm text-indigo-600 hover:text-indigo-500 flex items-center"
+              className="text-sm text-tiffany-600 hover:text-tiffany-500 flex items-center"
             >
               <ExternalLink className="mr-1 h-4 w-4" />
               View
@@ -417,14 +417,14 @@ const BillingSettings: React.FC = () => {
               {plans.map((plan) => (
                 <div
                   key={plan.id}
-                  className={`border rounded-lg p-4 ${plan.current ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}`}
+                  className={`border rounded-lg p-4 ${plan.current ? 'border-tiffany-500 bg-tiffany-50' : 'border-gray-200'}`}
                 >
                   <div className="flex justify-between items-start">
                     <div>
                       <h4 className="font-medium text-gray-900 flex items-center">
                         {plan.name}
                         {plan.current && (
-                          <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                          <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-tiffany-100 text-tiffany-800">
                             Current
                           </span>
                         )}
@@ -436,14 +436,14 @@ const BillingSettings: React.FC = () => {
                       <ul className="mt-2 space-y-1">
                         {plan.features.map((feature, index) => (
                           <li key={index} className="text-xs text-gray-500 flex items-center">
-                            <Zap className="h-3 w-3 text-indigo-500 mr-1" />
+                            <Zap className="h-3 w-3 text-tiffany-500 mr-1" />
                             {feature}
                           </li>
                         ))}
                       </ul>
                     </div>
                     {!plan.current ? (
-                      <button className="px-3 py-1 text-sm font-medium text-indigo-600 border border-indigo-600 rounded hover:bg-indigo-50">
+                      <button className="px-3 py-1 text-sm font-medium text-tiffany-600 border border-tiffany-600 rounded hover:bg-tiffany-50">
                         Upgrade
                       </button>
                     ) : (
@@ -495,7 +495,7 @@ const IntegrationsSettings: React.FC = () => {
               className={`px-3 py-1 text-sm font-medium rounded ${
                 integration.connected
                   ? 'text-red-600 border border-red-600 hover:bg-red-50'
-                  : 'text-indigo-600 border border-indigo-600 hover:bg-indigo-50'
+                  : 'text-tiffany-600 border border-tiffany-600 hover:bg-tiffany-50'
               }`}
             >
               {integration.connected ? 'Disconnect' : 'Connect'}

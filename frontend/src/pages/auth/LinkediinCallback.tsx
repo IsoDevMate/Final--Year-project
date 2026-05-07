@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '../../contexts/AuthContext';
@@ -35,7 +35,7 @@ useEffect(() => {
       localStorage.setItem('refreshToken', refreshToken);
 
       try {
-        const response = await axios.get(`https://final-year-project-5d85.onrender.com/api/v1/auth/me`, {
+        const response = await axios.get(`https://final-year-project-jy2j.onrender.com/api/v1/auth/me`, {
           headers: { Authorization: `Bearer ${accessToken}` }
         });
 
@@ -73,7 +73,7 @@ useEffect(() => {
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-md text-center">
-        <div className="animate-spin h-10 w-10 border-4 border-indigo-500 rounded-full border-t-transparent mx-auto mb-4"></div>
+        <div className="animate-spin h-10 w-10 border-4 border-tiffany-500 rounded-full border-t-transparent mx-auto mb-4"></div>
         <h2 className="text-xl font-medium text-gray-700">Completing your sign-in...</h2>
         <p className="text-gray-500 mt-2">Please wait while we authenticate your LinkedIn account.</p>
         {isLoading && (

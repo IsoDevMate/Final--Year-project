@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -74,7 +74,7 @@ const CreatePaymentPage: React.FC = () => {
       const token = localStorage.getItem('accessToken');
 
       const response = await axios.post(
-        'https://final-year-project-5d85.onrender.com/api/v1/payments/checkout',
+        'https://final-year-project-jy2j.onrender.com/api/v1/payments/checkout',
         {
           subscriptionPlan: selectedPlan,
           currency: 'usd'
@@ -124,12 +124,12 @@ const CreatePaymentPage: React.FC = () => {
               className={`
                 border-2 rounded-xl p-6 cursor-pointer transition-all duration-300
                 ${selectedPlan === plan.type
-                  ? 'border-indigo-600 bg-indigo-50 shadow-lg'
-                  : 'border-gray-200 hover:border-indigo-300'}
+                  ? 'border-tiffany-600 bg-tiffany-50 shadow-lg'
+                  : 'border-gray-200 hover:border-tiffany-300'}
               `}
             >
               <h2 className="text-xl font-bold text-gray-900 mb-4">{plan.name}</h2>
-              <p className="text-3xl font-extrabold text-indigo-600 mb-4">
+              <p className="text-3xl font-extrabold text-tiffany-600 mb-4">
                 ${plan.price}<span className="text-sm text-gray-500">/month</span>
               </p>
               <ul className="space-y-3 mb-6">
@@ -143,7 +143,7 @@ const CreatePaymentPage: React.FC = () => {
               <div className={`
                 w-full py-3 text-center rounded-lg font-bold transition-colors
                 ${selectedPlan === plan.type
-                  ? 'bg-indigo-600 text-white'
+                  ? 'bg-tiffany-600 text-white'
                   : 'bg-gray-200 text-gray-600'}
               `}>
                 {selectedPlan === plan.type ? 'Selected' : 'Select Plan'}
@@ -159,10 +159,10 @@ const CreatePaymentPage: React.FC = () => {
             className={`
               inline-flex items-center justify-center px-6 py-3
               border border-transparent text-base font-medium rounded-md
-              text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500
+              text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-tiffany-500
               ${!selectedPlan || isLoading
                 ? 'bg-gray-400 cursor-not-allowed'
-                : 'bg-indigo-600 hover:bg-indigo-700'}
+                : 'bg-tiffany-600 hover:bg-tiffany-700'}
             `}
           >
             {isLoading ? (

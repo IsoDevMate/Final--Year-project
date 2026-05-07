@@ -7,4 +7,16 @@
   --color-avocado-200: oklch(0.98 0.04 113.22);
   --ease-fluid: cubic-bezier(0.3, 0, 0, 1);
   --ease-snappy: cubic-bezier(0.2, 0, 0, 1);
+
+  /* Tiffany Blue scale — base: #0ABAB5 */
+  --color-tiffany-50:  #e6fafa;
+  --color-tiffany-100: #b3f0ee;
+  --color-tiffany-200: #80e6e2;
+  --color-tiffany-300: #4ddcd7;
+  --color-tiffany-400: #26d2cb;
+  --color-tiffany-500: #0ABAB5;
+  --color-tiffany-600: #089e9a;
+  --color-tiffany-700: #06827e;
+  --color-tiffany-800: #046663;
+  --color-tiffany-900: #024a47;
 }

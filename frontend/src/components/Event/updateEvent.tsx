@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Calendar, MapPin, Users, DollarSign, FileText, Loader, ArrowLeft } from 'lucide-react';
 import axios from 'axios';
@@ -143,7 +143,7 @@ const UpdateEventPage: React.FC = () => {
   useEffect(() => {
     const fetchEventData = async () => {
       try {
-        const response = await axios.get(`https://final-year-project-5d85.onrender.com/api/v1/events/${id}`);
+        const response = await axios.get(`https://final-year-project-jy2j.onrender.com/api/v1/events/${id}`);
 
         if (response.data.success) {
           const eventData = response.data.data;
@@ -315,7 +315,7 @@ const UpdateEventPage: React.FC = () => {
 
       const token = localStorage.getItem('accessToken');
       const response = await axios.post(
-        `https://final-year-project-5d85.onrender.com/api/v1/events/${id}/cover-image`,
+        `https://final-year-project-jy2j.onrender.com/api/v1/events/${id}/cover-image`,
         formData,
         {
           headers: {
@@ -367,7 +367,7 @@ const UpdateEventPage: React.FC = () => {
 
       const token = localStorage.getItem('accessToken');
       const response = await axios.put(
-        `https://final-year-project-5d85.onrender.com/api/v1/events/${id}`,
+        `https://final-year-project-jy2j.onrender.com/api/v1/events/${id}`,
         {
           ...eventData,
           coverImage: coverImageUrl
@@ -402,7 +402,7 @@ const UpdateEventPage: React.FC = () => {
     return (
       <div className="min-h-screen bg-gray-50 p-4">
         <div className="flex justify-center items-center h-64">
-          <Loader className="h-12 w-12 animate-spin text-indigo-600" />
+          <Loader className="h-12 w-12 animate-spin text-tiffany-600" />
         </div>
       </div>
     );
@@ -416,7 +416,7 @@ const UpdateEventPage: React.FC = () => {
           <p className="mb-4">You do not have permission to update this event.</p>
           <button
             onClick={handleBack}
-            className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+            className="inline-flex items-center px-4 py-2 bg-tiffany-600 text-white rounded-md hover:bg-tiffany-700"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Events
@@ -799,7 +799,7 @@ const UpdateEventPage: React.FC = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex items-center"
+              className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-tiffany-600 hover:bg-tiffany-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-tiffany-500 flex items-center"
             >
               {isLoading && <Loader className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" />}
               {isLoading ? 'Updating...' : 'Update Event'}

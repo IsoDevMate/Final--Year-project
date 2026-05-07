@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Calendar, Tag, Search, Plus,
@@ -69,7 +69,7 @@ const NotesListPage: React.FC = () => {
     tags: [],
   });
 
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://final-year-project-5d85.onrender.com';
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://final-year-project-jy2j.onrender.com';
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem('accessToken');
@@ -213,7 +213,7 @@ const NotesListPage: React.FC = () => {
     switch (type) {
       case 'image': return <Image className="h-4 w-4 text-blue-500" />;
       case 'video': return <Video className="h-4 w-4 text-red-500" />;
-      case 'audio': return <Mic className="h-4 w-4 text-purple-500" />;
+      case 'audio': return <Mic className="h-4 w-4 text-tiffany-500" />;
       case 'document': return <File className="h-4 w-4 text-green-500" />;
     }
   };
@@ -221,7 +221,7 @@ const NotesListPage: React.FC = () => {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-tiffany-600"></div>
       </div>
     );
   }
@@ -233,7 +233,7 @@ const NotesListPage: React.FC = () => {
         <div className="flex space-x-2">
           <button
             onClick={() => navigate('/dashboard/notes')}
-            className="flex items-center bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
+            className="flex items-center bg-tiffany-600 text-white px-4 py-2 rounded-md hover:bg-tiffany-700"
           >
             <Plus className="h-5 w-5 mr-2" /> New Note
           </button>
@@ -248,7 +248,7 @@ const NotesListPage: React.FC = () => {
             placeholder="Search notes..."
             value={filters.searchTerm}
             onChange={(e) => setFilters(prev => ({...prev, searchTerm: e.target.value}))}
-            className="w-full pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-tiffany-500"
           />
           <Search className="absolute left-3 top-3 text-gray-400" />
         </div>
@@ -335,7 +335,7 @@ const NotesListPage: React.FC = () => {
                       }}
                       className={`px-2 py-1 rounded-full text-xs ${
                         filters.tags.includes(tag)
-                          ? 'bg-indigo-600 text-white'
+                          ? 'bg-tiffany-600 text-white'
                           : 'bg-gray-200 text-gray-700'
                       }`}
                     >
@@ -399,7 +399,7 @@ const NotesListPage: React.FC = () => {
               {note.isPrivate ? (
                 <Lock className="absolute top-2 right-2 text-gray-400 h-4 w-4" />
               ) : (
-                <Share2 className="absolute top-2 right-2 text-indigo-500 h-4 w-4" />
+                <Share2 className="absolute top-2 right-2 text-tiffany-500 h-4 w-4" />
               )}
 
               <Link to={`/dashboard/notes/${note._id}`} className="block">
@@ -454,7 +454,7 @@ const NotesListPage: React.FC = () => {
               onClick={() => setPage(index + 1)}
               className={`px-4 py-2 rounded-md ${
                 page === index + 1
-                  ? 'bg-indigo-600 text-white'
+                  ? 'bg-tiffany-600 text-white'
                   : 'bg-gray-200 text-gray-700'
               }`}
             >

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Clock, Calendar, Video, Users, MapPin, ArrowLeft, Plus, Edit, Trash2, FileText, ExternalLink } from 'lucide-react';
 import axios from 'axios';
@@ -72,7 +72,7 @@ const SessionsPage = () => {
 
       try {
         // Fetch event details
-        const eventResponse = await axios.get(`https://final-year-project-5d85.onrender.com/api/v1/events/${eventId}`);
+        const eventResponse = await axios.get(`https://final-year-project-jy2j.onrender.com/api/v1/events/${eventId}`);
         if (eventResponse.data.success) {
           const eventData = eventResponse.data.data;
           setEvent(eventData);
@@ -80,7 +80,7 @@ const SessionsPage = () => {
         }
 
         // Fetch sessions for this event
-        const sessionsResponse = await axios.get(`https://final-year-project-5d85.onrender.com/api/v1/sessions/event/${eventId}`);
+        const sessionsResponse = await axios.get(`https://final-year-project-jy2j.onrender.com/api/v1/sessions/event/${eventId}`);
         if (sessionsResponse.data.success) {
           const sessionsData = sessionsResponse.data.data;
           setSessions(sessionsData);
@@ -105,7 +105,7 @@ const SessionsPage = () => {
   const handleDeleteSession = async (sessionId: string) => {
     if (window.confirm('Are you sure you want to delete this session?')) {
       try {
-        const response = await axios.delete(`https://final-year-project-5d85.onrender.com/api/v1/sessions/${sessionId}`);
+        const response = await axios.delete(`https://final-year-project-jy2j.onrender.com/api/v1/sessions/${sessionId}`);
 
         if (response.data.success) {
           // Remove from local state
@@ -135,7 +135,7 @@ const SessionsPage = () => {
         updateData.streamUrl = url;
       }
 
-      const response = await axios.patch(`https://final-year-project-5d85.onrender.com/api/v1/sessions/${sessionId}/livestream`, updateData);
+      const response = await axios.patch(`https://final-year-project-jy2j.onrender.com/api/v1/sessions/${sessionId}/livestream`, updateData);
 
       if (response.data.success) {
         // Update in local state
@@ -154,7 +154,7 @@ const SessionsPage = () => {
   // Register for a session
   const handleRegisterForSession = async (sessionId: string) => {
     try {
-      const response = await axios.post(`https://final-year-project-5d85.onrender.com/api/v1/sessions/${sessionId}/register`);
+      const response = await axios.post(`https://final-year-project-jy2j.onrender.com/api/v1/sessions/${sessionId}/register`);
 
       if (response.data.success) {
         // Update the attendees count in local state
@@ -252,7 +252,7 @@ const SessionsPage = () => {
         </div>
         <Link
           to={`/events/${eventId}/sessions/create`}
-          className="flex items-center bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-200 mt-4 md:mt-0"
+          className="flex items-center bg-tiffany-600 text-white py-2 px-4 rounded-lg hover:bg-tiffany-700 transition duration-200 mt-4 md:mt-0"
         >
           <Plus className="h-5 w-5 mr-2" />
           Create Session
@@ -263,14 +263,14 @@ const SessionsPage = () => {
       <div className="bg-white rounded-xl shadow-sm p-6">
         {isLoading ? (
           <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-tiffany-600"></div>
           </div>
         ) : error ? (
           <div className="text-center text-red-600">
             <p>{error}</p>
             <button
               onClick={() => window.location.reload()}
-              className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+              className="mt-4 px-4 py-2 bg-tiffany-600 text-white rounded-lg hover:bg-tiffany-700"
             >
               Try Again
             </button>
@@ -287,7 +287,7 @@ const SessionsPage = () => {
             <div className="mt-6">
               <Link
                 to={`/dashboard/events/${eventId}/sessions/create`}
-                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-tiffany-600 hover:bg-tiffany-700"
               >
                 <Plus className="h-4 w-4 mr-1" />
                 Create Session
@@ -304,7 +304,7 @@ const SessionsPage = () => {
                     <div key={session._id} className="border rounded-lg p-4 hover:shadow-md transition duration-200">
                       <div className="flex flex-col md:flex-row md:items-center md:justify-between">
                         <div className="flex-1">
-                          <Link to={`/sessions/${session._id}`} className="text-lg font-medium text-indigo-600 hover:text-indigo-800">
+                          <Link to={`/sessions/${session._id}`} className="text-lg font-medium text-tiffany-600 hover:text-tiffany-800">
                             {session.title}
                           </Link>
                           <div className="mt-2 space-y-2">
@@ -340,7 +340,7 @@ const SessionsPage = () => {
                           {session.tags && session.tags.length > 0 && (
                             <div className="mt-3 flex flex-wrap gap-2">
                               {session.tags.map(tag => (
-                                <span key={tag} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                                <span key={tag} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-tiffany-100 text-tiffany-800">
                                   {tag}
                                 </span>
                               ))}
@@ -364,7 +364,7 @@ const SessionsPage = () => {
                             className={`inline-flex items-center px-3 py-1.5 border text-xs font-medium rounded
                               ${session.isLiveStreamed
                                 ? 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
-                                : 'border-transparent text-white bg-indigo-600 hover:bg-indigo-700'}`}
+                                : 'border-transparent text-white bg-tiffany-600 hover:bg-tiffany-700'}`}
                           >
                             <Video className="h-4 w-4 mr-1" />
                             {session.isLiveStreamed ? 'End Stream' : 'Start Stream'}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 interface LinkedInShareButtonProps {
@@ -14,7 +14,7 @@ const LinkedInShareButton: React.FC<LinkedInShareButtonProps> = ({ noteId }) => 
   useEffect(() => {
     const checkLinkedInStatus = async () => {
       try {
-        const response = await axios.get('https://final-year-project-5d85.onrender.com/api/v1/linkedin/status');
+        const response = await axios.get('https://final-year-project-jy2j.onrender.com/api/v1/linkedin/status');
         setCanShare(response.data.data.hasLinkedIn);
       } catch (error) {
         console.error('Failed to check LinkedIn status:', error);
@@ -30,7 +30,7 @@ const LinkedInShareButton: React.FC<LinkedInShareButtonProps> = ({ noteId }) => 
     setShareResult(null);
 
     try {
-      const response = await axios.post(`https://final-year-project-5d85.onrender.com/api/v1/linkedin/share/note/${noteId}`);
+      const response = await axios.post(`https://final-year-project-jy2j.onrender.com/api/v1/linkedin/share/note/${noteId}`);
 
       setShareResult({
         success: true,

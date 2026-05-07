@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, Users, DollarSign, Clock, Video, ArrowRight } from 'lucide-react';
 
@@ -87,7 +87,7 @@ const Dashboard = () => {
         <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
         <Link
           to="/dashboard/events/create"
-          className="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-200"
+          className="bg-tiffany-600 text-white py-2 px-4 rounded-lg hover:bg-tiffany-700 transition duration-200"
         >
           Create Event
         </Link>
@@ -95,7 +95,7 @@ const Dashboard = () => {
 
       {isLoading ? (
         <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-tiffany-600"></div>
         </div>
       ) : (
         <>
@@ -103,8 +103,8 @@ const Dashboard = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="bg-white rounded-xl shadow-sm p-6">
               <div className="flex items-center">
-                <div className="bg-indigo-100 rounded-full p-3">
-                  <Calendar className="h-6 w-6 text-indigo-600" />
+                <div className="bg-tiffany-100 rounded-full p-3">
+                  <Calendar className="h-6 w-6 text-tiffany-600" />
                 </div>
                 <div className="ml-4">
                   <h3 className="text-sm font-medium text-gray-500">Total Events</h3>
@@ -139,8 +139,8 @@ const Dashboard = () => {
 
             <div className="bg-white rounded-xl shadow-sm p-6">
               <div className="flex items-center">
-                <div className="bg-purple-100 rounded-full p-3">
-                  <Clock className="h-6 w-6 text-purple-600" />
+                <div className="bg-tiffany-100 rounded-full p-3">
+                  <Clock className="h-6 w-6 text-tiffany-600" />
                 </div>
                 <div className="ml-4">
                   <h3 className="text-sm font-medium text-gray-500">Upcoming Events</h3>
@@ -156,7 +156,7 @@ const Dashboard = () => {
               <h2 className="text-lg font-medium text-gray-900">Recent Events</h2>
               <Link
                 to="/dashboard/events"
-                className="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center"
+                className="text-tiffany-600 hover:text-tiffany-800 text-sm font-medium flex items-center"
               >
                 View all <ArrowRight className="h-4 w-4 ml-1" />
               </Link>
@@ -202,7 +202,7 @@ const Dashboard = () => {
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <Link to={`/dashboard/events/${event.id}`} className="text-indigo-600 hover:text-indigo-900">
+                        <Link to={`/dashboard/events/${event.id}`} className="text-tiffany-600 hover:text-tiffany-900">
                           Details
                         </Link>
                       </td>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Calendar, MapPin, Users, Clock, ArrowLeft, User, DollarSign, AlertTriangle } from 'lucide-react';
 import axios from 'axios';
@@ -58,7 +58,7 @@ try {
           return;
         }
   console.log("Attempting to fetch event with ID:", _id);
-  const response = await axios.get(`https://final-year-project-5d85.onrender.com/api/v1/events/${_id}`);
+  const response = await axios.get(`https://final-year-project-jy2j.onrender.com/api/v1/events/${_id}`);
   console.log("API Response:", response.data);
 
   if (response.data.success) {
@@ -181,7 +181,7 @@ try {
       }
 
       const response = await axios.post(
-        `https://final-year-project-5d85.onrender.com/api/v1/events/register/${event._id}`,
+        `https://final-year-project-jy2j.onrender.com/api/v1/events/register/${event._id}`,
         {},
         {
           headers: {
@@ -226,7 +226,7 @@ try {
         }
 
         const response = await axios.delete(
-          `https://final-year-project-5d85.onrender.com/api/v1/events/register/${event._id}`,
+          `https://final-year-project-jy2j.onrender.com/api/v1/events/register/${event._id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`
@@ -266,7 +266,7 @@ try {
 
       // Initiate M-Pesa payment
       const paymentResponse = await axios.post(
-        `https://final-year-project-5d85.onrender.com/api/v1/mpesa/event/${event._id}`,
+        `https://final-year-project-jy2j.onrender.com/api/v1/mpesa/event/${event._id}`,
         {
           phoneNumber: phoneNumber,
           amount: event.ticketPrice
@@ -291,7 +291,7 @@ try {
 
           try {
             const statusResponse = await axios.get(
-              `https://final-year-project-5d85.onrender.com/api/v1/mpesa/event/${event._id}`,
+              `https://final-year-project-jy2j.onrender.com/api/v1/mpesa/event/${event._id}`,
               {
                 headers: {
                   Authorization: `Bearer ${token}`
@@ -357,7 +357,7 @@ try {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-tiffany-600"></div>
       </div>
     );
   }
@@ -371,7 +371,7 @@ try {
           <p className="text-gray-600 mb-6">{error || "We couldn't find the event you're looking for."}</p>
           <Link
             to="/dashboard/events"
-            className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+            className="inline-flex items-center px-4 py-2 bg-tiffany-600 text-white rounded-lg hover:bg-tiffany-700"
           >
             <ArrowLeft className="h-5 w-5 mr-2" />
             Back to Events
@@ -387,7 +387,7 @@ try {
       <div className="mb-6">
         <Link
           to="/dashboard/events"
-          className="inline-flex items-center text-indigo-600 hover:text-indigo-800"
+          className="inline-flex items-center text-tiffany-600 hover:text-tiffany-800"
         >
           <ArrowLeft className="h-5 w-5 mr-2" />
           Back to Events
@@ -399,7 +399,7 @@ try {
         {event.coverImage ? (
           <div className="h-64 w-full bg-cover bg-center" style={{ backgroundImage: `url(${event.coverImage})` }}></div>
         ) : (
-          <div className="h-64 w-full bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center">
+          <div className="h-64 w-full bg-gradient-to-r from-tiffany-500 to-tiffany-600 flex items-center justify-center">
             <h1 className="text-4xl font-bold text-white">{event.title}</h1>
           </div>
         )}
@@ -418,38 +418,38 @@ try {
               <h1 className="text-3xl font-bold text-gray-900 mb-3">{event.title}</h1>
               <div className="flex flex-wrap text-gray-500 text-sm mb-4">
                 <div className="flex items-center mr-6 mb-2">
-                  <Calendar className="h-5 w-5 mr-2 text-indigo-600" />
+                  <Calendar className="h-5 w-5 mr-2 text-tiffany-600" />
                   <span>
                     <span className="font-medium">Start:</span> {formatDate(event.startDate)}
                   </span>
                 </div>
                 <div className="flex items-center mr-6 mb-2">
-                  <Clock className="h-5 w-5 mr-2 text-indigo-600" />
+                  <Clock className="h-5 w-5 mr-2 text-tiffany-600" />
                   <span>
                     <span className="font-medium">Duration:</span> {getEventDuration()}
                   </span>
                 </div>
                 <div className="flex items-center mr-6 mb-2">
-                  <MapPin className="h-5 w-5 mr-2 text-indigo-600" />
+                  <MapPin className="h-5 w-5 mr-2 text-tiffany-600" />
                   <span>
                     <span className="font-medium">Location:</span> {event.location.name}, {event.location.address}, {event.location.city}, {event.location.country}
                   </span>
                 </div>
                 <div className="flex items-center mr-6 mb-2">
-                  <Users className="h-5 w-5 mr-2 text-indigo-600" />
+                  <Users className="h-5 w-5 mr-2 text-tiffany-600" />
                   <span>
                     <span className="font-medium">Capacity:</span> {Array.isArray(event.attendees) ? event.attendees.length : '0'} / {event.capacity || '∞'} attendees
                   </span>
                 </div>
                 <div className="flex items-center mb-2">
-                  <User className="h-5 w-5 mr-2 text-indigo-600" />
+                  <User className="h-5 w-5 mr-2 text-tiffany-600" />
                   <span>
                     <span className="font-medium">Organizer:</span> {getOrganizerName()}
                   </span>
                 </div>
                 {event.ticketPrice > 0 && (
                   <div className="flex items-center mb-2 ml-6">
-                    <DollarSign className="h-5 w-5 mr-2 text-indigo-600" />
+                    <DollarSign className="h-5 w-5 mr-2 text-tiffany-600" />
                     <span>
                       <span className="font-medium">Price:</span> KES {event.ticketPrice.toFixed(2)}
                     </span>
@@ -476,7 +476,7 @@ try {
                     event.status !== 'published' ||
                     (event.capacity && Array.isArray(event.attendees) && event.attendees.length >= event.capacity)
                   }
-                  className="w-full md:w-auto px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition duration-200 disabled:opacity-50"
+                  className="w-full md:w-auto px-6 py-3 bg-tiffany-600 text-white font-medium rounded-lg hover:bg-tiffany-700 transition duration-200 disabled:opacity-50"
                 >
                   {registering ? 'Processing...' : paymentStatusPolling ? 'Processing Payment...' :
                    event.status !== 'published' ? 'Registration Unavailable' :
@@ -578,7 +578,7 @@ try {
           <h2 className="text-xl font-bold text-gray-900">Event Sessions</h2>
           <Link
             to={`/dashboard/events/${event._id}/sessions`}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+            className="px-4 py-2 bg-tiffany-600 text-white rounded-lg hover:bg-tiffany-700"
           >
             View All Sessions
           </Link>

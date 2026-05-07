@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, MapPin, Clock, Loader, AlertCircle, CheckCircle, ExternalLink } from 'lucide-react';
 import axios from 'axios';
@@ -56,7 +56,7 @@ const MyEventsPage = () => {
         }
 
         // Fetch all events first
-          const response = await axios.get('https://final-year-project-5d85.onrender.com/api/v1/events/registered', {
+          const response = await axios.get('https://final-year-project-jy2j.onrender.com/api/v1/events/registered', {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -97,7 +97,7 @@ const handleUnregister = async (eventId: string) => {
         return;
       }
 
-      const response = await axios.delete(`https://final-year-project-5d85.onrender.com/api/v1/events/register/${eventId}`, {
+      const response = await axios.delete(`https://final-year-project-jy2j.onrender.com/api/v1/events/register/${eventId}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -179,7 +179,7 @@ const handleUnregister = async (eventId: string) => {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="flex flex-col items-center">
-          <Loader className="h-8 w-8 text-indigo-600 animate-spin" />
+          <Loader className="h-8 w-8 text-tiffany-600 animate-spin" />
           <p className="mt-4 text-gray-600">Loading your events...</p>
         </div>
       </div>
@@ -194,7 +194,7 @@ const handleUnregister = async (eventId: string) => {
         <p className="mt-2 text-sm text-gray-500">{error}</p>
         <button
           onClick={() => window.location.reload()}
-          className="mt-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          className="mt-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-tiffany-600 hover:bg-tiffany-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-tiffany-500"
         >
           Try Again
         </button>
@@ -209,7 +209,7 @@ const handleUnregister = async (eventId: string) => {
         <h1 className="text-2xl font-bold text-gray-900">My Registered Events</h1>
         <Link
           to="/dashboard/events"
-          className="flex items-center text-indigo-600 hover:text-indigo-800"
+          className="flex items-center text-tiffany-600 hover:text-tiffany-800"
         >
           <Calendar className="h-5 w-5 mr-2" />
           Browse Events
@@ -225,7 +225,7 @@ const handleUnregister = async (eventId: string) => {
             <p className="mt-2 text-sm text-gray-500">You haven't registered for any events yet.</p>
             <Link
               to="/events"
-              className="mt-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="mt-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-tiffany-600 hover:bg-tiffany-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-tiffany-500"
             >
               Browse Events
             </Link>
@@ -243,8 +243,8 @@ const handleUnregister = async (eventId: string) => {
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    <div className="h-full w-full flex items-center justify-center bg-indigo-100">
-                      <Calendar className="h-16 w-16 text-indigo-400" />
+                    <div className="h-full w-full flex items-center justify-center bg-tiffany-100">
+                      <Calendar className="h-16 w-16 text-tiffany-400" />
                     </div>
                   )}
 
@@ -281,7 +281,7 @@ const handleUnregister = async (eventId: string) => {
                 <div className="border-t px-4 py-3 bg-gray-50 flex justify-between">
                   {/* <Link
                     to={`/events/${event._id}`}
-                    className="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center"
+                    className="text-tiffany-600 hover:text-tiffany-800 text-sm font-medium flex items-center"
                   >
                     View Details
                     <ExternalLink className="h-4 w-4 ml-1" />

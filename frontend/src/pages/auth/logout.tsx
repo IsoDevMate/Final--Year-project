@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { toast } from 'react-hot-toast';
@@ -50,14 +50,14 @@ const LogoutPage: React.FC = () => {
     return (
         <div className="flex justify-center items-center min-h-screen bg-gray-100">
             <div className="bg-white p-8 rounded-lg shadow-md text-center w-full max-w-md">
-                <div className="animate-spin h-12 w-12 border-4 border-indigo-500 rounded-full border-t-transparent mx-auto mb-6"></div>
+                <div className="animate-spin h-12 w-12 border-4 border-tiffany-500 rounded-full border-t-transparent mx-auto mb-6"></div>
                 <h2 className="text-2xl font-medium text-gray-700 mb-4">Logging you out...</h2>
                 <p className="text-gray-500 mb-4">Please wait while we complete the process.</p>
 
                 {/* Progress bar */}
                 <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
                     <div
-                        className="bg-indigo-600 h-2.5 rounded-full transition-all duration-300 ease-in-out"
+                        className="bg-tiffany-600 h-2.5 rounded-full transition-all duration-300 ease-in-out"
                         style={{ width: `${progress}%` }}
                     ></div>
                 </div>

@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+﻿import React, { useRef, useState, useEffect } from 'react';
 
 const SimpleCanvasDrawing = ({ onSave, onCancel, initialDrawing = null }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -199,7 +199,7 @@ const SimpleCanvasDrawing = ({ onSave, onCancel, initialDrawing = null }) => {
               <button
                 key={size}
                 className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                  brushSize === size ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-100'
+                  brushSize === size ? 'bg-tiffany-100 text-tiffany-700' : 'bg-gray-100'
                 }`}
                 onClick={() => setBrushSize(size)}
               >
@@ -250,7 +250,7 @@ const SimpleCanvasDrawing = ({ onSave, onCancel, initialDrawing = null }) => {
             onClick={handleSave}
             disabled={!hasDrawing}
             className={`px-4 py-2 ${
-              hasDrawing ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-indigo-300 cursor-not-allowed'
+              hasDrawing ? 'bg-tiffany-600 hover:bg-tiffany-700' : 'bg-tiffany-300 cursor-not-allowed'
             } text-white rounded`}
           >
             Save Drawing
