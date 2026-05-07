@@ -54,7 +54,7 @@ interface Location {
   address: string;
   city: string;
   country: string;
-  postalCode?: string;
+  mapLink?: string;
   coordinates?: {
     latitude: number;
     longitude: number;
@@ -100,7 +100,7 @@ const UpdateEventPage: React.FC = () => {
       address: '',
       city: '',
       country: '',
-      postalCode: '',
+      mapLink: '',
       coordinates: {
         latitude: 0,
         longitude: 0
@@ -275,13 +275,11 @@ const UpdateEventPage: React.FC = () => {
     if (!eventData.title.trim()) errors.title = 'Title is required';
     if (!eventData.description.trim()) errors.description = 'Description is required';
     if (!eventData.type) errors.type = 'Event type is required';
-    if (!eventData.status) errors.status = 'Status is required';
     if (!eventData.startDate) errors.startDate = 'Start date is required';
     if (!eventData.endDate) errors.endDate = 'End date is required';
 
     // Location validation
     if (!eventData.location.name.trim()) errors['location.name'] = 'Venue name is required';
-    if (!eventData.location.address.trim()) errors['location.address'] = 'Address is required';
     if (!eventData.location.city) errors['location.city'] = 'City is required';
     if (!eventData.location.country) errors['location.country'] = 'Country is required';
 
@@ -506,30 +504,6 @@ const UpdateEventPage: React.FC = () => {
               )}
             </div>
 
-            {/* Event Status */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Status
-              </label>
-              <select
-                name="status"
-                value={eventData.status}
-                onChange={handleInputChange}
-                className={`w-full px-3 py-2 border rounded-md ${
-                  formErrors.status ? 'border-red-500' : 'border-gray-300'
-                }`}
-              >
-                {eventStatuses.map((status) => (
-                  <option key={status} value={status}>
-                    {status.charAt(0).toUpperCase() + status.slice(1)}
-                  </option>
-                ))}
-              </select>
-              {formErrors.status && (
-                <p className="mt-1 text-sm text-red-500">{formErrors.status}</p>
-              )}
-            </div>
-
             {/* Start Date */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -595,24 +569,19 @@ const UpdateEventPage: React.FC = () => {
                   )}
                 </div>
 
-                {/* Address */}
+                {/* Google Maps Link */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Address
+                    Google Maps Link
                   </label>
                   <input
-                    type="text"
-                    name="location.address"
-                    value={eventData.location.address}
+                    type="url"
+                    name="location.mapLink"
+                    value={(eventData.location as any).mapLink || ''}
                     onChange={handleInputChange}
-                    className={`w-full px-3 py-2 border rounded-md ${
-                      formErrors['location.address'] ? 'border-red-500' : 'border-gray-300'
-                    }`}
-                    placeholder="Enter address"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    placeholder="https://maps.google.com/..."
                   />
-                  {formErrors['location.address'] && (
-                    <p className="mt-1 text-sm text-red-500">{formErrors['location.address']}</p>
-                  )}
                 </div>
 
                 {/* Country */}
@@ -666,20 +635,6 @@ const UpdateEventPage: React.FC = () => {
                   )}
                 </div>
 
-                {/* Postal Code */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Postal Code
-                  </label>
-                  <input
-                    type="text"
-                    name="location.postalCode"
-                    value={eventData.location.postalCode || ''}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                    placeholder="Enter postal code (optional)"
-                  />
-                </div>
               </div>
             </div>
 

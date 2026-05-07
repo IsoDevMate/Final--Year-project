@@ -17,6 +17,8 @@ import NotesListPage from './components/Note/noteslist';
 import PendingPaymentPage from './components/Event/pendingpayment';
 import ReportsPage from './components/rports';
 import RoleProtectedRoute from './services/role.service';
+import AdminDashboard from './components/Common/AdminDashboard';
+import Dashboard from './components/Common/Dashboard';
 import EventDetailsPage from './components/Event/eventsdetails';
 import UpdateEventPage from './components/Event/updateEvent';
 import { toast } from 'react-hot-toast';
@@ -177,7 +179,7 @@ export const App: React.FC = () => {
                 }
               >
 
-                <Route index element={<NotesListPage />} />
+                <Route index element={<Dashboard />} />
                 <Route
                   path="events/:eventId/sessions/:sessionId"
                   element={<div>Session Details</div>}
@@ -185,7 +187,7 @@ export const App: React.FC = () => {
 
                 <Route path="/dashboard/events/:eventId/edit " element={<UpdateEventPage />} />
 
-                <Route element={<RoleProtectedRoute allowedRoles={['organizer']} />}>
+                <Route element={<RoleProtectedRoute allowedRoles={['organizer', 'admin']} />}>
                  <Route
                    path="/dashboard/reports"
                    element={
@@ -194,6 +196,10 @@ export const App: React.FC = () => {
                      </motion.div>
                    }
                  />
+               </Route>
+
+               <Route element={<RoleProtectedRoute allowedRoles={['admin']} />}>
+                 <Route path="/dashboard/admin" element={<AdminDashboard />} />
                </Route>
 
                 <Route path="/dashboard/notes/:noteId" element={<NotesPage />} />
