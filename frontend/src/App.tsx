@@ -18,6 +18,7 @@ import PendingPaymentPage from './components/Event/pendingpayment';
 import ReportsPage from './components/rports';
 import RoleProtectedRoute from './services/role.service';
 import AdminDashboard from './components/Common/AdminDashboard';
+import Dashboard from './components/Common/Dashboard';
 import EventDetailsPage from './components/Event/eventsdetails';
 import UpdateEventPage from './components/Event/updateEvent';
 import { toast } from 'react-hot-toast';
@@ -178,7 +179,7 @@ export const App: React.FC = () => {
                 }
               >
 
-                <Route index element={<NotesListPage />} />
+                <Route index element={<Dashboard />} />
                 <Route
                   path="events/:eventId/sessions/:sessionId"
                   element={<div>Session Details</div>}
