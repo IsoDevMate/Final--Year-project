@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Share2, Upload } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '@radix-ui/react-dialog';
@@ -68,7 +68,7 @@ export const MultimediaShareModa: React.FC<MultimediaShareModalProps> = ({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <button className="flex items-center bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
+        <button className="flex items-center bg-tiffany-600 text-white px-4 py-2 rounded-md hover:bg-tiffany-700">
           <Share2 className="mr-2 h-4 w-4" /> Share to LinkedIn
         </button>
       </DialogTrigger>
@@ -135,7 +135,7 @@ export const MultimediaShareModa: React.FC<MultimediaShareModalProps> = ({
           className={`w-full mt-4 py-2 rounded-md flex items-center justify-center ${
             isSharing
               ? 'bg-gray-300 cursor-not-allowed'
-              : 'bg-indigo-600 text-white hover:bg-indigo-700'
+              : 'bg-tiffany-600 text-white hover:bg-tiffany-700'
           }`}
         >
           {isSharing ? (
@@ -266,7 +266,7 @@ export const MultimediaShareModa: React.FC<MultimediaShareModalProps> = ({
 //                 placeholder="Write something about this media..."
 //                 value={customMessage}
 //                 onChange={(e) => setCustomMessage(e.target.value)}
-//                 className="w-full min-h-[100px] px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none"
+//                 className="w-full min-h-[100px] px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-tiffany-500 focus:border-tiffany-500 resize-none"
 //               />
 //             </div>
 //           </div>
@@ -284,7 +284,7 @@ export const MultimediaShareModa: React.FC<MultimediaShareModalProps> = ({
 //             <button
 //               onClick={handleShare}
 //               disabled={isSharing}
-//               className="px-4 py-2 rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[100px]"
+//               className="px-4 py-2 rounded-md text-white bg-tiffany-600 hover:bg-tiffany-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[100px]"
 //             >
 //               {isSharing ? (
 //                 <>

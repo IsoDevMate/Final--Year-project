@@ -1,4 +1,4 @@
-// import React, { useState } from 'react';
+﻿// import React, { useState } from 'react';
 // import { Linkedin, LinkIcon, Check, X } from 'lucide-react';
 
 // interface LinkedInConnectionProps {
@@ -116,7 +116,7 @@
 //           <button
 //             onClick={connectLinkedIn}
 //             disabled={isConnecting}
-//             className="flex items-center justify-center w-full px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600"
+//             className="flex items-center justify-center w-full px-4 py-2 bg-tiffany-500 text-white rounded-md hover:bg-tiffany-600"
 //           >
 //             {isConnecting ? (
 //               <>
@@ -269,7 +269,7 @@ const LinkedInConnection: React.FC<LinkedInConnectionProps> = ({ API_BASE_URL, o
   if (isLoading) {
     return (
       <div className="bg-gray-50 p-4 rounded-lg flex justify-center items-center">
-        <div className="animate-spin h-5 w-5 border-2 border-indigo-500 border-t-transparent rounded-full mr-2"></div>
+        <div className="animate-spin h-5 w-5 border-2 border-tiffany-500 border-t-transparent rounded-full mr-2"></div>
         <span>Checking LinkedIn connection...</span>
       </div>
     );
@@ -313,13 +313,13 @@ const LinkedInConnection: React.FC<LinkedInConnectionProps> = ({ API_BASE_URL, o
         </>
       ) : (
         <>
-          <div className="bg-indigo-50 p-4 rounded-lg mb-4">
+          <div className="bg-tiffany-50 p-4 rounded-lg mb-4">
             <div className="flex">
               <div className="flex-shrink-0">
-                <LinkIcon className="h-5 w-5 text-indigo-400" />
+                <LinkIcon className="h-5 w-5 text-tiffany-400" />
               </div>
               <div className="ml-3">
-                <p className="text-sm text-indigo-700">
+                <p className="text-sm text-tiffany-700">
                   Connect your LinkedIn account to share your notes directly to your LinkedIn profile.
                 </p>
               </div>
@@ -329,7 +329,7 @@ const LinkedInConnection: React.FC<LinkedInConnectionProps> = ({ API_BASE_URL, o
           <button
             onClick={connectLinkedIn}
             disabled={isConnecting}
-            className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+            className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-tiffany-600 hover:bg-tiffany-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-tiffany-500 disabled:opacity-50"
           >
             {isConnecting ? (
               <>

@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Link } from 'react-router-dom';
 import { Home, AlertTriangle } from 'lucide-react';
 
@@ -7,8 +7,8 @@ const NotFoundPage: React.FC = () => {
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
       <div className="bg-white rounded-xl shadow-sm p-8 max-w-md w-full text-center">
         <div className="flex justify-center mb-6">
-          <div className="bg-indigo-100 rounded-full p-4">
-            <AlertTriangle className="h-12 w-12 text-indigo-600" />
+          <div className="bg-tiffany-100 rounded-full p-4">
+            <AlertTriangle className="h-12 w-12 text-tiffany-600" />
           </div>
         </div>
 
@@ -20,7 +20,7 @@ const NotFoundPage: React.FC = () => {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link
             to="/dashboard"
-            className="flex items-center justify-center gap-2 bg-indigo-600 text-white py-2 px-6 rounded-lg hover:bg-indigo-700 transition duration-200"
+            className="flex items-center justify-center gap-2 bg-tiffany-600 text-white py-2 px-6 rounded-lg hover:bg-tiffany-700 transition duration-200"
           >
             <Home className="h-5 w-5" />
             <span>Go to Dashboard</span>
@@ -38,9 +38,9 @@ const NotFoundPage: React.FC = () => {
       <div className="mt-8 text-center">
         <div className="flex items-center justify-center mb-2">
           <div className="bg-white rounded-full p-1 mr-2">
-            <span className="text-indigo-700 text-md font-bold">C</span>
+            <span className="text-tiffany-700 text-md font-bold">C</span>
           </div>
-          <span className="text-lg font-bold text-indigo-700">comfybase</span>
+          <span className="text-lg font-bold text-tiffany-700">eventbase</span>
         </div>
         <p className="text-gray-500 text-sm">
           Need help? Contact our support team.

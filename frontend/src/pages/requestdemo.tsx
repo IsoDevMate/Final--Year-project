@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import {
   MapPin,
   Phone,
@@ -36,9 +36,9 @@ const RequestDemoPage = () => {
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12">
         {/* Contact Information */}
-        <div className="bg-indigo-700 text-white p-8 rounded-xl">
-          <a href="/" className="text-3xl font-bold mb-6 hover:underline">Contact ComfyBase</a>
-          <p className="text-indigo-100 mb-8">
+        <div className="bg-tiffany-700 text-white p-8 rounded-xl">
+          <a href="/" className="text-3xl font-bold mb-6 hover:underline">Contact EventBase</a>
+          <p className="text-tiffany-100 mb-8">
             Ready to transform your event experience? Fill out the form, and our team will reach out to you shortly.
           </p>
 
@@ -53,20 +53,20 @@ const RequestDemoPage = () => {
             </div>
             <div className="flex items-center">
               <Mail className="h-6 w-6 mr-4" />
-              <span>support@comfybase.com</span>
+              <span>support@eventbase.com</span>
             </div>
           </div>
 
           <div className="mt-12">
             <h3 className="text-xl font-semibold mb-4">Connect with Us</h3>
             <div className="flex space-x-4">
-              <a href="#" className="text-white hover:text-indigo-200">
+              <a href="#" className="text-white hover:text-tiffany-200">
                 <Linkedin className="h-6 w-6" />
               </a>
-              <a href="#" className="text-white hover:text-indigo-200">
+              <a href="#" className="text-white hover:text-tiffany-200">
                 <Twitter className="h-6 w-6" />
               </a>
-              <a href="#" className="text-white hover:text-indigo-200">
+              <a href="#" className="text-white hover:text-tiffany-200">
                 <Facebook className="h-6 w-6" />
               </a>
             </div>
@@ -86,7 +86,7 @@ const RequestDemoPage = () => {
                 required
                 value={formData.name}
                 onChange={handleChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-tiffany-500 focus:border-tiffany-500"
               />
             </div>
 
@@ -99,7 +99,7 @@ const RequestDemoPage = () => {
                 required
                 value={formData.email}
                 onChange={handleChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-tiffany-500 focus:border-tiffany-500"
               />
             </div>
 
@@ -111,7 +111,7 @@ const RequestDemoPage = () => {
                 id="company"
                 value={formData.company}
                 onChange={handleChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-tiffany-500 focus:border-tiffany-500"
               />
             </div>
 
@@ -123,7 +123,7 @@ const RequestDemoPage = () => {
                 id="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-tiffany-500 focus:border-tiffany-500"
               />
             </div>
 
@@ -135,14 +135,14 @@ const RequestDemoPage = () => {
                 rows={4}
                 value={formData.message}
                 onChange={handleChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-tiffany-500 focus:border-tiffany-500"
               />
             </div>
 
             <div>
               <button
                 type="submit"
-                className="w-full bg-indigo-600 text-white py-3 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                className="w-full bg-tiffany-600 text-white py-3 px-4 rounded-md hover:bg-tiffany-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-tiffany-500"
               >
                 Request Demo
               </button>

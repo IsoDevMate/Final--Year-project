@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
   Save, X,
@@ -76,7 +76,7 @@ interface MediaAttachment {
 
   const editorRef = useRef<HTMLDivElement>(null);
 
-   const API_BASE_URL = 'https://final-year-project-5d85.onrender.com';
+   const API_BASE_URL = 'https://final-year-project-jy2j.onrender.com';
 
 
    const getAuthHeaders = () => {
@@ -587,7 +587,7 @@ const openMediaPreview = (attachment: MediaAttachment) => {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-tiffany-600"></div>
       </div>
     );
   }
@@ -600,7 +600,7 @@ const openMediaPreview = (attachment: MediaAttachment) => {
         <div className="flex items-center">
           <button
         onClick={() => navigate('/dashboard/notes')}
-        className="mr-4 text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded"
+        className="mr-4 text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-tiffany-500 rounded"
           >
         <ChevronLeft size={24} />
           </button>
@@ -647,8 +647,8 @@ const openMediaPreview = (attachment: MediaAttachment) => {
         disabled={isSaving}
         className={`py-2 px-4 rounded-lg flex items-center transition duration-200 focus:outline-none focus:ring-2 ${
           isSaving
-            ? 'bg-indigo-400 text-white cursor-not-allowed'
-            : 'bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500'
+            ? 'bg-tiffany-400 text-white cursor-not-allowed'
+            : 'bg-tiffany-600 text-white hover:bg-tiffany-700 focus:ring-tiffany-500'
         }`}
           >
         {isSaving ? (
@@ -689,7 +689,7 @@ const openMediaPreview = (attachment: MediaAttachment) => {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Enter note title"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-tiffany-500 focus:border-tiffany-500"
             />
           </div>
 
@@ -699,7 +699,7 @@ const openMediaPreview = (attachment: MediaAttachment) => {
               <h2 className="text-lg font-medium text-gray-900">Note Content</h2>
               <button
                 onClick={() => setShowCanvasEditor(!showCanvasEditor)}
-                className="text-indigo-600 hover:text-indigo-800 flex items-center text-sm font-medium"
+                className="text-tiffany-600 hover:text-tiffany-800 flex items-center text-sm font-medium"
               >
                 <Edit3 className="h-4 w-4 mr-1" /> {showCanvasEditor ? 'Hide Drawing Tool' : 'Show Drawing Tool'}
               </button>
@@ -717,7 +717,7 @@ const openMediaPreview = (attachment: MediaAttachment) => {
 
             <button
                onClick={() => setShowCanvasEditor(true)}
-               className="flex items-center text-indigo-600              hover:text-indigo-800"
+               className="flex items-center text-tiffany-600              hover:text-tiffany-800"
              >
                <Pencil className="h-5 w-5 mr-1" />
                Show Drawing Tool
@@ -726,7 +726,7 @@ const openMediaPreview = (attachment: MediaAttachment) => {
             {/* Text Editor */}
             <div
               ref={editorRef}
-              className="border border-gray-300 rounded-md p-4 min-h-[300px] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="border border-gray-300 rounded-md p-4 min-h-[300px] focus:outline-none focus:ring-2 focus:ring-tiffany-500 focus:border-tiffany-500"
               contentEditable
               dangerouslySetInnerHTML={{ __html: content }}
               onBlur={(e) => setContent(e.currentTarget.innerHTML)}
@@ -787,11 +787,11 @@ const openMediaPreview = (attachment: MediaAttachment) => {
                   onChange={(e) => setCurrentTag(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && addTag()}
                   placeholder="Add a tag"
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-tiffany-500 focus:border-tiffany-500"
                 />
                 <button
                   onClick={addTag}
-                  className="bg-indigo-600 text-white px-4 py-2 rounded-r-md hover:bg-indigo-700"
+                  className="bg-tiffany-600 text-white px-4 py-2 rounded-r-md hover:bg-tiffany-700"
                 >
                   <Plus className="h-5 w-5" />
                 </button>
@@ -802,13 +802,13 @@ const openMediaPreview = (attachment: MediaAttachment) => {
                 {tags.map((tag) => (
                   <span
                     key={tag}
-                    className="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm flex items-center"
+                    className="bg-tiffany-100 text-tiffany-800 px-3 py-1 rounded-full text-sm flex items-center"
                   >
                     <Tag className="h-3 w-3 mr-1" />
                     {tag}
                     <button
                       onClick={() => removeTag(tag)}
-                      className="ml-1 text-indigo-800 hover:text-indigo-900"
+                      className="ml-1 text-tiffany-800 hover:text-tiffany-900"
                     >
                       <X className="h-3 w-3" />
                     </button>
@@ -856,7 +856,7 @@ const openMediaPreview = (attachment: MediaAttachment) => {
                 {note.event && (
                   <div>
                     <span className="text-gray-500">Event:</span>
-                    <span className="ml-2 text-indigo-600">
+                    <span className="ml-2 text-tiffany-600">
                       <Link to={`/dashboard/events/${note.event._id}`}>{note.event.title}</Link>
                     </span>
                   </div>
@@ -865,7 +865,7 @@ const openMediaPreview = (attachment: MediaAttachment) => {
                 {note.session && (
                   <div>
                     <span className="text-gray-500">Session:</span>
-                    <span className="ml-2 text-indigo-600">
+                    <span className="ml-2 text-tiffany-600">
                       <Link to={`/dashboard/sessions/${note.session._id}`}>{note.session.title}</Link>
                     </span>
                   </div>

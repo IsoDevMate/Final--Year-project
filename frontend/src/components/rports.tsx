@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
   Download, FileText, Users, Calendar, ChevronDown,
@@ -38,7 +38,7 @@ const ReportsPage = () => {
   const fetchEvents = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get('https://final-year-project-5d85.onrender.com/api/v1/events/organizer/events', {
+      const response = await axios.get('https://final-year-project-jy2j.onrender.com/api/v1/events/organizer/events', {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`
         }
@@ -64,7 +64,7 @@ const ReportsPage = () => {
 
   const downloadAttendeeReport = async (eventId: string) => {
     try {
-      const response = await axios.get(`https://final-year-project-5d85.onrender.com/api/v1/events/${eventId}/attendees`, {
+      const response = await axios.get(`https://final-year-project-jy2j.onrender.com/api/v1/events/${eventId}/attendees`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`
         },
@@ -92,7 +92,7 @@ const ReportsPage = () => {
 
   const downloadEventSummaryReport = async () => {
     try {
-      const response = await axios.get('https://final-year-project-5d85.onrender.com/api/v1/reports/events/summary', {
+      const response = await axios.get('https://final-year-project-jy2j.onrender.com/api/v1/reports/events/summary', {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`
         },
@@ -129,25 +129,25 @@ const ReportsPage = () => {
         {/* Tabs */}
         <div className="flex border-b">
           <button
-            className={`px-4 py-2 font-medium ${activeTab === 'overview' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-gray-700'}`}
+            className={`px-4 py-2 font-medium ${activeTab === 'overview' ? 'text-tiffany-600 border-b-2 border-tiffany-600' : 'text-gray-500 hover:text-gray-700'}`}
             onClick={() => setActiveTab('overview')}
           >
             Overview
           </button>
           <button
-            className={`px-4 py-2 font-medium ${activeTab === 'events' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-gray-700'}`}
+            className={`px-4 py-2 font-medium ${activeTab === 'events' ? 'text-tiffany-600 border-b-2 border-tiffany-600' : 'text-gray-500 hover:text-gray-700'}`}
             onClick={() => setActiveTab('events')}
           >
             Event Reports
           </button>
           <button
-            className={`px-4 py-2 font-medium ${activeTab === 'attendees' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-gray-700'}`}
+            className={`px-4 py-2 font-medium ${activeTab === 'attendees' ? 'text-tiffany-600 border-b-2 border-tiffany-600' : 'text-gray-500 hover:text-gray-700'}`}
             onClick={() => setActiveTab('attendees')}
           >
             Attendee Reports
           </button>
           <button
-            className={`px-4 py-2 font-medium ${activeTab === 'saved' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-gray-700'}`}
+            className={`px-4 py-2 font-medium ${activeTab === 'saved' ? 'text-tiffany-600 border-b-2 border-tiffany-600' : 'text-gray-500 hover:text-gray-700'}`}
             onClick={() => setActiveTab('saved')}
           >
             Saved Reports
@@ -160,17 +160,17 @@ const ReportsPage = () => {
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
               <div className="p-4 bg-white rounded-lg shadow">
                 <h3 className="text-lg font-medium">Total Events</h3>
-                <p className="text-3xl font-bold text-indigo-600">{events.length}</p>
+                <p className="text-3xl font-bold text-tiffany-600">{events.length}</p>
               </div>
               <div className="p-4 bg-white rounded-lg shadow">
                 <h3 className="text-lg font-medium">Total Attendees</h3>
-                <p className="text-3xl font-bold text-indigo-600">
+                <p className="text-3xl font-bold text-tiffany-600">
                   {events.reduce((sum, event) => sum + event.attendeeCount, 0)}
                 </p>
               </div>
               <div className="p-4 bg-white rounded-lg shadow">
                 <h3 className="text-lg font-medium">Active Events</h3>
-                <p className="text-3xl font-bold text-indigo-600">
+                <p className="text-3xl font-bold text-tiffany-600">
                   {events.filter(event => new Date(event.date) >= new Date()).length}
                 </p>
               </div>
@@ -181,7 +181,7 @@ const ReportsPage = () => {
                 <h3 className="text-lg font-medium">Recent Events</h3>
                 <button
                   onClick={downloadEventSummaryReport}
-                  className="flex items-center px-3 py-2 text-sm bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                  className="flex items-center px-3 py-2 text-sm bg-tiffany-600 text-white rounded-md hover:bg-tiffany-700"
                 >
                   <Download className="w-4 h-4 mr-2" />
                   Download Summary
@@ -208,7 +208,7 @@ const ReportsPage = () => {
                         <td className="px-6 py-4 whitespace-nowrap text-right">
                           <button
                             onClick={() => downloadAttendeeReport(event.id)}
-                            className="text-indigo-600 hover:text-indigo-900"
+                            className="text-tiffany-600 hover:text-tiffany-900"
                           >
                             Download Report
                           </button>
@@ -230,7 +230,7 @@ const ReportsPage = () => {
               <div className="flex space-x-2">
                 <button
                   onClick={downloadEventSummaryReport}
-                  className="flex items-center px-3 py-2 text-sm bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                  className="flex items-center px-3 py-2 text-sm bg-tiffany-600 text-white rounded-md hover:bg-tiffany-700"
                 >
                   <Download className="w-4 h-4 mr-2" />
                   Download All Events
@@ -262,7 +262,7 @@ const ReportsPage = () => {
                         <td className="px-6 py-4 whitespace-nowrap text-right">
                           <button
                             onClick={() => downloadAttendeeReport(event.id)}
-                            className="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-indigo-700 bg-indigo-100 hover:bg-indigo-200"
+                            className="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-tiffany-700 bg-tiffany-100 hover:bg-tiffany-200"
                           >
                             <Download className="w-4 h-4 mr-1" />
                             Attendees
@@ -300,7 +300,7 @@ const ReportsPage = () => {
                   <select
                     value={selectedEvent || ''}
                     onChange={(e) => setSelectedEvent(e.target.value)}
-                    className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                    className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-tiffany-500 focus:border-tiffany-500 sm:text-sm rounded-md"
                   >
                     <option value="">-- Select an event --</option>
                     {events.map((event) => (
@@ -316,7 +316,7 @@ const ReportsPage = () => {
                     onClick={() => selectedEvent && downloadAttendeeReport(selectedEvent)}
                     disabled={!selectedEvent}
                     className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white ${
-                      selectedEvent ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-gray-300 cursor-not-allowed'
+                      selectedEvent ? 'bg-tiffany-600 hover:bg-tiffany-700' : 'bg-gray-300 cursor-not-allowed'
                     }`}
                   >
                     <Download className="w-4 h-4 mr-2" />

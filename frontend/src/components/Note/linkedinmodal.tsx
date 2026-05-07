@@ -1,4 +1,4 @@
-// import React, { useState } from 'react';
+﻿// import React, { useState } from 'react';
 // import { Share2, LinkIcon, ExternalLink, X } from 'lucide-react';
 // import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '@radix-ui/react-dialog';
 // import { toast } from 'react-hot-toast';
@@ -86,7 +86,7 @@
 //     <Dialog open={isOpen} onOpenChange={setIsOpen}>
 //       <DialogTrigger asChild>
 //         <button
-//           className="flex items-center px-3 py-2 rounded-md bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-colors"
+//           className="flex items-center px-3 py-2 rounded-md bg-tiffany-50 text-tiffany-700 hover:bg-tiffany-100 transition-colors"
 //           onClick={() => setIsOpen(true)}
 //         >
 //           <Share2 className="mr-2 h-4 w-4" /> Share on LinkedIn
@@ -115,8 +115,8 @@
 //             {!isLinkedInConnected ? (
 //               // LinkedIn Account Connection UI
 //               <div className="text-center space-y-4">
-//                 <div className="bg-indigo-50 p-6 rounded-lg">
-//                   <LinkIcon className="h-12 w-12 text-indigo-700 mx-auto mb-3" />
+//                 <div className="bg-tiffany-50 p-6 rounded-lg">
+//                   <LinkIcon className="h-12 w-12 text-tiffany-700 mx-auto mb-3" />
 //                   <h3 className="text-lg font-medium text-gray-900 mb-2">
 //                     Connect Your LinkedIn Account
 //                   </h3>
@@ -126,7 +126,7 @@
 //                   <button
 //                     onClick={connectLinkedIn}
 //                     disabled={isConnecting}
-//                     className="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 w-full"
+//                     className="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-white bg-tiffany-600 hover:bg-tiffany-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-tiffany-500 w-full"
 //                   >
 //                     {isConnecting ? (
 //                       <>
@@ -163,7 +163,7 @@
 //                     placeholder="Add a custom message to your LinkedIn post"
 //                     value={customMessage}
 //                     onChange={(e) => setCustomMessage(e.target.value)}
-//                     className="w-full min-h-[100px] px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none"
+//                     className="w-full min-h-[100px] px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-tiffany-500 focus:border-tiffany-500 resize-none"
 //                   />
 //                 </div>
 //               </>
@@ -184,7 +184,7 @@
 //               <button
 //                 onClick={handleShare}
 //                 disabled={isSharing}
-//                 className="px-4 py-2 rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[100px]"
+//                 className="px-4 py-2 rounded-md text-white bg-tiffany-600 hover:bg-tiffany-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[100px]"
 //               >
 //                 {isSharing ? (
 //                   <>
@@ -287,7 +287,7 @@ const LinkedInShareModal: React.FC<LinkedInShareModalProps> = ({ note, onShare, 
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <button
-          className="flex items-center px-3 py-2 rounded-md bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-colors"
+          className="flex items-center px-3 py-2 rounded-md bg-tiffany-50 text-tiffany-700 hover:bg-tiffany-100 transition-colors"
           onClick={() => setIsOpen(true)}
         >
           <Share2 className="mr-2 h-4 w-4" /> Share on LinkedIn
@@ -316,8 +316,8 @@ const LinkedInShareModal: React.FC<LinkedInShareModalProps> = ({ note, onShare, 
             {!isLinkedInConnected ? (
               // LinkedIn Account Connection UI
               <div className="text-center space-y-4">
-                <div className="bg-indigo-50 p-6 rounded-lg">
-                  <LinkIcon className="h-12 w-12 text-indigo-700 mx-auto mb-3" />
+                <div className="bg-tiffany-50 p-6 rounded-lg">
+                  <LinkIcon className="h-12 w-12 text-tiffany-700 mx-auto mb-3" />
                   <h3 className="text-lg font-medium text-gray-900 mb-2">
                     Connect Your LinkedIn Account
                   </h3>
@@ -327,7 +327,7 @@ const LinkedInShareModal: React.FC<LinkedInShareModalProps> = ({ note, onShare, 
                   <button
                     onClick={connectLinkedIn}
                     disabled={isConnecting}
-                    className="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 w-full"
+                    className="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-white bg-tiffany-600 hover:bg-tiffany-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-tiffany-500 w-full"
                   >
                     {isConnecting ? (
                       <>
@@ -364,7 +364,7 @@ const LinkedInShareModal: React.FC<LinkedInShareModalProps> = ({ note, onShare, 
                     placeholder="Add a custom message to your LinkedIn post"
                     value={customMessage}
                     onChange={(e) => setCustomMessage(e.target.value)}
-                    className="w-full min-h-[100px] px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none"
+                    className="w-full min-h-[100px] px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-tiffany-500 focus:border-tiffany-500 resize-none"
                   />
                 </div>
               </>
@@ -385,7 +385,7 @@ const LinkedInShareModal: React.FC<LinkedInShareModalProps> = ({ note, onShare, 
               <button
                 onClick={handleShare}
                 disabled={isSharing}
-                className="px-4 py-2 rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[100px]"
+                className="px-4 py-2 rounded-md text-white bg-tiffany-600 hover:bg-tiffany-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[100px]"
               >
                 {isSharing ? (
                   <>

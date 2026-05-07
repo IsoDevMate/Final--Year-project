@@ -1,4 +1,4 @@
-# ComfyBase Event Management System 🎫
+# eventBase Event Management System 🎫
 
 <div align="center">
 

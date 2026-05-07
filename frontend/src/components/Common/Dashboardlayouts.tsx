@@ -1,4 +1,4 @@
-
+﻿
 import { useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import {
@@ -30,10 +30,10 @@ const DashboardLayout = () => {
 
   const navLinks = [
     { title: 'Dashboard', path: '/dashboard', icon: <Home className="w-5 h-5" /> },
-    { title: 'Events', path: '/dashboard/events', icon: <Calendar className="w-5 h-5" /> },
-    { title: 'Reports', path: '/dashboard/reports', icon: <CreditCard className="w-5 h-5" />, roles: ['admin', 'organizer'] },
+    // { title: 'Events', path: '/dashboard/events', icon: <Calendar className="w-5 h-5" /> },
+    // { title: 'Reports', path: '/dashboard/reports', icon: <CreditCard className="w-5 h-5" />, roles: ['admin', 'organizer'] },
     { title: 'Settings', path: '/dashboard/settings', icon: <Settings className="w-5 h-5" /> },
-    { title: 'Notes', path: '/dashboard/notes', icon: <Notes className="w-5 h-5" /> },
+    // { title: 'Notes', path: '/dashboard/notes', icon: <Notes className="w-5 h-5" /> },
     { title: 'Profile', path: '/dashboard/profile', icon: <Users className="w-5 h-5" /> },
   ].filter(link => !link.roles || link.roles.includes(user?.role || ''));
 
@@ -45,7 +45,7 @@ const DashboardLayout = () => {
     <div className="flex h-screen bg-gray-100">
       {/* Mobile sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-30 w-16 lg:w-64 bg-indigo-700 overflow-y-auto transition-all duration-300 ease-in-out ${
+        className={`fixed inset-y-0 left-0 z-30 w-16 lg:w-64 bg-tiffany-700 overflow-y-auto transition-all duration-300 ease-in-out ${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
       >
@@ -61,7 +61,7 @@ const DashboardLayout = () => {
                 className="w-12 h-12"
               />
             </div>
-            <span className="hidden lg:inline text-2xl font-bold">comfybase</span>
+            <span className="hidden lg:inline text-2xl font-bold">eventbase</span>
           </div>
           <button
             onClick={toggleSidebar}
@@ -80,8 +80,8 @@ const DashboardLayout = () => {
                   to={link.path}
                   className={`flex items-center p-3 lg:px-4 lg:py-3 text-sm rounded-lg ${
                     isActive(link.path)
-                      ? 'bg-indigo-900 text-white'
-                      : 'text-indigo-100 hover:bg-indigo-800'
+                      ? 'bg-tiffany-900 text-white'
+                      : 'text-tiffany-100 hover:bg-tiffany-800'
                   }`}
                   title={link.title} // Add title attribute for tooltip
                 >
@@ -96,7 +96,7 @@ const DashboardLayout = () => {
         <div className="absolute bottom-0 w-full p-2 lg:p-4">
           <Link
             to="/auth/logout"
-            className="flex items-center p-3 lg:px-4 lg:py-3 text-sm rounded-lg text-indigo-100 hover:bg-indigo-800"
+            className="flex items-center p-3 lg:px-4 lg:py-3 text-sm rounded-lg text-tiffany-100 hover:bg-tiffany-800"
             title="Logout" // Add title attribute for tooltip
           >
             <LogOut className="w-5 h-5" />

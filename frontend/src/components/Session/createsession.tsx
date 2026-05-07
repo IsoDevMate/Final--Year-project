@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import {
@@ -112,7 +112,7 @@ const CreateSessionPage: React.FC = () => {
     const fetchEvents = async () => {
       try {
         // Assuming you have an endpoint to fetch events
-        const response = await axios.get('https://final-year-project-5d85.onrender.com/api/v1/events');
+        const response = await axios.get('https://final-year-project-jy2j.onrender.com/api/v1/events');
         if (response.data.success) {
         setEvents(response.data.data.events);
         }
@@ -255,7 +255,7 @@ const CreateSessionPage: React.FC = () => {
     };
 
     try {
-      const response = await axios.post('https://final-year-project-5d85.onrender.com/api/v1/sessions/create', submissionData);
+      const response = await axios.post('https://final-year-project-jy2j.onrender.com/api/v1/sessions/create', submissionData);
 
       if (response.data.success) {
         navigate(`/dashboard/events/${selectedEvent}/sessions`);
@@ -290,7 +290,7 @@ const CreateSessionPage: React.FC = () => {
           {/* naigate to events page  */}
           <button
             onClick={() => navigate('/dashboard/events')}
-            className="mt-4 bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600 transition-colors"
+            className="mt-4 bg-tiffany-500 text-white px-4 py-2 rounded hover:bg-tiffany-600 transition-colors"
           >
             Back to Events
           </button>
@@ -488,7 +488,7 @@ const CreateSessionPage: React.FC = () => {
             <button
               type="button"
               onClick={addTag}
-              className="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700"
+              className="bg-tiffany-600 text-white py-2 px-4 rounded-md hover:bg-tiffany-700"
             >
               <Plus className="h-5 w-5" />
             </button>
@@ -499,13 +499,13 @@ const CreateSessionPage: React.FC = () => {
               {formData.tags.map(tag => (
                 <span
                   key={tag}
-                  className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800"
+                  className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-tiffany-100 text-tiffany-800"
                 >
                   {tag}
                   <button
                     type="button"
                     onClick={() => removeTag(tag)}
-                    className="ml-1 text-indigo-400 hover:text-indigo-600"
+                    className="ml-1 text-tiffany-400 hover:text-tiffany-600"
                   >
                     <X className="h-3 w-3" />
                   </button>
@@ -570,7 +570,7 @@ const CreateSessionPage: React.FC = () => {
           <button
             type="button"
             onClick={addMaterial}
-            className="mt-2 bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 flex items-center"
+            className="mt-2 bg-tiffany-600 text-white py-2 px-4 rounded-md hover:bg-tiffany-700 flex items-center"
           >
             <Plus className="h-5 w-5 mr-2" /> Add Material
           </button>
@@ -591,7 +591,7 @@ const CreateSessionPage: React.FC = () => {
                       href={material.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-xs text-indigo-600 ml-2 hover:underline"
+                      className="text-xs text-tiffany-600 ml-2 hover:underline"
                     >
                       View
                     </a>
@@ -619,7 +619,7 @@ const CreateSessionPage: React.FC = () => {
               ...prev,
               isLiveStreamed: e.target.checked
             }))}
-            className="h-4 w-4 text-indigo-600 border-gray-300 rounded"
+            className="h-4 w-4 text-tiffany-600 border-gray-300 rounded"
           />
           <label htmlFor="isLiveStreamed" className="ml-2 block text-sm text-gray-900">
             Enable Live Streaming
@@ -647,7 +647,7 @@ const CreateSessionPage: React.FC = () => {
         <div className="flex justify-end">
           <button
             type="submit"
-            className="bg-indigo-600 text-white py-2 px-6 rounded-md hover:bg-indigo-700 transition duration-200"
+            className="bg-tiffany-600 text-white py-2 px-6 rounded-md hover:bg-tiffany-700 transition duration-200"
           >
             Create Session
           </button>

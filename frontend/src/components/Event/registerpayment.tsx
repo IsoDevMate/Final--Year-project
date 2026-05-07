@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { X } from 'lucide-react';
 
 interface PaymentModalProps {
@@ -72,7 +72,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                 setError('');
               }}
               placeholder="254XXXXXXXXX"
-              className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-tiffany-500"
             />
             {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
           </div>
@@ -87,7 +87,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+              className="px-4 py-2 bg-tiffany-600 text-white rounded-lg hover:bg-tiffany-700"
             >
               Initiate Payment
             </button>

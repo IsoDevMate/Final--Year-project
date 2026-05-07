@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -7,6 +7,8 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { Eye, EyeOff, Mail, LogIn } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+
+const AUTH_ACTIONS_DISABLED = true;
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -32,6 +34,10 @@ const LoginPage: React.FC = () => {
   });
 
 const onSubmit = async (data: LoginFormData) => {
+  if (AUTH_ACTIONS_DISABLED) {
+    toast.error('Sign in is currently disabled.');
+    return;
+  }
   setIsLoading(true);
   try {
     console.log('Attempting login with:', data.email);
@@ -58,8 +64,12 @@ const onSubmit = async (data: LoginFormData) => {
 };
 
   const handleLinkedInLogin = () => {
+    if (AUTH_ACTIONS_DISABLED) {
+      toast.error('LinkedIn sign in is currently disabled.');
+      return;
+    }
     // Make a request to get LinkedIn authorization URL
-    axios.get(`https://final-year-project-5d85.onrender.com/api/v1/auth/linkedin`)
+    axios.get(`https://final-year-project-jy2j.onrender.com/api/v1/auth/linkedin`)
       .then(response => {
         // Redirect to LinkedIn authorization page
         window.location.href = response.data.data.url;
@@ -72,15 +82,15 @@ const onSubmit = async (data: LoginFormData) => {
 
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-b from-indigo-700 to-indigo-400">
+    <div className="flex min-h-screen bg-gradient-to-b from-tiffany-700 to-tiffany-400">
       {/* Left side */}
       <div className="hidden md:flex md:w-1/2 flex-col items-center justify-center p-12 text-white">
         <div className="mb-12">
           <Link to="/" className="flex items-center text-3xl font-bold">
             <div className="bg-white rounded-full p-2 mr-2">
-              <span className="text-indigo-600 text-xl font-bold">C</span>
+              <span className="text-tiffany-600 text-xl font-bold">C</span>
             </div>
-            comfybase
+            eventbase
           </Link>
         </div>
         <div className="mt-auto">
@@ -94,11 +104,11 @@ const onSubmit = async (data: LoginFormData) => {
       <div className="w-full md:w-1/2 bg-white p-8 md:p-12 flex items-center justify-center">
         <div className="w-full max-w-md">
           <div className="md:hidden mb-6">
-            <span className="flex items-center text-2xl font-bold text-indigo-700">
-              <div className="bg-indigo-700 rounded-full p-1 mr-2">
+            <span className="flex items-center text-2xl font-bold text-tiffany-700">
+              <div className="bg-tiffany-700 rounded-full p-1 mr-2">
                 <span className="text-white text-lg font-bold">C</span>
               </div>
-              comfybase
+              eventbase
             </span>
           </div>
 
@@ -118,7 +128,7 @@ const onSubmit = async (data: LoginFormData) => {
                   id="email"
                   type="email"
                   placeholder="your.email@example.com"
-                  className={`block w-full pl-10 pr-3 py-3 border rounded-full text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
+                  className={`block w-full pl-10 pr-3 py-3 border rounded-full text-gray-700 focus:outline-none focus:ring-2 focus:ring-tiffany-500 ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
                   {...register('email')}
                 />
               </div>
@@ -141,7 +151,7 @@ const onSubmit = async (data: LoginFormData) => {
                   id="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••••••••"
-                  className={`block w-full pl-10 pr-10 py-3 border rounded-full text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${errors.password ? 'border-red-500' : 'border-gray-300'}`}
+                  className={`block w-full pl-10 pr-10 py-3 border rounded-full text-gray-700 focus:outline-none focus:ring-2 focus:ring-tiffany-500 ${errors.password ? 'border-red-500' : 'border-gray-300'}`}
                   {...register('password')}
                 />
                 <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
@@ -161,8 +171,12 @@ const onSubmit = async (data: LoginFormData) => {
 
             <button
               type="submit"
-              disabled={isLoading}
-              className="w-full bg-indigo-600 py-3 px-4 rounded-full text-white font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 flex items-center justify-center"
+              disabled={AUTH_ACTIONS_DISABLED || isLoading}
+              className={`w-full py-3 px-4 rounded-full text-white font-medium focus:outline-none focus:ring-2 focus:ring-tiffany-500 focus:ring-offset-2 flex items-center justify-center ${
+                AUTH_ACTIONS_DISABLED
+                  ? 'bg-tiffany-400 opacity-60 cursor-not-allowed'
+                  : 'bg-tiffany-600 hover:bg-tiffany-700'
+              }`}
             >
               {isLoading ? (
                 <svg className="animate-spin h-5 w-5 mr-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -179,9 +193,16 @@ const onSubmit = async (data: LoginFormData) => {
 
           <div className="mt-4 text-center">
             <p className="text-sm text-gray-600">
-              Don't have an account? <Link to="/auth/signup" className="text-indigo-600 hover:text-indigo-800 font-medium">Sign Up</Link>
+              Don't have an account?{' '}
+              <span
+                className={`font-medium ${
+                  AUTH_ACTIONS_DISABLED ? 'text-gray-400 cursor-not-allowed' : 'text-tiffany-600 hover:text-tiffany-800'
+                }`}
+              >
+                Sign Up
+              </span>
             </p>
-            <Link to="/auth/forgot-password" className="text-sm text-indigo-600 hover:text-indigo-800 font-medium">
+            <Link to="/auth/forgot-password" className="text-sm text-tiffany-600 hover:text-tiffany-800 font-medium">
               Forgot Password
             </Link>
           </div>
@@ -199,7 +220,11 @@ const onSubmit = async (data: LoginFormData) => {
             <div className="mt-6 grid grid-cols-3 gap-3 justify-centre">
               <button
                 type="button"
-                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-full shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
+                disabled={AUTH_ACTIONS_DISABLED}
+                aria-disabled={AUTH_ACTIONS_DISABLED}
+                className={`w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-full shadow-sm bg-white text-sm font-medium text-gray-700 ${
+                  AUTH_ACTIONS_DISABLED ? 'opacity-60 cursor-not-allowed' : 'hover:bg-gray-50'
+                }`}
                 onClick={handleLinkedInLogin}
               >
                 <svg className="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 24 24">

@@ -1,4 +1,4 @@
-// // import React, { useEffect, useState } from 'react';
+﻿// // import React, { useEffect, useState } from 'react';
 // // import { useLocation, useNavigate, Link } from 'react-router-dom';
 // // import { Clock, Check, RefreshCw, AlertTriangle } from 'lucide-react';
 // // import axios from 'axios';
@@ -28,7 +28,7 @@
 // //     // Fetch event details
 // //     const fetchEventDetails = async () => {
 // //       try {
-// //         const response = await axios.get(`https://final-year-project-5d85.onrender.com/api/v1/events/${eventId}`);
+// //         const response = await axios.get(`https://final-year-project-jy2j.onrender.com/api/v1/events/${eventId}`);
 // //         if (response.data.success) {
 // //           setEventDetails(response.data.data);
 // //         }
@@ -62,7 +62,7 @@
 // //       }
 
 // //       const statusResponse = await axios.get(
-// //         `https://final-year-project-5d85.onrender.com/api/v1/mpesa/event/${eventId}`,
+// //         `https://final-year-project-jy2j.onrender.com/api/v1/mpesa/event/${eventId}`,
 // //         {
 // //           headers: {
 // //             Authorization: `Bearer ${token}`
@@ -130,7 +130,7 @@
 // //             })}
 // //           </div>
 // //           {eventDetails.ticketPrice > 0 && (
-// //             <p className="text-indigo-600 font-medium mt-1">
+// //             <p className="text-tiffany-600 font-medium mt-1">
 // //               KES {eventDetails.ticketPrice.toFixed(2)}
 // //             </p>
 // //           )}
@@ -170,7 +170,7 @@
 // //           <button
 // //             onClick={checkPaymentStatus}
 // //             disabled={isPolling}
-// //             className="flex items-center justify-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition duration-200 disabled:bg-indigo-300"
+// //             className="flex items-center justify-center px-4 py-2 bg-tiffany-600 text-white rounded-lg hover:bg-tiffany-700 transition duration-200 disabled:bg-tiffany-300"
 // //           >
 // //             {isPolling ? (
 // //               <>
@@ -199,14 +199,14 @@
 // //         <div className="mt-8 flex items-center justify-between border-t pt-4">
 // //           <Link
 // //             to="/dashboard/events"
-// //             className="text-indigo-600 hover:text-indigo-800"
+// //             className="text-tiffany-600 hover:text-tiffany-800"
 // //           >
 // //             Back to Events
 // //           </Link>
 
 // //           <Link
 // //             to="/dashboard/events"
-// //             className="text-indigo-600 hover:text-indigo-800"
+// //             className="text-tiffany-600 hover:text-tiffany-800"
 // //           >
 // //             My Registered Events
 // //           </Link>
@@ -226,7 +226,7 @@
 // import { useAuth } from '../../contexts/AuthContext';
 // import toast from 'react-hot-toast';
 
-// const API_URL = 'https://final-year-project-5d85.onrender.com';
+// const API_URL = 'https://final-year-project-jy2j.onrender.com';
 
 // const PendingPaymentPage = () => {
 //   const location = useLocation();
@@ -365,7 +365,7 @@
 //             })}
 //           </div>
 //           {eventDetails.ticketPrice > 0 && (
-//             <p className="text-indigo-600 font-medium mt-1">
+//             <p className="text-tiffany-600 font-medium mt-1">
 //               KES {eventDetails.ticketPrice.toFixed(2)}
 //             </p>
 //           )}
@@ -405,7 +405,7 @@
 //           <button
 //             onClick={checkPaymentStatus}
 //             disabled={isPolling}
-//             className="flex items-center justify-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition duration-200 disabled:bg-indigo-300"
+//             className="flex items-center justify-center px-4 py-2 bg-tiffany-600 text-white rounded-lg hover:bg-tiffany-700 transition duration-200 disabled:bg-tiffany-300"
 //           >
 //             {isPolling ? (
 //               <>
@@ -434,14 +434,14 @@
 //         <div className="mt-8 flex items-center justify-between border-t pt-4">
 //           <Link
 //             to="/dashboard/events"
-//             className="text-indigo-600 hover:text-indigo-800"
+//             className="text-tiffany-600 hover:text-tiffany-800"
 //           >
 //             Back to Events
 //           </Link>
 
 //           <Link
 //             to="/dashboard/events"
-//             className="text-indigo-600 hover:text-indigo-800"
+//             className="text-tiffany-600 hover:text-tiffany-800"
 //           >
 //             My Registered Events
 //           </Link>
@@ -461,7 +461,7 @@ import axios from 'axios';
 import { useAuth } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
 
-const API_URL = 'https://final-year-project-5d85.onrender.com';
+const API_URL = 'https://final-year-project-jy2j.onrender.com';
 
 const PendingPaymentPage = () => {
   const location = useLocation();
@@ -656,7 +656,7 @@ const PendingPaymentPage = () => {
             })}
           </div>
           {eventDetails.ticketPrice > 0 && (
-            <p className="text-indigo-600 font-medium mt-1">
+            <p className="text-tiffany-600 font-medium mt-1">
               KES {eventDetails.ticketPrice.toFixed(2)}
             </p>
           )}
@@ -696,7 +696,7 @@ const PendingPaymentPage = () => {
           <button
             onClick={manualCheckStatus}
             disabled={isPolling}
-            className="flex items-center justify-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition duration-200 disabled:bg-indigo-300"
+            className="flex items-center justify-center px-4 py-2 bg-tiffany-600 text-white rounded-lg hover:bg-tiffany-700 transition duration-200 disabled:bg-tiffany-300"
           >
             {isPolling ? (
               <>
@@ -725,14 +725,14 @@ const PendingPaymentPage = () => {
         <div className="mt-8 flex items-center justify-between border-t pt-4">
           <Link
             to="/dashboard/events"
-            className="text-indigo-600 hover:text-indigo-800"
+            className="text-tiffany-600 hover:text-tiffany-800"
           >
             Back to Events
           </Link>
 
           <Link
             to="/dashboard/events"
-            className="text-indigo-600 hover:text-indigo-800"
+            className="text-tiffany-600 hover:text-tiffany-800"
           >
             My Registered Events
           </Link>

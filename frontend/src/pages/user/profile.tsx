@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
+﻿import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import axios from 'axios';
 import { User, Camera } from 'lucide-react';
@@ -51,7 +51,7 @@ const ProfilePage: React.FC = () => {
 
     try {
         const token = localStorage.getItem('accessToken');
-        const response = await axios.put('https://final-year-project-5d85.onrender.com/api/v1/auth/update-profile', formData, {
+        const response = await axios.put('https://final-year-project-jy2j.onrender.com/api/v1/auth/update-profile', formData, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -80,9 +80,9 @@ const ProfilePage: React.FC = () => {
                 <h1 className="text-2xl font-bold text-gray-900 mb-6">Profile Settings</h1>
 
                 <div className="mb-8 flex flex-col items-center">
-                    <div className="bg-indigo-100 rounded-full p-6 mb-4 relative">
-                        <User className="h-16 w-16 text-indigo-600" />
-                        <button className="absolute bottom-0 right-0 bg-indigo-600 rounded-full p-2 text-white">
+                    <div className="bg-tiffany-100 rounded-full p-6 mb-4 relative">
+                        <User className="h-16 w-16 text-tiffany-600" />
+                        <button className="absolute bottom-0 right-0 bg-tiffany-600 rounded-full p-2 text-white">
                             <Camera className="h-4 w-4" />
                         </button>
                     </div>
@@ -113,7 +113,7 @@ const ProfilePage: React.FC = () => {
                                 name="firstName"
                                 value={formData.firstName}
                                 onChange={handleChange}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-tiffany-500 focus:border-tiffany-500"
                                 required
                             />
                         </div>
@@ -126,7 +126,7 @@ const ProfilePage: React.FC = () => {
                                 name="lastName"
                                 value={formData.lastName}
                                 onChange={handleChange}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-tiffany-500 focus:border-tiffany-500"
                                 required
                             />
                         </div>
@@ -141,7 +141,7 @@ const ProfilePage: React.FC = () => {
                             name="email"
                             value={formData.email}
                             onChange={handleChange}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 bg-gray-100"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-tiffany-500 focus:border-tiffany-500 bg-gray-100"
                             disabled
                         />
                         <p className="text-xs text-gray-500 mt-1">Email address cannot be changed.</p>
@@ -156,14 +156,14 @@ const ProfilePage: React.FC = () => {
                             name="phoneNumber"
                             value={formData.phoneNumber}
                             onChange={handleChange}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-tiffany-500 focus:border-tiffany-500"
                         />
                     </div>
 
                     <div className="flex justify-end">
                         <button
                             type="submit"
-                            className={`bg-indigo-600 text-white py-2 px-6 rounded-lg hover:bg-indigo-700 transition duration-200 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                            className={`bg-tiffany-600 text-white py-2 px-6 rounded-lg hover:bg-tiffany-700 transition duration-200 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
                             disabled={loading}
                         >
                             {loading ? 'Updating...' : 'Save Changes'}

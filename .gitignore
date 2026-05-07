@@ -1,1 +1,4 @@
 backend/comfybase-348d1-firebase-adminsdk-fbsvc-3a35a942ec.json
+.env
+.env.*
+!.env.example

@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import {
   Image,
   File,
@@ -155,7 +155,7 @@ export const MediaAttachmentHandler = {
             key={type}
             className="flex flex-col items-center justify-center p-3 border border-gray-300 rounded-md cursor-pointer hover:bg-gray-50"
           >
-            <Icon className="h-5 w-5 mb-1 text-indigo-600" />
+            <Icon className="h-5 w-5 mb-1 text-tiffany-600" />
             <span className="text-xs text-gray-500">{label}</span>
             <input
               type="file"
@@ -198,7 +198,7 @@ export const MediaAttachmentHandler = {
     const colorMap = {
       image: 'text-blue-500',
       document: 'text-green-500',
-      audio: 'text-purple-500',
+      audio: 'text-tiffany-500',
       video: 'text-red-500'
     };
 
@@ -271,7 +271,7 @@ export const MediaAttachmentHandler = {
   //       return;
   //     }
 
-  //     const API_BASE_URL = "https://final-year-project-5d85.onrender.com";
+  //     const API_BASE_URL = "https://final-year-project-jy2j.onrender.com";
 
   //     try {
   //       // Use your API endpoint but with proper error handling
@@ -449,7 +449,7 @@ export const MediaAttachmentHandler = {
         return;
       }
 
-      const API_BASE_URL = "https://final-year-project-5d85.onrender.com";
+      const API_BASE_URL = "https://final-year-project-jy2j.onrender.com";
 
       try {
         // Use your API endpoint but with proper error handling

@@ -1,4 +1,4 @@
-
+﻿
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, MapPin, Users, DollarSign, FileText, Loader } from 'lucide-react';
@@ -284,7 +284,7 @@ const CreateEventPage: React.FC = () => {
 
     try {
       const token = localStorage.getItem('accessToken');
-      const response = await axios.post('https://final-year-project-5d85.onrender.com/api/v1/events', formattedEventData, {
+      const response = await axios.post('https://final-year-project-jy2j.onrender.com/api/v1/events', formattedEventData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -317,7 +317,7 @@ const CreateEventPage: React.FC = () => {
           {/* naigate to events page  */}
           <button
             onClick={() => navigate('/dashboard/events')}
-            className="mt-4 bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600 transition-colors"
+            className="mt-4 bg-tiffany-500 text-white px-4 py-2 rounded hover:bg-tiffany-600 transition-colors"
           >
             Back to Events
           </button>
@@ -616,7 +616,7 @@ const CreateEventPage: React.FC = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="bg-indigo-500 text-white px-6 py-2 rounded hover:bg-indigo-600 transition-colors flex items-center disabled:bg-indigo-300"
+            className="bg-tiffany-500 text-white px-6 py-2 rounded hover:bg-tiffany-600 transition-colors flex items-center disabled:bg-tiffany-300"
           >
             {isLoading ? (
               <>
