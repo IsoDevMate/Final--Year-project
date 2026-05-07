@@ -170,6 +170,9 @@ const CreateEventPage: React.FC = () => {
       case 'location.name':
         return !value.trim() ? 'Venue name is required' : null;
 
+      case 'location.address':
+        return !value.trim() ? 'Address is required' : null;
+
       case 'location.city':
         return !value.trim() ? 'City is required' : null;
 
@@ -233,7 +236,7 @@ const CreateEventPage: React.FC = () => {
       if (key === 'location') {
         // Handle nested location fields
         for (const [locKey, locValue] of Object.entries(eventData.location)) {
-          if (locKey !== 'coordinates' && locKey !== 'postalCode' && locKey !== 'address' && locKey !== 'mapLink') {
+          if (locKey !== 'coordinates' && locKey !== 'postalCode' && locKey !== 'mapLink') {
             const locError = validateField(`location.${locKey}`, locValue);
             if (locError) {
               newErrors[`location.${locKey}`] = locError;
@@ -487,7 +490,7 @@ const CreateEventPage: React.FC = () => {
 
           <div>
             <label htmlFor="location.mapLink" className="block mb-2 font-semibold">
-              <MapPin className="inline-block mr-2" /> Google Maps Link
+              <MapPin className="inline-block mr-2" /> Google Maps Link <span className="text-gray-400 font-normal text-sm">(optional)</span>
             </label>
             <input
               type="url"
@@ -499,6 +502,25 @@ const CreateEventPage: React.FC = () => {
               placeholder="https://maps.google.com/..."
             />
           </div>
+        </div>
+
+        <div>
+          <label htmlFor="location.address" className="block mb-2 font-semibold">
+            <MapPin className="inline-block mr-2" /> Address
+          </label>
+          <input
+            type="text"
+            id="location.address"
+            name="location.address"
+            required
+            className={`w-full p-2 border rounded ${formErrors['location.address'] ? 'border-red-500' : ''}`}
+            value={eventData.location.address}
+            onChange={handleChange}
+            placeholder="e.g. Kenyatta Avenue, Nairobi"
+          />
+          {formErrors['location.address'] && (
+            <p className="text-red-500 text-sm mt-1">{formErrors['location.address']}</p>
+          )}
         </div>
 
         {/* Additional Event Details */}

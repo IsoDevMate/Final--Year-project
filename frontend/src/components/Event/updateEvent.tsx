@@ -280,6 +280,7 @@ const UpdateEventPage: React.FC = () => {
 
     // Location validation
     if (!eventData.location.name.trim()) errors['location.name'] = 'Venue name is required';
+    if (!eventData.location.address.trim()) errors['location.address'] = 'Address is required';
     if (!eventData.location.city) errors['location.city'] = 'City is required';
     if (!eventData.location.country) errors['location.country'] = 'Country is required';
 
@@ -633,6 +634,37 @@ const UpdateEventPage: React.FC = () => {
                   {formErrors['location.city'] && (
                     <p className="mt-1 text-sm text-red-500">{formErrors['location.city']}</p>
                   )}
+                </div>
+
+                {/* Address */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                  <input
+                    type="text"
+                    name="location.address"
+                    value={eventData.location.address}
+                    onChange={handleInputChange}
+                    className={`w-full px-3 py-2 border rounded-md ${formErrors['location.address'] ? 'border-red-500' : 'border-gray-300'}`}
+                    placeholder="e.g. Kenyatta Avenue, Nairobi"
+                  />
+                  {formErrors['location.address'] && (
+                    <p className="mt-1 text-sm text-red-500">{formErrors['location.address']}</p>
+                  )}
+                </div>
+
+                {/* Google Maps Link */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Google Maps Link <span className="text-gray-400 font-normal text-xs">(optional)</span>
+                  </label>
+                  <input
+                    type="url"
+                    name="location.mapLink"
+                    value={(eventData.location as any).mapLink || ''}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    placeholder="https://maps.google.com/..."
+                  />
                 </div>
 
               </div>
