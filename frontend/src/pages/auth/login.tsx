@@ -194,13 +194,9 @@ const onSubmit = async (data: LoginFormData) => {
           <div className="mt-4 text-center">
             <p className="text-sm text-gray-600">
               Don't have an account?{' '}
-              <span
-                className={`font-medium ${
-                  AUTH_ACTIONS_DISABLED ? 'text-gray-400 cursor-not-allowed' : 'text-tiffany-600 hover:text-tiffany-800'
-                }`}
-              >
+              <Link to="/auth/signup" className="font-medium text-tiffany-600 hover:text-tiffany-800">
                 Sign Up
-              </span>
+              </Link>
             </p>
             <Link to="/auth/forgot-password" className="text-sm text-tiffany-600 hover:text-tiffany-800 font-medium">
               Forgot Password
