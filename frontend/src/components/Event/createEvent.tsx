@@ -84,9 +84,6 @@ const CreateEventPage: React.FC = () => {
     'conference',
     'seminar',
     'workshop',
-    'meetup',
-    'webinar',
-    'training',
     'expo',
     'other'
   ];

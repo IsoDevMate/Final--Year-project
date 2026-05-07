@@ -3,25 +3,14 @@ import { EventType, EventStatus } from '../models/event.model';
 
 // Location schema
 const locationSchema = z.object({
-  name: z.string()
-    .min(1, 'Location name is required')
-    .max(100, 'Location name cannot exceed 100 characters'),
-  address: z.string()
-    .min(1, 'Address is required')
-    .max(200, 'Address cannot exceed 200 characters'),
-  city: z.string()
-    .min(1, 'City is required')
-    .max(50, 'City name cannot exceed 50 characters'),
-  country: z.string()
-    .min(1, 'Country is required')
-    .max(50, 'Country name cannot exceed 50 characters'),
+  name: z.string().min(1, 'Location name is required').max(100),
+  address: z.string().max(200).optional().default(''),
+  city: z.string().min(1, 'City is required').max(50),
+  country: z.string().min(1, 'Country is required').max(50),
+  mapLink: z.string().url().optional().or(z.literal('')),
   coordinates: z.object({
-    latitude: z.number()
-      .min(-90, 'Latitude must be between -90 and 90')
-      .max(90, 'Latitude must be between -90 and 90'),
-    longitude: z.number()
-      .min(-180, 'Longitude must be between -180 and 180')
-      .max(180, 'Longitude must be between -180 and 180')
+    latitude: z.number().min(-90).max(90),
+    longitude: z.number().min(-180).max(180)
   }).nullable().optional()
 });
 

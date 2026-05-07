@@ -42,12 +42,10 @@ const NotFoundPage = lazy(() => import('./config/notfound'));
 axios.interceptors.response.use(
   (response) => response,
   async (error) => {
-   if (error.response && error.response.status === 400) {
-
+    if (error.response && error.response.status === 401) {
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
-     localStorage.removeItem('user');
-      toast.error('Bad request. Please check your input.')
+      localStorage.removeItem('user');
       window.location.href = '/auth/login';
     }
 
@@ -62,11 +60,6 @@ axios.interceptors.response.use(
 
     if (error.response && error.response.status === 500) {
       toast.error('An internal server error occurred. Please try again later.');
-      window.location.href = '/dashboard';
-    }
-    if (error.response && error.response.status === 400) {
-      toast.error('Bad request. Please check your input.');
-      window.location.href = '/dashboard';
     }
 
     return Promise.reject(error);
