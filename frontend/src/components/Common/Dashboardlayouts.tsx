@@ -11,7 +11,8 @@ import {
   Menu,
   X,
   Bell,
-  FileText as Notes
+  FileText as Notes,
+  ShieldCheck
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -33,6 +34,7 @@ const DashboardLayout = () => {
     { title: 'Events', path: '/dashboard/events', icon: <Calendar className="w-5 h-5" /> },
     { title: 'Reports', path: '/dashboard/reports', icon: <CreditCard className="w-5 h-5" />, roles: ['admin', 'organizer'] },
     { title: 'Notes', path: '/dashboard/notes', icon: <Notes className="w-5 h-5" /> },
+    { title: 'Admin', path: '/dashboard/admin', icon: <ShieldCheck className="w-5 h-5" />, roles: ['admin'] },
     { title: 'Settings', path: '/dashboard/settings', icon: <Settings className="w-5 h-5" /> },
     { title: 'Profile', path: '/dashboard/profile', icon: <Users className="w-5 h-5" /> },
   ].filter(link => !link.roles || link.roles.includes(user?.role || ''));
