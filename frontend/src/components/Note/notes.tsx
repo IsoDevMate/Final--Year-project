@@ -55,7 +55,7 @@ interface MediaAttachment {
   const { noteId, eventId } = useParams();
   const navigate = useNavigate();
     const [note, setNote] = useState<Note | null>(null);
-    const { user ,isAuthenticated,setUser } = useAuth();
+    const { user, isAuthenticated, checkAuthStatus } = useAuth();
    const [title, setTitle] = useState('');
 
   const [content, setContent] = useState('');
@@ -613,13 +613,8 @@ const openMediaPreview = (attachment: MediaAttachment) => {
         <div className="flex gap-4 items-center">
           {user && (
         <LinkedInConnection
-          user={user}
           API_BASE_URL={API_BASE_URL}
-          onUpdate={() => {
-            // Refresh user data after LinkedIn connection changes
-            setUser({ ...user, socialLinks: { ...user.socialLinks, linkedinAccessToken: null } });
-            toast.success("LinkedIn connection updated successfully!");
-          }}
+          onConnectionChange={() => checkAuthStatus()}
         />
           )}
         </div>
