@@ -172,25 +172,12 @@ const LinkedInConnection: React.FC<LinkedInConnectionProps> = ({ API_BASE_URL, o
 
       if (response.data?.data?.hasLinkedIn) {
         setIsConnected(true);
-
-        // Call onConnectionChange callback if provided
-        if (onConnectionChange) {
-          onConnectionChange(true);
-        }
       } else {
         setIsConnected(false);
-
-        // Call onConnectionChange callback if provided
-        if (onConnectionChange) {
-          onConnectionChange(false);
-        }
       }
     } catch (error) {
       console.error('Error checking LinkedIn status:', error);
       setIsConnected(false);
-      if (onConnectionChange) {
-        onConnectionChange(false);
-      }
     } finally {
       setIsLoading(false);
     }
