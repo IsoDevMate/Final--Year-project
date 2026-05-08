@@ -51,11 +51,9 @@ axios.interceptors.response.use(
 
     if (error.response && error.response.status === 403) {
       toast.error('You do not have permission to access this resource.');
-      window.location.href = '/dashboard';
     }
     if (error.response && error.response.status === 404) {
       toast.error('The requested resource was not found.');
-      window.location.href = '/dashboard';
     }
 
     if (error.response && error.response.status === 500) {

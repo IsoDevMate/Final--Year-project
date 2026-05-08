@@ -2,16 +2,24 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, Users, DollarSign, Clock, ArrowRight } from 'lucide-react';
 import axios from 'axios';
+import { useAuth } from '../../contexts/AuthContext';
 
 const API = 'https://final-year-project-jy2j.onrender.com/api/v1';
 const authHeaders = () => ({ Authorization: `Bearer ${localStorage.getItem('accessToken')}` });
 
 const Dashboard = () => {
+  const { user } = useAuth();
   const [statsData, setStatsData] = useState({ totalEvents: 0, totalAttendees: 0, totalRevenue: 0, upcomingEvents: 0 });
   const [recentEvents, setRecentEvents] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const isOrganizer = user?.role === 'organizer' || user?.role === 'admin';
+
   useEffect(() => {
+    if (!isOrganizer) {
+      setIsLoading(false);
+      return;
+    }
     const fetchData = async () => {
       try {
         const r = await axios.get(`${API}/events/organizer/events`, { headers: authHeaders() });
@@ -25,13 +33,13 @@ const Dashboard = () => {
         });
         setRecentEvents(events.slice(0, 5));
       } catch {
-        // not an organizer or no events yet — leave zeros
+        // no events yet — leave zeros
       } finally {
         setIsLoading(false);
       }
     };
     fetchData();
-  }, []);
+  }, [isOrganizer]);
 
   const getStatusBadgeColor = (status: string) => {
     switch (status) {
@@ -42,6 +50,22 @@ const Dashboard = () => {
       default: return 'bg-gray-100 text-gray-800';
     }
   };
+
+  if (!isOrganizer) {
+    return (
+      <div className="space-y-6">
+        <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+        <div className="bg-white rounded-xl shadow-sm p-8 text-center space-y-4">
+          <Calendar className="h-12 w-12 text-tiffany-600 mx-auto" />
+          <h2 className="text-lg font-semibold text-gray-800">Welcome, {user?.firstName}!</h2>
+          <p className="text-gray-500">Browse upcoming events and manage your registrations.</p>
+          <Link to="/dashboard/events" className="inline-block bg-tiffany-600 text-white py-2 px-6 rounded-lg hover:bg-tiffany-700 transition duration-200">
+            Browse Events
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
