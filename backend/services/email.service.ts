@@ -63,9 +63,10 @@ export class EmailService {
           <p>The eventbase Team</p>
           ${footer()}`,
       });
+      console.log(`[Email] ✅ Welcome email sent to ${to}`);
       return true;
-    } catch (error) {
-      console.error('Email sending error:', error);
+    } catch (error: any) {
+      console.error(`[Email] ❌ Failed to send welcome email to ${to} — ${error?.message}`);
       return false;
     }
   }
@@ -84,9 +85,10 @@ export class EmailService {
           <p>The eventbase Team</p>
           ${footer()}`,
       });
+      console.log(`[Email] ✅ Password reset email sent to ${to}`);
       return true;
-    } catch (error) {
-      console.error('Email sending error:', error);
+    } catch (error: any) {
+      console.error(`[Email] ❌ Failed to send password reset email to ${to} — ${error?.message}`);
       return false;
     }
   }
@@ -104,9 +106,10 @@ export class EmailService {
           <p>The eventbase Team</p>
           ${footer()}`,
       });
+      console.log(`[Email] ✅ Password reset confirmation sent to ${to}`);
       return true;
-    } catch (error) {
-      console.error('Email sending error:', error);
+    } catch (error: any) {
+      console.error(`[Email] ❌ Failed to send reset confirmation to ${to} — ${error?.message}`);
       return false;
     }
   }
@@ -133,9 +136,10 @@ export class EmailService {
           <p>The eventbase Team</p>
           ${footer()}`,
       });
+      console.log(`[Email] ✅ Event registration email sent to ${to} for "${data.eventName}"`);
       return true;
-    } catch (error) {
-      console.error('Email sending error:', error);
+    } catch (error: any) {
+      console.error(`[Email] ❌ Failed to send event registration email to ${to} — ${error?.message}`);
       return false;
     }
   }
