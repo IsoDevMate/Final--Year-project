@@ -37,9 +37,9 @@ frontendUrl: process.env.FRONTEND_URL,
   cors: {
     origin: process.env.CORS_ORIGIN || 'https://final-year-project-77pa.onrender.com'
     },
-  sendgrid: {
-    apiKey: process.env.SENDGRID_API_KEY || '',
-    fromEmail: process.env.SENDGRID_SENDER_EMAIL || "oum.....m",
+  email: {
+    user: process.env.EMAIL_USER || '',
+    appPassword: process.env.EMAIL_APP_PASSWORD || '',
   },
 };
 

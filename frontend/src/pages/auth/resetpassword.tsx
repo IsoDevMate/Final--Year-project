@@ -3,6 +3,43 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { Lock, Check, ArrowLeft, EyeOff, Eye } from 'lucide-react';
 
+// Password strength helpers
+function getPasswordStrength(pw: string) {
+  const checks = [
+    { label: 'At least 8 characters', ok: pw.length >= 8 },
+    { label: 'Uppercase letter (A-Z)', ok: /[A-Z]/.test(pw) },
+    { label: 'Lowercase letter (a-z)', ok: /[a-z]/.test(pw) },
+    { label: 'Number (0-9)', ok: /[0-9]/.test(pw) },
+    { label: 'Special character (!@#$…)', ok: /[^A-Za-z0-9]/.test(pw) },
+  ];
+  return { checks, score: checks.filter(c => c.ok).length };
+}
+const strengthLabels = ['', 'Very Weak', 'Weak', 'Fair', 'Strong', 'Very Strong'];
+const strengthColors = ['', '#ef4444', '#f97316', '#eab308', '#22c55e', '#0ABAB5'];
+
+function PasswordStrengthMeter({ password }: { password: string }) {
+  if (!password) return null;
+  const { checks, score } = getPasswordStrength(password);
+  return (
+    <div className="mt-2 space-y-1">
+      <div className="flex gap-1">
+        {[1,2,3,4,5].map(i => (
+          <div key={i} className="h-1.5 flex-1 rounded-full transition-all duration-300"
+            style={{ background: i <= score ? strengthColors[score] : '#e5e7eb' }} />
+        ))}
+      </div>
+      <p className="text-xs font-medium" style={{ color: strengthColors[score] }}>{strengthLabels[score]}</p>
+      <ul className="space-y-0.5">
+        {checks.map(c => (
+          <li key={c.label} className={`text-xs flex items-center gap-1 ${c.ok ? 'text-green-600' : 'text-gray-400'}`}>
+            <span>{c.ok ? '✓' : '○'}</span> {c.label}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 const ResetPasswordPage: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -38,11 +75,12 @@ const ResetPasswordPage: React.FC = () => {
             return;
         }
 
-        // Validate password length
-        if (password.length < 8) {
-            setError('Password must be at least 8 characters');
-            return;
-        }
+        // Validate password strength
+        if (password.length < 8) { setError('Password must be at least 8 characters'); return; }
+        if (!/[A-Z]/.test(password)) { setError('Password must contain at least one uppercase letter'); return; }
+        if (!/[a-z]/.test(password)) { setError('Password must contain at least one lowercase letter'); return; }
+        if (!/[0-9]/.test(password)) { setError('Password must contain at least one number'); return; }
+        if (!/[^A-Za-z0-9]/.test(password)) { setError('Password must contain at least one special character'); return; }
 
         setLoading(true);
         setError('');
@@ -171,6 +209,7 @@ const ResetPasswordPage: React.FC = () => {
                                     </button>
                                 </div>
                             </div>
+                            <PasswordStrengthMeter password={password} />
                         </div>
                         <div>
                             <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700">

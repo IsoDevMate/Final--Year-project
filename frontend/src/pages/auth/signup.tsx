@@ -14,25 +14,73 @@ const registerSchema = z.object({
   firstName: z.string().min(2, 'First name must be at least 2 characters'),
   lastName: z.string().min(2, 'Last name must be at least 2 characters'),
   email: z.string().email('Invalid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-    role: z.enum(['attendee', 'organizer'], {
+  password: z.string()
+    .min(8, 'Password must be at least 8 characters')
+    .regex(/[A-Z]/, 'Must contain an uppercase letter')
+    .regex(/[a-z]/, 'Must contain a lowercase letter')
+    .regex(/[0-9]/, 'Must contain a number')
+    .regex(/[^A-Za-z0-9]/, 'Must contain a special character'),
+  role: z.enum(['attendee', 'organizer'], {
     errorMap: () => ({ message: 'Please select a role' })
   })
 });
 
 type RegisterFormData = z.infer<typeof registerSchema>;
 
+// Password strength checker
+function getPasswordStrength(pw: string) {
+  const checks = [
+    { label: 'At least 8 characters', ok: pw.length >= 8 },
+    { label: 'Uppercase letter (A-Z)', ok: /[A-Z]/.test(pw) },
+    { label: 'Lowercase letter (a-z)', ok: /[a-z]/.test(pw) },
+    { label: 'Number (0-9)', ok: /[0-9]/.test(pw) },
+    { label: 'Special character (!@#$…)', ok: /[^A-Za-z0-9]/.test(pw) },
+  ];
+  const score = checks.filter(c => c.ok).length;
+  return { checks, score };
+}
+
+const strengthLabels = ['', 'Very Weak', 'Weak', 'Fair', 'Strong', 'Very Strong'];
+const strengthColors = ['', '#ef4444', '#f97316', '#eab308', '#22c55e', '#0ABAB5'];
+
+function PasswordStrengthMeter({ password }: { password: string }) {
+  if (!password) return null;
+  const { checks, score } = getPasswordStrength(password);
+  return (
+    <div className="mt-2 space-y-1">
+      <div className="flex gap-1">
+        {[1, 2, 3, 4, 5].map(i => (
+          <div key={i} className="h-1.5 flex-1 rounded-full transition-all duration-300"
+            style={{ background: i <= score ? strengthColors[score] : '#e5e7eb' }} />
+        ))}
+      </div>
+      <p className="text-xs font-medium" style={{ color: strengthColors[score] }}>
+        {strengthLabels[score]}
+      </p>
+      <ul className="space-y-0.5">
+        {checks.map(c => (
+          <li key={c.label} className={`text-xs flex items-center gap-1 ${c.ok ? 'text-green-600' : 'text-gray-400'}`}>
+            <span>{c.ok ? '✓' : '○'}</span> {c.label}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 const SignupPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const { register, handleSubmit, formState: { errors } } = useForm<RegisterFormData>({
+  const { register, handleSubmit, watch, formState: { errors } } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
      defaultValues: {
       role: 'attendee' // Default to attendee
     }
   });
+
+  const passwordValue = watch('password', '');
 
   const onSubmit = async (data: RegisterFormData) => {
     if (AUTH_ACTIONS_DISABLED) {
@@ -230,6 +278,7 @@ const SignupPage: React.FC = () => {
               {errors.password && (
                 <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
               )}
+              <PasswordStrengthMeter password={passwordValue} />
             </div>
 
             <button
