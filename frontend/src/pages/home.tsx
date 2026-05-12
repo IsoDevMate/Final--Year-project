@@ -6,7 +6,7 @@ import RequestDemoPage from './requestdemo';
 import BrandCarousel from './carousel';
 import { NotebookPen,  ChevronRight,  Linkedin, QrCode, BookOpen} from 'lucide-react';
 import ErrorBoundary from '../ErroBoundary';
-import image from '../assets/Screenshot 2025-03-22 123120.png';
+import image from '/image.png';
 import chooseus from '../assets/ce.jpg'
 import qr from '../assets/qr.jpg'
 import linked from '../assets/linked.avif'

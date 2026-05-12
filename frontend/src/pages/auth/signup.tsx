@@ -120,18 +120,22 @@ const SignupPage: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-b from-tiffany-700 to-tiffany-400">
+    <div className="flex min-h-screen bg-gray-100">
       {/* Left side */}
-      <div className="hidden md:flex md:w-1/2 flex-col items-center justify-center p-12 text-white">
-        <div className="mb-12">
-           <Link to="/" className="flex items-center text-3xl font-bold">
-                      <div className="bg-white rounded-full p-2 mr-2">
-                        <span className="text-tiffany-600 text-xl font-bold">C</span>
-                      </div>
-                      eventbase
-                    </Link>
-        </div>
-        <div className="mt-auto">
+      <div className="hidden md:flex md:w-1/2 relative overflow-hidden">
+        <img
+          src="/image copy.png"
+          alt="Event"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-tiffany-700/60" />
+        <div className="relative z-10 flex flex-col justify-between p-12 text-white w-full">
+          <Link to="/" className="flex items-center text-3xl font-bold">
+            <div className="bg-white rounded-full p-2 mr-2">
+              <span className="text-tiffany-600 text-xl font-bold">C</span>
+            </div>
+            eventbase
+          </Link>
           <h1 className="text-5xl font-bold mb-6">
             Unleash your inner<br />organizer today. 🚀
           </h1>
