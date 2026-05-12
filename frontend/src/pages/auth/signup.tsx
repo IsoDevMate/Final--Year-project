@@ -124,7 +124,7 @@ const SignupPage: React.FC = () => {
       {/* Left side */}
       <div className="hidden md:flex md:w-1/2 relative overflow-hidden">
         <img
-          src="/image copy.png"
+          src="/event-bg.jpg"
           alt="Event"
           className="absolute inset-0 w-full h-full object-cover"
         />
