@@ -1,6 +1,11 @@
 import { z } from 'zod';
 import { UserRole } from '../models/user.model';
 
+const nameField = (label: string) =>
+  z.string()
+    .min(2, `${label} must be at least 2 characters`)
+    .max(50, `${label} cannot exceed 50 characters`)
+    .regex(/^[A-Za-z\s'\-]+$/, `${label} must contain letters only`);
 
 export const registerSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -10,8 +15,8 @@ export const registerSchema = z.object({
     .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
     .regex(/[0-9]/, 'Password must contain at least one number')
     .regex(/[^A-Za-z0-9]/, 'Password must contain at least one special character'),
-  firstName: z.string().min(2, 'First name must be at least 2 characters'),
-  lastName: z.string().min(2, 'Last name must be at least 2 characters'),
+  firstName: nameField('First name'),
+  lastName: nameField('Last name'),
   role: z.nativeEnum(UserRole).optional()
 });
 

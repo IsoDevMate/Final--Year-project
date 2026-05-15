@@ -48,8 +48,11 @@ const ProfilePage: React.FC = () => {
     setError('');
 
     // Client-side validation
+    const nameRegex = /^[A-Za-z\s'\-]+$/;
     if (formData.firstName.trim().length < 2) { setError('First name must be at least 2 characters'); return; }
+    if (!nameRegex.test(formData.firstName.trim())) { setError('First name must contain letters only'); return; }
     if (formData.lastName.trim().length < 2) { setError('Last name must be at least 2 characters'); return; }
+    if (!nameRegex.test(formData.lastName.trim())) { setError('Last name must contain letters only'); return; }
     if (formData.phoneNumber && !/^\+?[\d\s\-()]{7,15}$/.test(formData.phoneNumber)) {
       setError('Invalid phone number format'); return;
     }

@@ -9,10 +9,16 @@ import { Eye, EyeOff, Mail, User, UserPlus } from 'lucide-react';
 
 const AUTH_ACTIONS_DISABLED = false;
 
+const nameField = (label: string) =>
+  z.string()
+    .min(2, `${label} must be at least 2 characters`)
+    .max(50, `${label} cannot exceed 50 characters`)
+    .regex(/^[A-Za-z\s'\-]+$/, `${label} must contain letters only`);
+
 // Schema matching your backend validation
 const registerSchema = z.object({
-  firstName: z.string().min(2, 'First name must be at least 2 characters'),
-  lastName: z.string().min(2, 'Last name must be at least 2 characters'),
+  firstName: nameField('First name'),
+  lastName: nameField('Last name'),
   email: z.string().email('Invalid email address'),
   password: z.string()
     .min(8, 'Password must be at least 8 characters')

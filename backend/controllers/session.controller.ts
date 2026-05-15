@@ -16,7 +16,7 @@ const sessionBodySchema = z.object({
   location: z.string().max(200).optional().default(''),
   capacity: z.number().int().min(1).max(10000).optional(),
   speaker: z.object({
-    name: z.string().min(1, 'Speaker name is required').max(100),
+    name: z.string().min(1, 'Speaker name is required').max(100).regex(/^[A-Za-z\s'\-]+$/, 'Speaker name must contain letters only'),
     title: z.string().max(100).optional(),
     company: z.string().max(100).optional(),
     bio: z.string().max(500).optional(),

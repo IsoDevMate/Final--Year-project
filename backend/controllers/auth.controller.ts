@@ -116,9 +116,11 @@ static  async requestPasswordReset(req: Request, res: Response, next: NextFuncti
       if (!userId) return ResponseUtil.error(res, 401, 'Unauthorized: User not found');
 
       const { z } = await import('zod');
+      const nameField = (label: string) =>
+        z.string().min(2, `${label} must be at least 2 characters`).max(50).regex(/^[A-Za-z\s'\-]+$/, `${label} must contain letters only`);
       const updateProfileSchema = z.object({
-        firstName: z.string().min(2, 'First name must be at least 2 characters').max(50).optional(),
-        lastName: z.string().min(2, 'Last name must be at least 2 characters').max(50).optional(),
+        firstName: nameField('First name').optional(),
+        lastName: nameField('Last name').optional(),
         email: z.string().email('Invalid email address').optional(),
         phoneNumber: z.string().regex(/^\+?[\d\s\-()]{7,15}$/, 'Invalid phone number').optional().or(z.literal('')),
       }).strict();
