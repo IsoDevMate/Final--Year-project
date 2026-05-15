@@ -6,11 +6,25 @@ import { Note } from '../models/note.model';
 import { MpesaPayment } from '../models/mpesapayment.model';
 import { Token } from '../models/token.model';
 import { ResponseUtil } from '../utils/response.utils';
+import { StorageService } from '../services/upload.service';
 
 const router = Router();
 
 // All admin routes require auth + admin role
 router.use(AuthMiddleware.verifyToken, AuthMiddleware.hasRole([UserRole.ADMIN]));
+
+// Test Firebase storage connectivity (admin only)
+router.get('/test-storage', async (req, res, next) => {
+  try {
+    const storage = new StorageService();
+    const testBuffer = Buffer.from('eventbase-storage-test');
+    const result = await storage.uploadFile(testBuffer, 'test.txt', 'admin-test', 'document');
+    await storage.deleteFile(result.storageRef);
+    return ResponseUtil.success(res, 200, { bucket: result.url.split('/')[3] }, 'Firebase storage is connected and working');
+  } catch (e: any) {
+    return ResponseUtil.error(res, 500, `Storage test failed: ${e.message}`);
+  }
+});
 
 // GET all users
 router.get('/users', async (req, res, next) => {

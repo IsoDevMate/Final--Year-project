@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Trash2, Edit2, Check, X, Users, Calendar, ShieldCheck, UserCheck } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
-const API = 'https://final-year-project-jy2j.onrender.com/api/v1';
+const API = `${import.meta.env.VITE_API_BASE_URL}/api/v1`;
 const headers = () => ({ Authorization: `Bearer ${localStorage.getItem('accessToken')}` });
 
 interface UserRow { _id: string; firstName: string; lastName: string; email: string; role: string; isVerified: boolean; createdAt: string; }

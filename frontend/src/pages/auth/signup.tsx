@@ -90,7 +90,7 @@ const SignupPage: React.FC = () => {
     setIsLoading(true);
     try {
     //   const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/auth/register`, data);
-       const response = await axios.post(`https://final-year-project-jy2j.onrender.com/api/v1/auth/register`, data);
+       const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/v1/auth/register`, data);
 
       toast.success('Registration successful! Please sign in.');
       navigate('/auth/login');

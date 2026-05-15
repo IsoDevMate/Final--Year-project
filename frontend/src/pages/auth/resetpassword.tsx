@@ -86,7 +86,7 @@ const ResetPasswordPage: React.FC = () => {
         setError('');
 
         try {
-            const response = await axios.post('https://final-year-project-jy2j.onrender.com/api/v1/auth/reset-password', {
+            const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/v1/auth/reset-password`, {
                 token,
                 password
             });

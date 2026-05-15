@@ -28,7 +28,7 @@
 // //     // Fetch event details
 // //     const fetchEventDetails = async () => {
 // //       try {
-// //         const response = await axios.get(`https://final-year-project-jy2j.onrender.com/api/v1/events/${eventId}`);
+// //         const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/v1/events/${eventId}`);
 // //         if (response.data.success) {
 // //           setEventDetails(response.data.data);
 // //         }
@@ -62,7 +62,7 @@
 // //       }
 
 // //       const statusResponse = await axios.get(
-// //         `https://final-year-project-jy2j.onrender.com/api/v1/mpesa/event/${eventId}`,
+// //         `${import.meta.env.VITE_API_BASE_URL}/api/v1/mpesa/event/${eventId}`,
 // //         {
 // //           headers: {
 // //             Authorization: `Bearer ${token}`
@@ -226,7 +226,7 @@
 // import { useAuth } from '../../contexts/AuthContext';
 // import toast from 'react-hot-toast';
 
-// const API_URL = 'https://final-year-project-jy2j.onrender.com';
+// const API_URL = `${import.meta.env.VITE_API_BASE_URL}`;
 
 // const PendingPaymentPage = () => {
 //   const location = useLocation();
@@ -461,7 +461,7 @@ import axios from 'axios';
 import { useAuth } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
 
-const API_URL = 'https://final-year-project-jy2j.onrender.com';
+const API_URL = `${import.meta.env.VITE_API_BASE_URL}`;
 
 const PendingPaymentPage = () => {
   const location = useLocation();

@@ -34,7 +34,7 @@ interface Event {
 }
 
 const EventDetailsPage = () => {
-  const { _id } = useParams<{ _id: string }>();
+  const { eventId } = useParams<{ eventId: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -53,12 +53,12 @@ const EventDetailsPage = () => {
       setIsLoading(true);
       setError(null);
 try {
-        if (!id) {
+        if (!eventId) {
           setError('Event ID is required');
           return;
         }
-  console.log("Attempting to fetch event with ID:", _id);
-  const response = await axios.get(`https://final-year-project-jy2j.onrender.com/api/v1/events/${_id}`);
+  console.log("Attempting to fetch event with ID:", eventId);
+  const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/v1/events/${eventId}`);
   console.log("API Response:", response.data);
 
   if (response.data.success) {
@@ -82,10 +82,10 @@ try {
   }
 
 
-    if (_id) {
+    if (eventId) {
       fetchEventDetails();
     }
-  }, [_id]);
+  }, [eventId]);
 
   // Format date for display
   const formatDate = (dateString: string) => {
@@ -181,7 +181,7 @@ try {
       }
 
       const response = await axios.post(
-        `https://final-year-project-jy2j.onrender.com/api/v1/events/register/${event._id}`,
+        `${import.meta.env.VITE_API_BASE_URL}/api/v1/events/register/${event._id}`,
         {},
         {
           headers: {
@@ -226,7 +226,7 @@ try {
         }
 
         const response = await axios.delete(
-          `https://final-year-project-jy2j.onrender.com/api/v1/events/register/${event._id}`,
+          `${import.meta.env.VITE_API_BASE_URL}/api/v1/events/register/${event._id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`
@@ -266,7 +266,7 @@ try {
 
       // Initiate M-Pesa payment
       const paymentResponse = await axios.post(
-        `https://final-year-project-jy2j.onrender.com/api/v1/mpesa/event/${event._id}`,
+        `${import.meta.env.VITE_API_BASE_URL}/api/v1/mpesa/event/${event._id}`,
         {
           phoneNumber: phoneNumber,
           amount: event.ticketPrice
@@ -291,7 +291,7 @@ try {
 
           try {
             const statusResponse = await axios.get(
-              `https://final-year-project-jy2j.onrender.com/api/v1/mpesa/event/${event._id}`,
+              `${import.meta.env.VITE_API_BASE_URL}/api/v1/mpesa/event/${event._id}`,
               {
                 headers: {
                   Authorization: `Bearer ${token}`

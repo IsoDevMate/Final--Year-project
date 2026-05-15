@@ -4,7 +4,7 @@ import { Calendar, Users, DollarSign, Clock, ArrowRight } from 'lucide-react';
 import axios from 'axios';
 import { useAuth } from '../../contexts/AuthContext';
 
-const API = 'https://final-year-project-jy2j.onrender.com/api/v1';
+const API = `${import.meta.env.VITE_API_BASE_URL}/api/v1`;
 const authHeaders = () => ({ Authorization: `Bearer ${localStorage.getItem('accessToken')}` });
 
 const Dashboard = () => {

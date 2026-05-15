@@ -73,7 +73,7 @@
 
 //         // Get event details
 //         const eventResponse = await axios.get(
-//           `https://final-year-project-jy2j.onrender.com/api/v1/events/${eventId}`,
+//           `${import.meta.env.VITE_API_BASE_URL}/api/v1/events/${eventId}`,
 //           {
 //             headers: {
 //               Authorization: `Bearer ${token}`
@@ -129,7 +129,7 @@
 //           // Fetch QR code (optional)
 //           try {
 //             const qrResponse = await axios.get(
-//               `https://final-year-project-jy2j.onrender.com/api/v1/events/${eventId}/qrcode`,
+//               `${import.meta.env.VITE_API_BASE_URL}/api/v1/events/${eventId}/qrcode`,
 //               {
 //                 headers: {
 //                   Authorization: `Bearer ${token}`
@@ -501,7 +501,7 @@ const RegistrationSuccessPage = () => {
 
         // Get event details
         const eventResponse = await axios.get(
-          `https://final-year-project-jy2j.onrender.com/api/v1/events/${eventId}`,
+          `${import.meta.env.VITE_API_BASE_URL}/api/v1/events/${eventId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`
@@ -558,7 +558,7 @@ const RegistrationSuccessPage = () => {
           // Fetch QR code (optional)
           // try {
           //   const qrResponse = await axios.get(
-          //     `https://final-year-project-jy2j.onrender.com/api/v1/events/${eventId}/qrcode`,
+          //     `${import.meta.env.VITE_API_BASE_URL}/api/v1/events/${eventId}/qrcode`,
           //     {
           //       headers: {
           //         Authorization: `Bearer ${token}`

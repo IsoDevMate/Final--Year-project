@@ -141,7 +141,7 @@ const UpdateEventPage: React.FC = () => {
   useEffect(() => {
     const fetchEventData = async () => {
       try {
-        const response = await axios.get(`https://final-year-project-jy2j.onrender.com/api/v1/events/${id}`);
+        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/v1/events/${id}`);
 
         if (response.data.success) {
           const eventData = response.data.data;
@@ -312,7 +312,7 @@ const UpdateEventPage: React.FC = () => {
 
       const token = localStorage.getItem('accessToken');
       const response = await axios.post(
-        `https://final-year-project-jy2j.onrender.com/api/v1/events/${id}/cover-image`,
+        `${import.meta.env.VITE_API_BASE_URL}/api/v1/events/${id}/cover-image`,
         formData,
         {
           headers: {
@@ -390,7 +390,7 @@ const UpdateEventPage: React.FC = () => {
       if (coverImageUrl) payload.coverImage = coverImageUrl;
 
       const response = await axios.put(
-        `https://final-year-project-jy2j.onrender.com/api/v1/events/${id}`,
+        `${import.meta.env.VITE_API_BASE_URL}/api/v1/events/${id}`,
         payload,
         { headers: { 'Authorization': `Bearer ${token}` } }
       );

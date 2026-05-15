@@ -76,7 +76,7 @@ interface MediaAttachment {
 
   const editorRef = useRef<HTMLDivElement>(null);
 
-   const API_BASE_URL = 'https://final-year-project-jy2j.onrender.com';
+   const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL}`;
 
 
    const getAuthHeaders = () => {

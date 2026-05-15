@@ -34,6 +34,7 @@ export interface UpdateEventDto {
   location?: Partial<LocationDto>;
   capacity?: number;
   ticketPrice?: number;
+  coverImage?: string;
 }
 
 export interface EventQueryDto {

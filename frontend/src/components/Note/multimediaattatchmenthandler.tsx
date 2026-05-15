@@ -271,7 +271,7 @@ export const MediaAttachmentHandler = {
   //       return;
   //     }
 
-  //     const API_BASE_URL = "https://final-year-project-jy2j.onrender.com";
+  //     const API_BASE_URL = "${import.meta.env.VITE_API_BASE_URL}";
 
   //     try {
   //       // Use your API endpoint but with proper error handling
@@ -449,7 +449,7 @@ export const MediaAttachmentHandler = {
         return;
       }
 
-      const API_BASE_URL = "https://final-year-project-jy2j.onrender.com";
+      const API_BASE_URL = "${import.meta.env.VITE_API_BASE_URL}";
 
       try {
         // Use your API endpoint but with proper error handling

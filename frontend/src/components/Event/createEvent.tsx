@@ -281,7 +281,7 @@ const CreateEventPage: React.FC = () => {
 
     try {
       const token = localStorage.getItem('accessToken');
-      const response = await axios.post('https://final-year-project-jy2j.onrender.com/api/v1/events', formattedEventData, {
+      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/v1/events`, formattedEventData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

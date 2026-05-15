@@ -1,6 +1,6 @@
 ﻿import axios from 'axios';
 
-const API_BASE_URL = 'https://final-year-project-jy2j.onrender.com/api/v1';
+const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL}/api/v1`;
 
 // Event service functions
 export const fetchEvents = async (params = {}) => {

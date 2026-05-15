@@ -99,13 +99,24 @@ export const updateEventSchema = z.object({
     (date) => !isNaN(Date.parse(date)),
     { message: 'End date must be a valid date' }
   ).optional(),
-  location: locationSchema.partial().optional(),
-   capacity: z.number()
+  location: z.object({
+    name: z.string().optional(),
+    address: z.string().optional(),
+    city: z.string().optional(),
+    country: z.string().optional(),
+    mapLink: z.string().url().optional().or(z.literal('')),
+    coordinates: z.object({
+      latitude: z.number().min(-90).max(90),
+      longitude: z.number().min(-180).max(180)
+    }).nullable().optional()
+  }).optional(),
+  capacity: z.number()
     .int('Capacity must be a whole number')
     .min(30, 'Minimum event capacity is 30 people')
     .max(5000, 'Maximum event capacity is 5000 people')
     .optional(),
-  ticketPrice: z.number().min(0).optional()
+  ticketPrice: z.number().min(0).optional(),
+  coverImage: z.string().optional(),
 });
 
 // Event query schema

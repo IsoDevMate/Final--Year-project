@@ -69,7 +69,7 @@ const onSubmit = async (data: LoginFormData) => {
       return;
     }
     // Make a request to get LinkedIn authorization URL
-    axios.get(`https://final-year-project-jy2j.onrender.com/api/v1/auth/linkedin`)
+    axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/v1/auth/linkedin`)
       .then(response => {
         // Redirect to LinkedIn authorization page
         window.location.href = response.data.data.url;

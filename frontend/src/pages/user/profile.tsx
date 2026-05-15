@@ -51,7 +51,7 @@ const ProfilePage: React.FC = () => {
 
     try {
         const token = localStorage.getItem('accessToken');
-        const response = await axios.put('https://final-year-project-jy2j.onrender.com/api/v1/auth/update-profile', formData, {
+        const response = await axios.put(`${import.meta.env.VITE_API_BASE_URL}/api/v1/auth/update-profile`, formData, {
             headers: {
                 Authorization: `Bearer ${token}`
             }

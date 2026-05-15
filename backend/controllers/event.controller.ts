@@ -115,6 +115,7 @@ async getEventById(req: Request, res: Response, next: NextFunction) {
   async updateEvent(req: Request, res: Response, next: NextFunction) {
   try {
     const { id } = eventIdSchema.parse(req.params);
+    console.log('[updateEvent] body received:', JSON.stringify(req.body, null, 2));
     const validatedData = updateEventSchema.parse(req.body);
 
     // Check if user object exists (should be set by auth middleware)
@@ -153,7 +154,9 @@ async getEventById(req: Request, res: Response, next: NextFunction) {
     return ResponseUtil.success(res, 200, updatedEvent, 'Event updated successfully');
   } catch (error) {
     if (error instanceof ZodError) {
-      return ResponseUtil.error(res, 400, error.errors[0].message);
+      const allErrors = error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join('; ');
+      console.error('[updateEvent] Zod validation errors:', allErrors);
+      return ResponseUtil.error(res, 400, allErrors);
     }
     next(error);
   }

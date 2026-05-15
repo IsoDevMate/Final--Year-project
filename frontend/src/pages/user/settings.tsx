@@ -4,7 +4,7 @@ import { Bell, Shield, Mail, CreditCard, Globe, Key, Lock, ExternalLink, Zap } f
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 
-const API = 'https://final-year-project-jy2j.onrender.com/api/v1';
+const API = `${import.meta.env.VITE_API_BASE_URL}/api/v1`;
 const authHeaders = () => ({ Authorization: `Bearer ${localStorage.getItem('accessToken')}` });
 
 type TabType = 'account' | 'security' | 'notifications' | 'billing' | 'integrations';

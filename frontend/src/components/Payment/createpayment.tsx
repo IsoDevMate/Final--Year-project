@@ -74,7 +74,7 @@ const CreatePaymentPage: React.FC = () => {
       const token = localStorage.getItem('accessToken');
 
       const response = await axios.post(
-        'https://final-year-project-jy2j.onrender.com/api/v1/payments/checkout',
+        `${import.meta.env.VITE_API_BASE_URL}/api/v1/payments/checkout`,
         {
           subscriptionPlan: selectedPlan,
           currency: 'usd'

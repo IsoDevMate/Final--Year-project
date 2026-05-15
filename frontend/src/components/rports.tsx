@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Download, RefreshCcw, FileText } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
-const API = 'https://final-year-project-jy2j.onrender.com/api/v1';
+const API = `${import.meta.env.VITE_API_BASE_URL}/api/v1`;
 const authHeaders = () => ({ Authorization: `Bearer ${localStorage.getItem('accessToken')}` });
 
 interface EventSummary { id: string; title: string; attendeeCount: number; date: string; type: string; location: string; }
