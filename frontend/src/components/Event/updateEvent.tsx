@@ -116,9 +116,6 @@ const UpdateEventPage: React.FC = () => {
     'conference',
     'seminar',
     'workshop',
-    'meetup',
-    'webinar',
-    'training',
     'expo',
     'other'
   ];
@@ -366,17 +363,36 @@ const UpdateEventPage: React.FC = () => {
       }
 
       const token = localStorage.getItem('accessToken');
+
+      // Build clean payload — only send fields the backend updateEventSchema accepts
+      const payload: any = {
+        title: eventData.title,
+        description: eventData.description,
+        type: eventData.type,
+        status: eventData.status,
+        startDate: eventData.startDate,
+        endDate: eventData.endDate,
+        capacity: Number(eventData.capacity),
+        ticketPrice: Number(eventData.ticketPrice),
+        location: {
+          name: eventData.location.name,
+          address: eventData.location.address,
+          city: eventData.location.city,
+          country: eventData.location.country,
+          ...(eventData.location.mapLink ? { mapLink: eventData.location.mapLink } : {}),
+          ...(eventData.location.coordinates &&
+            (eventData.location.coordinates.latitude !== 0 || eventData.location.coordinates.longitude !== 0)
+            ? { coordinates: eventData.location.coordinates }
+            : { coordinates: null })
+        }
+      };
+
+      if (coverImageUrl) payload.coverImage = coverImageUrl;
+
       const response = await axios.put(
         `https://final-year-project-jy2j.onrender.com/api/v1/events/${id}`,
-        {
-          ...eventData,
-          coverImage: coverImageUrl
-        },
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        }
+        payload,
+        { headers: { 'Authorization': `Bearer ${token}` } }
       );
 
       if (response.data.success) {
