@@ -1,11 +1,14 @@
 ﻿import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Bell, Shield, Mail, CreditCard, Globe, Key, Lock, ExternalLink, Package, DollarSign, Zap } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Bell, Shield, Mail, CreditCard, Globe, Key, Lock, ExternalLink, Zap } from 'lucide-react';
+import axios from 'axios';
+import { toast } from 'react-hot-toast';
 
-// Define the tab values as a type
+const API = 'https://final-year-project-jy2j.onrender.com/api/v1';
+const authHeaders = () => ({ Authorization: `Bearer ${localStorage.getItem('accessToken')}` });
+
 type TabType = 'account' | 'security' | 'notifications' | 'billing' | 'integrations';
 
-// Interface for notification settings
 interface NotificationSettings {
   events: boolean;
   reminders: boolean;
@@ -13,7 +16,6 @@ interface NotificationSettings {
   marketing: boolean;
 }
 
-// Interface for subscription plan
 interface SubscriptionPlan {
   id: string;
   name: string;
@@ -25,21 +27,16 @@ interface SubscriptionPlan {
 
 const SettingsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('account');
+  const navigate = useNavigate();
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'account':
-        return <AccountSettings />;
-      case 'security':
-        return <SecuritySettings />;
-      case 'notifications':
-        return <NotificationSettingsTab />;
-      case 'billing':
-        return <BillingSettings />;
-      case 'integrations':
-        return <IntegrationsSettings />;
-      default:
-        return <AccountSettings />;
+      case 'account': return <AccountSettings navigate={navigate} />;
+      case 'security': return <SecuritySettings />;
+      case 'notifications': return <NotificationSettingsTab />;
+      case 'billing': return <BillingSettings />;
+      case 'integrations': return <IntegrationsSettings />;
+      default: return <AccountSettings navigate={navigate} />;
     }
   };
 
@@ -125,11 +122,40 @@ const SettingsPage: React.FC = () => {
 };
 
 // Account Settings Tab
-const AccountSettings: React.FC = () => {
+const AccountSettings: React.FC<{ navigate: (path: string) => void }> = ({ navigate }) => {
+  const [deactivating, setDeactivating] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  const handleDeactivate = async () => {
+    if (!confirm('Deactivate your account? You can reactivate it by logging in again.')) return;
+    setDeactivating(true);
+    try {
+      await axios.post(`${API}/auth/deactivate`, {}, { headers: authHeaders() });
+      toast.success('Account deactivated');
+      localStorage.clear();
+      navigate('/auth/login');
+    } catch {
+      toast.error('Failed to deactivate account');
+    } finally { setDeactivating(false); }
+  };
+
+  const handleDelete = async () => {
+    if (!confirm('Permanently delete your account? This will remove all your data and cannot be undone.')) return;
+    if (!confirm('Are you absolutely sure? All your events, notes, and payments will be deleted.')) return;
+    setDeleting(true);
+    try {
+      await axios.delete(`${API}/auth/account`, { headers: authHeaders() });
+      toast.success('Account deleted');
+      localStorage.clear();
+      navigate('/');
+    } catch {
+      toast.error('Failed to delete account');
+    } finally { setDeleting(false); }
+  };
+
   return (
     <div>
       <h2 className="text-lg font-medium text-gray-900 mb-4">Account Settings</h2>
-
       <div className="space-y-6">
         <div className="bg-gray-50 p-4 rounded-lg">
           <div className="flex items-center justify-between">
@@ -137,12 +163,7 @@ const AccountSettings: React.FC = () => {
               <h3 className="text-sm font-medium text-gray-900">Profile Information</h3>
               <p className="text-sm text-gray-500">Update your name, email, and other personal details</p>
             </div>
-            <Link
-              to="/dashboard/profile"
-              className="text-sm text-tiffany-600 hover:text-tiffany-500"
-            >
-              Update
-            </Link>
+            <Link to="/dashboard/profile" className="text-sm text-tiffany-600 hover:text-tiffany-500">Update</Link>
           </div>
         </div>
 
@@ -152,20 +173,32 @@ const AccountSettings: React.FC = () => {
               <h3 className="text-sm font-medium text-gray-900">Email Preferences</h3>
               <p className="text-sm text-gray-500">Manage the emails you receive from us</p>
             </div>
-            <button className="text-sm text-tiffany-600 hover:text-tiffany-500">
-              Manage
+            <button className="text-sm text-tiffany-600 hover:text-tiffany-500">Manage</button>
+          </div>
+        </div>
+
+        <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-medium text-gray-900">Deactivate Account</h3>
+              <p className="text-sm text-gray-500">Temporarily disable your account. You can reactivate it later.</p>
+            </div>
+            <button onClick={handleDeactivate} disabled={deactivating}
+              className="text-sm text-yellow-700 border border-yellow-400 px-3 py-1 rounded hover:bg-yellow-100 disabled:opacity-50">
+              {deactivating ? 'Deactivating...' : 'Deactivate'}
             </button>
           </div>
         </div>
 
-        <div className="bg-gray-50 p-4 rounded-lg">
+        <div className="bg-red-50 border border-red-200 p-4 rounded-lg">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-sm font-medium text-gray-900">Delete Account</h3>
-              <p className="text-sm text-gray-500">Permanently delete your account and all data</p>
+              <p className="text-sm text-gray-500">Permanently delete your account and all associated data. This cannot be undone.</p>
             </div>
-            <button className="text-sm text-red-600 hover:text-red-500">
-              Delete
+            <button onClick={handleDelete} disabled={deleting}
+              className="text-sm text-red-600 border border-red-400 px-3 py-1 rounded hover:bg-red-100 disabled:opacity-50">
+              {deleting ? 'Deleting...' : 'Delete'}
             </button>
           </div>
         </div>

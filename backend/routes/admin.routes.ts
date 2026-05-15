@@ -2,6 +2,9 @@ import { Router } from 'express';
 import { AuthMiddleware } from '../middleware/auth.mddleware';
 import { UserRole, User } from '../models/user.model';
 import { Event } from '../models/event.model';
+import { Note } from '../models/note.model';
+import { MpesaPayment } from '../models/mpesapayment.model';
+import { Token } from '../models/token.model';
 import { ResponseUtil } from '../utils/response.utils';
 
 const router = Router();
@@ -40,11 +43,23 @@ router.put('/users/:id', async (req, res, next) => {
   } catch (e) { next(e); }
 });
 
-// DELETE user
+// DELETE user with cascade
 router.delete('/users/:id', async (req, res, next) => {
   try {
-    const deleted = await User.findByIdAndDelete(req.params.id);
-    if (!deleted) return ResponseUtil.error(res, 404, 'User not found');
+    const target = await User.findById(req.params.id);
+    if (!target) return ResponseUtil.error(res, 404, 'User not found');
+
+    if (target.role === UserRole.ORGANIZER) {
+      await Event.deleteMany({ organizer: target._id });
+    } else {
+      await Event.updateMany({ attendees: target._id }, { $pull: { attendees: target._id } });
+    }
+
+    await Note.deleteMany({ user: target._id });
+    await MpesaPayment.deleteMany({ userId: target._id });
+    await Token.deleteMany({ userId: target._id });
+    await User.findByIdAndDelete(req.params.id);
+
     return ResponseUtil.success(res, 200, null, 'User deleted successfully');
   } catch (e) { next(e); }
 });

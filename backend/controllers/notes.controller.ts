@@ -171,7 +171,11 @@ export class NoteController {
     const userId = (req.user as any).userId;
 
     // Determine file type based on MIME type
-    const fileType = req.file.mimetype.split('/')[0] as 'image' | 'audio' | 'video' | 'document';
+    const mimePrefix = req.file.mimetype.split('/')[0];
+    const fileType: 'image' | 'audio' | 'video' | 'document' =
+      mimePrefix === 'image' ? 'image' :
+      mimePrefix === 'audio' ? 'audio' :
+      mimePrefix === 'video' ? 'video' : 'document';
 
     // Create a Buffer from the file
     const fileBuffer = req.file.buffer;

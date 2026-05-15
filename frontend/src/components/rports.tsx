@@ -8,16 +8,26 @@ const authHeaders = () => ({ Authorization: `Bearer ${localStorage.getItem('acce
 
 interface EventSummary { id: string; title: string; attendeeCount: number; date: string; type: string; location: string; }
 
+const openPdfReport = async (url: string, filename: string) => {
+  try {
+    const r = await axios.get(url, { headers: authHeaders(), responseType: 'blob' });
+    const blob = new Blob([r.data], { type: 'text/html' });
+    const win = window.open(window.URL.createObjectURL(blob), '_blank');
+    if (win) win.onload = () => setTimeout(() => win.print(), 500);
+    toast.success(`${filename} opened — use Print → Save as PDF`);
+  } catch { toast.error('Failed to generate PDF report'); }
+};
+
 const ReportsPage = () => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'events' | 'attendees' | 'pdf'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'events' | 'attendees' | 'pdf' | 'mpesa'>('overview');
   const [events, setEvents] = useState<EventSummary[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<string | null>(null);
-  const [pdfPeriod, setPdfPeriod] = useState<'daily' | 'weekly' | 'monthly'>('weekly');
-  const [generatingPdf, setGeneratingPdf] = useState(false);
+  const [period, setPeriod] = useState<'daily' | 'weekly' | 'monthly'>('weekly');
+  const [generating, setGenerating] = useState(false);
 
   useEffect(() => {
-    if (activeTab === 'events' || activeTab === 'overview' || activeTab === 'attendees') fetchEvents();
+    if (['events', 'overview', 'attendees'].includes(activeTab)) fetchEvents();
   }, [activeTab]);
 
   const fetchEvents = async () => {
@@ -34,40 +44,39 @@ const ReportsPage = () => {
     finally { setIsLoading(false); }
   };
 
-  const downloadCsv = async (url: string, filename: string) => {
+  const handleGenerate = async (type: 'events' | 'mpesa') => {
+    setGenerating(true);
     try {
-      const r = await axios.get(url, { headers: authHeaders(), responseType: 'blob' });
-      const link = document.createElement('a');
-      link.href = window.URL.createObjectURL(new Blob([r.data]));
-      link.setAttribute('download', filename);
-      document.body.appendChild(link); link.click(); link.remove();
-    } catch { toast.error('Failed to download report'); }
-  };
-
-  const generatePdf = async () => {
-    setGeneratingPdf(true);
-    try {
-      const r = await axios.get(`${API}/reports/pdf/${pdfPeriod}`, { headers: authHeaders(), responseType: 'blob' });
-      const blob = new Blob([r.data], { type: 'text/html' });
-      const url = window.URL.createObjectURL(blob);
-      // Open in new tab so browser can print-to-PDF
-      const win = window.open(url, '_blank');
-      if (win) {
-        win.onload = () => {
-          setTimeout(() => { win.print(); }, 500);
-        };
-      }
-      toast.success(`${pdfPeriod.charAt(0).toUpperCase() + pdfPeriod.slice(1)} report opened — use Print → Save as PDF`);
-    } catch { toast.error('Failed to generate PDF report'); }
-    finally { setGeneratingPdf(false); }
+      await openPdfReport(`${API}/reports/${type === 'mpesa' ? 'mpesa' : 'pdf'}/${period}`, `${type}-${period}`);
+    } finally { setGenerating(false); }
   };
 
   const tabs = [
     { key: 'overview', label: 'Overview' },
     { key: 'events', label: 'Event Reports' },
     { key: 'attendees', label: 'Attendee Reports' },
-    { key: 'pdf', label: 'PDF Reports' },
+    { key: 'pdf', label: 'Events PDF' },
+    { key: 'mpesa', label: 'M-Pesa PDF' },
   ] as const;
+
+  const PeriodSelector = () => (
+    <div className="space-y-4">
+      <div className="flex gap-3">
+        {(['daily', 'weekly', 'monthly'] as const).map(p => (
+          <button key={p} onClick={() => setPeriod(p)}
+            className={`px-5 py-2 rounded-lg font-medium capitalize border transition ${period === p ? 'bg-tiffany-600 text-white border-tiffany-600' : 'bg-white text-gray-700 border-gray-300 hover:border-tiffany-400'}`}>
+            {p}
+          </button>
+        ))}
+      </div>
+      <div className="bg-tiffany-50 border border-tiffany-200 rounded-lg p-4 text-sm text-tiffany-800">
+        <strong>{period.charAt(0).toUpperCase() + period.slice(1)} report</strong> covers:{' '}
+        {period === 'daily' && 'Today only'}
+        {period === 'weekly' && 'Last 7 days'}
+        {period === 'monthly' && 'Last 30 days'}
+      </div>
+    </div>
+  );
 
   return (
     <div className="w-full space-y-4">
@@ -78,11 +87,10 @@ const ReportsPage = () => {
         </button>
       </div>
 
-      {/* Tabs */}
-      <div className="flex border-b">
+      <div className="flex border-b overflow-x-auto">
         {tabs.map(t => (
           <button key={t.key} onClick={() => setActiveTab(t.key)}
-            className={`px-4 py-2 font-medium ${activeTab === t.key ? 'text-tiffany-600 border-b-2 border-tiffany-600' : 'text-gray-500 hover:text-gray-700'}`}>
+            className={`px-4 py-2 font-medium whitespace-nowrap ${activeTab === t.key ? 'text-tiffany-600 border-b-2 border-tiffany-600' : 'text-gray-500 hover:text-gray-700'}`}>
             {t.label}
           </button>
         ))}
@@ -106,9 +114,9 @@ const ReportsPage = () => {
           <div className="p-4 bg-white rounded-lg shadow">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-medium">Recent Events</h3>
-              <button onClick={() => downloadCsv(`${API}/reports/events/summary`, `events-summary-${new Date().toISOString().split('T')[0]}.csv`)}
+              <button onClick={() => openPdfReport(`${API}/reports/pdf/monthly`, 'events-summary')}
                 className="flex items-center px-3 py-2 text-sm bg-tiffany-600 text-white rounded-md hover:bg-tiffany-700">
-                <Download className="w-4 h-4 mr-2" /> Download CSV
+                <FileText className="w-4 h-4 mr-2" /> Download PDF
               </button>
             </div>
             <table className="min-w-full divide-y divide-gray-200 text-sm">
@@ -125,7 +133,7 @@ const ReportsPage = () => {
                     <td className="px-4 py-3">{e.type}</td>
                     <td className="px-4 py-3">{e.attendeeCount}</td>
                     <td className="px-4 py-3 text-right">
-                      <button onClick={() => downloadCsv(`${API}/events/${e.id}/attendees`, `${e.title}-attendees.csv`)} className="text-tiffany-600 hover:text-tiffany-900 text-xs">Download</button>
+                      <button onClick={() => openPdfReport(`${API}/reports/pdf/monthly`, `${e.title}-report`)} className="text-tiffany-600 hover:text-tiffany-900 text-xs">PDF</button>
                     </td>
                   </tr>
                 ))}
@@ -140,9 +148,9 @@ const ReportsPage = () => {
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-semibold">Event Reports</h2>
-            <button onClick={() => downloadCsv(`${API}/reports/events/summary`, `events-summary-${new Date().toISOString().split('T')[0]}.csv`)}
+            <button onClick={() => openPdfReport(`${API}/reports/pdf/monthly`, 'events-summary')}
               className="flex items-center px-3 py-2 text-sm bg-tiffany-600 text-white rounded-md hover:bg-tiffany-700">
-              <Download className="w-4 h-4 mr-2" /> Download All (CSV)
+              <FileText className="w-4 h-4 mr-2" /> Download All (PDF)
             </button>
           </div>
           <div className="bg-white shadow rounded-lg overflow-x-auto">
@@ -161,9 +169,9 @@ const ReportsPage = () => {
                     <td className="px-4 py-3">{e.type}</td>
                     <td className="px-4 py-3">{e.attendeeCount}</td>
                     <td className="px-4 py-3 text-right">
-                      <button onClick={() => downloadCsv(`${API}/events/${e.id}/attendees`, `${e.title}-attendees.csv`)}
+                      <button onClick={() => openPdfReport(`${API}/reports/pdf/monthly`, `${e.title}-report`)}
                         className="inline-flex items-center px-2 py-1 text-xs rounded text-tiffany-700 bg-tiffany-100 hover:bg-tiffany-200">
-                        <Download className="w-3 h-3 mr-1" /> Attendees
+                        <Download className="w-3 h-3 mr-1" /> PDF
                       </button>
                     </td>
                   </tr>
@@ -189,43 +197,44 @@ const ReportsPage = () => {
             </select>
           </div>
           <div className="flex justify-end">
-            <button onClick={() => selectedEvent && downloadCsv(`${API}/events/${selectedEvent}/attendees`, `attendees-${selectedEvent}.csv`)}
+            <button
+              onClick={() => selectedEvent && openPdfReport(`${API}/reports/pdf/monthly`, `attendees-${selectedEvent}`)}
               disabled={!selectedEvent}
               className={`inline-flex items-center px-4 py-2 text-sm font-medium rounded-md text-white ${selectedEvent ? 'bg-tiffany-600 hover:bg-tiffany-700' : 'bg-gray-300 cursor-not-allowed'}`}>
-              <Download className="w-4 h-4 mr-2" /> Download CSV
+              <FileText className="w-4 h-4 mr-2" /> Download PDF
             </button>
           </div>
         </div>
       )}
 
-      {/* PDF Reports */}
+      {/* Events PDF Reports */}
       {activeTab === 'pdf' && (
         <div className="bg-white p-6 rounded-lg shadow space-y-6">
           <div>
-            <h3 className="text-lg font-medium mb-1">Generate PDF Report</h3>
-            <p className="text-sm text-gray-500">Select a period to generate a printable report. The report will open in a new tab — use <strong>Print → Save as PDF</strong>.</p>
+            <h3 className="text-lg font-medium mb-1">Generate Events PDF Report</h3>
+            <p className="text-sm text-gray-500">Select a period. The report opens in a new tab — use <strong>Print → Save as PDF</strong>.</p>
           </div>
-
-          <div className="flex gap-3">
-            {(['daily', 'weekly', 'monthly'] as const).map(p => (
-              <button key={p} onClick={() => setPdfPeriod(p)}
-                className={`px-5 py-2 rounded-lg font-medium capitalize border transition ${pdfPeriod === p ? 'bg-tiffany-600 text-white border-tiffany-600' : 'bg-white text-gray-700 border-gray-300 hover:border-tiffany-400'}`}>
-                {p}
-              </button>
-            ))}
-          </div>
-
-          <div className="bg-tiffany-50 border border-tiffany-200 rounded-lg p-4 text-sm text-tiffany-800">
-            <strong>{pdfPeriod.charAt(0).toUpperCase() + pdfPeriod.slice(1)} report</strong> covers:{' '}
-            {pdfPeriod === 'daily' && 'Today only'}
-            {pdfPeriod === 'weekly' && 'Last 7 days'}
-            {pdfPeriod === 'monthly' && 'Last 30 days'}
-          </div>
-
-          <button onClick={generatePdf} disabled={generatingPdf}
+          <PeriodSelector />
+          <button onClick={() => handleGenerate('events')} disabled={generating}
             className="flex items-center px-6 py-3 bg-tiffany-600 text-white rounded-lg hover:bg-tiffany-700 disabled:opacity-60 font-medium">
             <FileText className="w-5 h-5 mr-2" />
-            {generatingPdf ? 'Generating...' : `Generate ${pdfPeriod.charAt(0).toUpperCase() + pdfPeriod.slice(1)} PDF`}
+            {generating ? 'Generating...' : `Generate ${period.charAt(0).toUpperCase() + period.slice(1)} Events PDF`}
+          </button>
+        </div>
+      )}
+
+      {/* M-Pesa PDF Reports */}
+      {activeTab === 'mpesa' && (
+        <div className="bg-white p-6 rounded-lg shadow space-y-6">
+          <div>
+            <h3 className="text-lg font-medium mb-1">Generate M-Pesa Payments PDF Report</h3>
+            <p className="text-sm text-gray-500">Select a period. The report opens in a new tab — use <strong>Print → Save as PDF</strong>.</p>
+          </div>
+          <PeriodSelector />
+          <button onClick={() => handleGenerate('mpesa')} disabled={generating}
+            className="flex items-center px-6 py-3 bg-tiffany-600 text-white rounded-lg hover:bg-tiffany-700 disabled:opacity-60 font-medium">
+            <FileText className="w-5 h-5 mr-2" />
+            {generating ? 'Generating...' : `Generate ${period.charAt(0).toUpperCase() + period.slice(1)} M-Pesa PDF`}
           </button>
         </div>
       )}
