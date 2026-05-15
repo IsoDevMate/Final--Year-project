@@ -229,7 +229,7 @@ export const App: React.FC = () => {
                   path="notes"
                   element={
                     <motion.div {...pageTransition}>
-                      <NotesPage />
+                      <NotesListPage />
                     </motion.div>
                   }
                 />
@@ -300,7 +300,7 @@ export const App: React.FC = () => {
                 path="/dashboard/notes"
                 element={
                   <motion.div {...pageTransition}>
-                    <NotesPage />
+                    <NotesListPage />
                   </motion.div>
                 }
               />

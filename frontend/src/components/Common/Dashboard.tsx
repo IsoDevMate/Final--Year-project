@@ -1,11 +1,123 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, Users, DollarSign, Clock, ArrowRight } from 'lucide-react';
+import { Calendar, Users, DollarSign, Clock, ArrowRight, FileText, Plus } from 'lucide-react';
 import axios from 'axios';
 import { useAuth } from '../../contexts/AuthContext';
 
 const API = `${import.meta.env.VITE_API_BASE_URL}/api/v1`;
 const authHeaders = () => ({ Authorization: `Bearer ${localStorage.getItem('accessToken')}` });
+
+// ── Attendee dashboard ────────────────────────────────────────────────────────
+const AttendeeDashboard: React.FC<{ firstName: string }> = ({ firstName }) => {
+  const [notes, setNotes] = useState<any[]>([]);
+  const [registeredEvents, setRegisteredEvents] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const [notesRes, eventsRes] = await Promise.allSettled([
+          axios.get(`${API}/notes`, { headers: authHeaders() }),
+          axios.get(`${API}/events/registered`, { headers: authHeaders() }),
+        ]);
+        if (notesRes.status === 'fulfilled') setNotes(notesRes.value.data.data?.notes || notesRes.value.data.data || []);
+        if (eventsRes.status === 'fulfilled') setRegisteredEvents(eventsRes.value.data.data || []);
+      } catch { /* leave empty */ }
+      finally { setLoading(false); }
+    };
+    load();
+  }, []);
+
+  if (loading) return (
+    <div className="flex justify-center items-center h-64">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-tiffany-600" />
+    </div>
+  );
+
+  return (
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold text-gray-900">Welcome back, {firstName}!</h1>
+
+      {/* Quick actions */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <Link to="/dashboard/events" className="flex items-center p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition border border-gray-100">
+          <div className="bg-tiffany-100 rounded-full p-3 mr-4"><Calendar className="h-6 w-6 text-tiffany-600" /></div>
+          <div>
+            <p className="font-semibold text-gray-800">Browse Events</p>
+            <p className="text-sm text-gray-500">Discover and register for events</p>
+          </div>
+        </Link>
+        <Link to="/dashboard/notes" className="flex items-center p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition border border-gray-100">
+          <div className="bg-blue-100 rounded-full p-3 mr-4"><FileText className="h-6 w-6 text-blue-600" /></div>
+          <div>
+            <p className="font-semibold text-gray-800">My Notes</p>
+            <p className="text-sm text-gray-500">View, edit and manage your notes</p>
+          </div>
+        </Link>
+      </div>
+
+      {/* My Notes */}
+      <div className="bg-white rounded-xl shadow-sm">
+        <div className="flex items-center justify-between p-5 border-b border-gray-100">
+          <h2 className="text-lg font-semibold text-gray-900">Recent Notes</h2>
+          <Link to="/dashboard/notes" className="text-sm text-tiffany-600 hover:text-tiffany-800 flex items-center gap-1">
+            View all <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+        {notes.length === 0 ? (
+          <div className="p-8 text-center text-gray-400">
+            <FileText className="h-10 w-10 mx-auto mb-2 opacity-40" />
+            <p>No notes yet.</p>
+            <Link to="/dashboard/events" className="mt-2 inline-block text-sm text-tiffany-600 hover:underline">
+              Register for an event to start taking notes
+            </Link>
+          </div>
+        ) : (
+          <ul className="divide-y divide-gray-100">
+            {notes.slice(0, 5).map((note: any) => (
+              <li key={note._id} className="flex items-center justify-between px-5 py-3 hover:bg-gray-50">
+                <div className="min-w-0">
+                  <p className="font-medium text-gray-800 truncate">{note.title}</p>
+                  <p className="text-xs text-gray-400">{note.event?.title || 'No event'} · {new Date(note.updatedAt || note.createdAt).toLocaleDateString()}</p>
+                </div>
+                <Link to="/dashboard/notes" className="ml-4 text-xs text-tiffany-600 hover:underline shrink-0">Open</Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      {/* Registered Events */}
+      <div className="bg-white rounded-xl shadow-sm">
+        <div className="flex items-center justify-between p-5 border-b border-gray-100">
+          <h2 className="text-lg font-semibold text-gray-900">My Registered Events</h2>
+          <Link to="/dashboard/events" className="text-sm text-tiffany-600 hover:text-tiffany-800 flex items-center gap-1">
+            Browse more <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+        {registeredEvents.length === 0 ? (
+          <div className="p-8 text-center text-gray-400">
+            <Calendar className="h-10 w-10 mx-auto mb-2 opacity-40" />
+            <p>You haven't registered for any events yet.</p>
+            <Link to="/dashboard/events" className="mt-2 inline-block text-sm text-tiffany-600 hover:underline">Browse Events</Link>
+          </div>
+        ) : (
+          <ul className="divide-y divide-gray-100">
+            {registeredEvents.slice(0, 5).map((event: any) => (
+              <li key={event._id} className="flex items-center justify-between px-5 py-3 hover:bg-gray-50">
+                <div className="min-w-0">
+                  <p className="font-medium text-gray-800 truncate">{event.title}</p>
+                  <p className="text-xs text-gray-400">{new Date(event.startDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })} · {event.location?.city}</p>
+                </div>
+                <Link to={`/dashboard/events/${event._id}`} className="ml-4 text-xs text-tiffany-600 hover:underline shrink-0">Details</Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  );
+};
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -52,19 +164,7 @@ const Dashboard = () => {
   };
 
   if (!isOrganizer) {
-    return (
-      <div className="space-y-6">
-        <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-        <div className="bg-white rounded-xl shadow-sm p-8 text-center space-y-4">
-          <Calendar className="h-12 w-12 text-tiffany-600 mx-auto" />
-          <h2 className="text-lg font-semibold text-gray-800">Welcome, {user?.firstName}!</h2>
-          <p className="text-gray-500">Browse upcoming events and manage your registrations.</p>
-          <Link to="/dashboard/events" className="inline-block bg-tiffany-600 text-white py-2 px-6 rounded-lg hover:bg-tiffany-700 transition duration-200">
-            Browse Events
-          </Link>
-        </div>
-      </div>
-    );
+    return <AttendeeDashboard firstName={user?.firstName || 'there'} />;
   }
 
   return (
