@@ -45,30 +45,35 @@ const ProfilePage: React.FC = () => {
 
    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
     setError('');
+
+    // Client-side validation
+    if (formData.firstName.trim().length < 2) { setError('First name must be at least 2 characters'); return; }
+    if (formData.lastName.trim().length < 2) { setError('Last name must be at least 2 characters'); return; }
+    if (formData.phoneNumber && !/^\+?[\d\s\-()]{7,15}$/.test(formData.phoneNumber)) {
+      setError('Invalid phone number format'); return;
+    }
+
+    setLoading(true);
     setSuccess(false);
 
     try {
         const token = localStorage.getItem('accessToken');
-        const response = await axios.put(`${import.meta.env.VITE_API_BASE_URL}/api/v1/auth/update-profile`, formData, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
+        const response = await axios.put(`${import.meta.env.VITE_API_BASE_URL}/api/v1/auth/update-profile`,
+          { firstName: formData.firstName.trim(), lastName: formData.lastName.trim(), phoneNumber: formData.phoneNumber },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
 
         if (response.data.success) {
-            // Update user in local storage
             const updatedUser = { ...user, ...formData };
             setUserData(updatedUser);
             localStorage.setItem('user', JSON.stringify(updatedUser));
-
             setSuccess(true);
             setTimeout(() => setSuccess(false), 3000);
         }
         toast.success('Profile updated successfully!');
     } catch (err: any) {
-        setError(err.response?.data?.message || 'Failed to update profile');
+        setError(err.response?.data?.message || err.response?.data?.error || 'Failed to update profile');
     } finally {
         setLoading(false);
     }

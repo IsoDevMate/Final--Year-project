@@ -147,18 +147,25 @@ const CreateSessionPage: React.FC = () => {
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
 
-    if (!formData.title) newErrors.title = 'Session title is required';
-    if (!formData.description) newErrors.description = 'Description is required';
+    if (!formData.title.trim()) newErrors.title = 'Session title is required';
+    else if (formData.title.trim().length < 3) newErrors.title = 'Title must be at least 3 characters';
+
+    if (!formData.description.trim()) newErrors.description = 'Description is required';
+    else if (formData.description.trim().length < 10) newErrors.description = 'Description must be at least 10 characters';
+
+    if (!selectedEvent) newErrors.eventId = 'Please select an event';
+
     if (!formData.startTime) newErrors.startTime = 'Start time is required';
     if (!formData.endTime) newErrors.endTime = 'End time is required';
 
-    // Validate end time is after start time
     if (formData.startTime && formData.endTime) {
       const start = new Date(formData.startTime);
       const end = new Date(formData.endTime);
-      if (end <= start) {
-        newErrors.endTime = 'End time must be after start time';
-      }
+      if (end <= start) newErrors.endTime = 'End time must be after start time';
+    }
+
+    if (formData.capacity !== undefined && (isNaN(formData.capacity) || formData.capacity < 1)) {
+      newErrors.capacity = 'Capacity must be a positive number';
     }
 
     setErrors(newErrors);

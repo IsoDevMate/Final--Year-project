@@ -113,23 +113,31 @@ static  async requestPasswordReset(req: Request, res: Response, next: NextFuncti
   static async updateProfile(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = (req.user as User)?.id;
-      console.log('User ID from request:', userId);
+      if (!userId) return ResponseUtil.error(res, 401, 'Unauthorized: User not found');
 
-      if (!userId) {
-        return ResponseUtil.error(res, 401, 'Unauthorized: User not found');
+      const { z } = await import('zod');
+      const updateProfileSchema = z.object({
+        firstName: z.string().min(2, 'First name must be at least 2 characters').max(50).optional(),
+        lastName: z.string().min(2, 'Last name must be at least 2 characters').max(50).optional(),
+        email: z.string().email('Invalid email address').optional(),
+        phoneNumber: z.string().regex(/^\+?[\d\s\-()]{7,15}$/, 'Invalid phone number').optional().or(z.literal('')),
+      }).strict();
+
+      let updateData: any;
+      try {
+        updateData = updateProfileSchema.parse(req.body);
+      } catch (e: any) {
+        return ResponseUtil.error(res, 400, e.errors?.[0]?.message || 'Invalid profile data');
       }
 
-      const updateData = req.body;
+      if (Object.keys(updateData).length === 0) {
+        return ResponseUtil.error(res, 400, 'No valid fields provided for update');
+      }
 
-      // Validate update data if needed
       const updatedUser = await authService.updateProfile(userId, updateData);
-
       return ResponseUtil.success(res, 200, updatedUser, 'Profile updated successfully');
     } catch (error) {
-      if (error instanceof AppError) {
-        return ResponseUtil.error(res, error.statusCode, error.message);
-      }
-      // Log the unexpected error for server-side tracking
+      if (error instanceof AppError) return ResponseUtil.error(res, error.statusCode, error.message);
       console.error('Unexpected profile update error:', error);
       return ResponseUtil.error(res, 500, 'An unexpected error occurred while updating profile');
     }
