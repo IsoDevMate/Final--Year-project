@@ -10,6 +10,7 @@ const config = {
     port: process.env.PORT || 3000,
     mongoUri: process.env.MONGO_URI,
     sessionSecret: process.env.SESSION_SECRET,
+    supportUrl: 'oumaoduor5827@gmail.com',
     jwt: {
         accessTokenSecret: process.env.JWT_ACCESS_TOKEN_SECRET,
         accessTokenExpiration: parseInt(process.env.JWT_ACCESS_TOKEN_EXPIRATION || '30', 10) * 24 * 60 * 60,
@@ -20,8 +21,8 @@ const config = {
     linkedin: {
         clientId: process.env.LINKEDIN_CLIENT_ID,
         clientSecret: process.env.LINKEDIN_CLIENT_SECRET,
-        callbackUrl: process.env.LINKEDIN_CALLBACK_URL || 'https://final-year-project-5d85.onrender.com/api/auth/linkedin/callback',
-        scope: 'openid profile email'
+        callbackUrl: process.env.LINKEDIN_CALLBACK_URL || 'https://final-year-project-77pa.onrender.com/api/v1/auth/linkedin/callback',
+        scope: 'openid profile email w_member_social'
     },
     storagebucketnameis: process.env.STORAGE_BUCKET_NAME || 'gs://uploadtimes-2d6d3.appspot.com',
     firebaseserviceacc: process.env.FIREBASE_CONFIG,
@@ -37,11 +38,11 @@ const config = {
     },
     frontendUrl: process.env.FRONTEND_URL,
     cors: {
-        origin: process.env.CORS_ORIGIN || 'https://final-year-project-5d85.onrender.com'
+        origin: process.env.CORS_ORIGIN || 'https://final-year-project-77pa.onrender.com'
     },
-    sendgrid: {
-        apiKey: process.env.SENDGRID_API_KEY || 'SG.......VkaY....KYU',
-        fromEmail: process.env.SENDGRID_SENDER_EMAIL || "oum.....m",
+    email: {
+        user: process.env.EMAIL_USER || '',
+        appPassword: process.env.EMAIL_APP_PASSWORD || '',
     },
 };
 exports.default = config;

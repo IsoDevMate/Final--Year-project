@@ -37,11 +37,6 @@ class MPaymentService {
                 if (event.capacity && event.attendees.length >= event.capacity) {
                     throw new errors_utils_1.AppError('Event has reached maximum capacity', 400);
                 }
-                //  console.log('User ID to check:', paymentData.userId);
-                //  console.log('Attendees:', event.attendees.map(a => a.toString()));
-                //  const isRegistered = event.attendees.some((attendee) => attendee.toString() === paymentData.userId);
-                //  console.log('Is user registered?', isRegistered);
-                // Check if user is already registered
                 const isUserRegistered = event.attendees.some((attendee) => {
                     console.log('Checking attendee:', attendee);
                     // Handle if attendee is already an ObjectId
@@ -156,6 +151,8 @@ class MPaymentService {
                 if (paymentResult.success) {
                     yield this.eventService.registerAttendee(eventId, userId);
                 }
+                console.log('Payment record updated:', payment);
+                console.log('Payment result:', paymentResult);
                 return {
                     success: paymentResult.success,
                     paymentId: payment._id,
@@ -172,6 +169,76 @@ class MPaymentService {
                     throw error;
                 }
                 throw new errors_utils_1.AppError('Failed to process payment callback', 500);
+            }
+        });
+    }
+    checkPaymentStatus(eventId, userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                // Find the payment record
+                const payment = yield mpesapayment_model_1.MpesaPayment.findOne({
+                    eventId: new mongoose_1.Types.ObjectId(eventId),
+                    userId: new mongoose_1.Types.ObjectId(userId),
+                    status: mpesapayment_model_1.MpesaPaymentStatus.PENDING
+                });
+                if (!payment) {
+                    throw new errors_utils_1.AppError('No pending payment found for this event', 404);
+                }
+                // Query M-Pesa for status
+                if (!payment.checkoutRequestId) {
+                    throw new errors_utils_1.AppError('CheckoutRequestID is missing', 400);
+                }
+                const stkStatusResponse = yield this.mpesaService.querySTKStatus(payment.checkoutRequestId);
+                // Parse response
+                const resultCode = stkStatusResponse.ResultCode;
+                const resultDesc = stkStatusResponse.ResultDesc;
+                const requestId = stkStatusResponse.CheckoutRequestID;
+                console.log(`STK query result: Code=${resultCode}, Desc=${resultDesc}, RequestID=${requestId}`);
+                // Update payment based on status code
+                if (resultCode === 0) {
+                    // Success status (paid)
+                    payment.status = mpesapayment_model_1.MpesaPaymentStatus.COMPLETED;
+                    payment.resultCode = resultCode;
+                    payment.resultDesc = resultDesc;
+                    yield payment.save();
+                    // Register the user for the event
+                    yield this.eventService.registerAttendee(eventId, userId);
+                    return {
+                        success: true,
+                        paymentId: payment._id,
+                        status: payment.status,
+                        message: 'Payment completed successfully'
+                    };
+                }
+                else if (resultCode === 1032) {
+                    // Transaction canceled by user or still waiting
+                    return {
+                        success: false,
+                        paymentId: payment._id,
+                        status: payment.status,
+                        message: 'Payment is still pending or was canceled'
+                    };
+                }
+                else {
+                    // Failed transaction
+                    payment.status = mpesapayment_model_1.MpesaPaymentStatus.FAILED;
+                    payment.resultCode = resultCode;
+                    payment.resultDesc = resultDesc;
+                    yield payment.save();
+                    return {
+                        success: false,
+                        paymentId: payment._id,
+                        status: payment.status,
+                        message: resultDesc || 'Payment failed'
+                    };
+                }
+            }
+            catch (error) {
+                console.error('Error checking payment status:', error);
+                if (error instanceof errors_utils_1.AppError) {
+                    throw error;
+                }
+                throw new errors_utils_1.AppError('Failed to check payment status', 500);
             }
         });
     }

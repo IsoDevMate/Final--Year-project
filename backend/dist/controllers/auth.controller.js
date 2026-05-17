@@ -1,4 +1,37 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -119,23 +152,35 @@ class AuthController {
     }
     static updateProfile(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a;
+            var _a, _b, _c;
             try {
                 const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
-                console.log('User ID from request:', userId);
-                if (!userId) {
+                if (!userId)
                     return response_utils_1.ResponseUtil.error(res, 401, 'Unauthorized: User not found');
+                const { z } = yield Promise.resolve().then(() => __importStar(require('zod')));
+                const nameField = (label) => z.string().min(2, `${label} must be at least 2 characters`).max(50).regex(/^[A-Za-z\s'\-]+$/, `${label} must contain letters only`);
+                const updateProfileSchema = z.object({
+                    firstName: nameField('First name').optional(),
+                    lastName: nameField('Last name').optional(),
+                    email: z.string().email('Invalid email address').optional(),
+                    phoneNumber: z.string().regex(/^\+?[\d\s\-()]{7,15}$/, 'Invalid phone number').optional().or(z.literal('')),
+                }).strict();
+                let updateData;
+                try {
+                    updateData = updateProfileSchema.parse(req.body);
                 }
-                const updateData = req.body;
-                // Validate update data if needed
+                catch (e) {
+                    return response_utils_1.ResponseUtil.error(res, 400, ((_c = (_b = e.errors) === null || _b === void 0 ? void 0 : _b[0]) === null || _c === void 0 ? void 0 : _c.message) || 'Invalid profile data');
+                }
+                if (Object.keys(updateData).length === 0) {
+                    return response_utils_1.ResponseUtil.error(res, 400, 'No valid fields provided for update');
+                }
                 const updatedUser = yield auth_service_1.authService.updateProfile(userId, updateData);
                 return response_utils_1.ResponseUtil.success(res, 200, updatedUser, 'Profile updated successfully');
             }
             catch (error) {
-                if (error instanceof errors_utils_1.AppError) {
+                if (error instanceof errors_utils_1.AppError)
                     return response_utils_1.ResponseUtil.error(res, error.statusCode, error.message);
-                }
-                // Log the unexpected error for server-side tracking
                 console.error('Unexpected profile update error:', error);
                 return response_utils_1.ResponseUtil.error(res, 500, 'An unexpected error occurred while updating profile');
             }

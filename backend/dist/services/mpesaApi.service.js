@@ -19,8 +19,8 @@ class MpesaService {
     constructor() {
         this.consumerKey = process.env.MPESA_CONSUMER_KEY || '';
         this.consumerSecret = process.env.MPESA_CONSUMER_SECRET || '';
-        this.passkey = process.env.MPESA_PASSKEY || '';
-        this.shortcode = process.env.MPESA_SHORTCODE || '';
+        this.passkey = process.env.MPESA_PASSKEY || '174379';
+        this.shortcode = process.env.MPESA_SHORTCODE || '17';
         this.baseUrl = process.env.MPESA_API_URL || 'https://sandbox.safaricom.co.ke';
         this.callbackBaseUrl = process.env.APP_CALLBACK_URL || 'https://final-year-project-3qr3.onrender.com/api/v1/mpesa/callback/:eventId/:userId';
         if (!this.consumerKey || !this.consumerSecret || !this.passkey || !this.shortcode) {
@@ -142,7 +142,7 @@ class MpesaService {
                     CommandID: 'TransactionStatusQuery',
                     TransactionID: transactionId,
                     PartyA: this.shortcode,
-                    IdentifierType: '1', // 1 for MSISDN
+                    IdentifierType: '4', // 1 for MSISDN, 2 for till number, 4 for shortcode
                     ResultURL: `${this.callbackBaseUrl}/result`,
                     QueueTimeOutURL: `${this.callbackBaseUrl}/timeout`,
                     Remarks: 'Transaction status query'
@@ -160,6 +160,51 @@ class MpesaService {
                 throw new errors_utils_1.AppError('Failed to get payment status', 500);
             }
         });
+    }
+    querySTKStatus(checkoutRequestId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const accessToken = yield this.getAccessToken();
+                // Generate timestamp and password
+                const timestamp = new Date().toISOString().replace(/[^0-9]/g, '').slice(0, 14);
+                const password = Buffer.from(`${this.shortcode}${this.passkey}${timestamp}`).toString('base64');
+                const requestData = {
+                    BusinessShortCode: this.shortcode,
+                    Password: password,
+                    Timestamp: timestamp,
+                    CheckoutRequestID: checkoutRequestId
+                };
+                console.log('Querying STK status with data:', {
+                    checkoutRequestId,
+                    shortcode: this.shortcode,
+                    timestamp
+                });
+                const response = yield axios_1.default.post(`${this.baseUrl}/mpesa/stkpushquery/v1/query`, requestData, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                console.log('STK query response:', response.data);
+                return response.data;
+            }
+            catch (error) {
+                console.error('Error querying STK status:', error);
+                if (axios_1.default.isAxiosError(error) && error.response) {
+                    throw new errors_utils_1.AppError(`M-Pesa error: ${error.response.data.errorMessage || 'Failed to query payment status'}`, 400);
+                }
+                throw new errors_utils_1.AppError('Failed to query payment status', 500);
+            }
+        });
+    }
+    parseSTKQueryResponse(response) {
+        const resultCode = response.ResultCode !== undefined ? parseInt(response.ResultCode) : -1;
+        const resultDesc = response.ResultDesc || 'Unknown status';
+        return {
+            resultCode,
+            resultDesc,
+            successful: resultCode === 0
+        };
     }
 }
 exports.MpesaService = MpesaService;

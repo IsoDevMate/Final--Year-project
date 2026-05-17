@@ -104,33 +104,22 @@ class LinkedInService {
                         firstName: profile.given_name,
                         lastName: profile.family_name,
                         role: user_model_1.UserRole.ATTENDEE,
+                        profileImage: profile.picture || '',
+                        bio: profile.name || 'Default user bio',
                         password: Math.random().toString(36).slice(-10) + Math.random().toString(36).slice(-10),
-                        // socialLinks: {
-                        //   linkedinId: profile.sub,
-                        //   linkedinAccessToken: tokenResponse.access_token,
-                        //   linkedinRefreshToken: tokenResponse.refresh_token, // Assuming refresh token is returned
-                        //   linkedinTokenExpiry: new Date(Date.now() + tokenResponse.expires_in * 1000)
-                        // }
                         socialLinks: Object.assign(Object.assign({ linkedinId: profile.sub, linkedinAccessToken: tokenResponse.access_token }, (tokenResponse.refresh_token && {
                             linkedinRefreshToken: tokenResponse.refresh_token
-                        })), { linkedinTokenExpiry: new Date(Date.now() + tokenResponse.expires_in * 1000) })
+                        })), { linkedinTokenExpiry: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000) // 60 days
+                         })
                     });
                     yield user.save();
                 }
                 else {
                     // Update existing user's LinkedIn tokens
-                    //   user.socialLinks = {
-                    //     ...user.socialLinks,
-                    //     linkedinId: profile.sub,
-                    //     linkedinAccessToken: tokenResponse.access_token,
-                    //     linkedinRefreshToken: tokenResponse.refresh_token, // Assuming refresh token is returned
-                    //     linkedinTokenExpiry: new Date(Date.now() + tokenResponse.expires_in * 1000)
-                    //   };
-                    //   await user.save();
-                    // }
                     user.socialLinks = Object.assign(Object.assign(Object.assign(Object.assign({}, user.socialLinks), { linkedinId: profile.sub, linkedinAccessToken: tokenResponse.access_token }), (tokenResponse.refresh_token && {
                         linkedinRefreshToken: tokenResponse.refresh_token
-                    })), { linkedinTokenExpiry: new Date(Date.now() + tokenResponse.expires_in * 1000) });
+                    })), { linkedinTokenExpiry: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000) // 60 days
+                     });
                     yield user.save();
                 }
                 // Generate tokens
@@ -172,49 +161,10 @@ class LinkedInService {
             }
         });
     }
-    /**
-     * Refresh LinkedIn access token
-     */
-    // static async refreshLinkedInToken(user: any): Promise<string> {
-    //   try {
-    //     // Check if refresh token exists
-    //     if (!user.socialLinks?.linkedinRefreshToken) {
-    //       throw new AppError('No LinkedIn refresh token found', 401);
-    //     }
-    //     // Check if token is close to expiry or already expired
-    //     const response = await axios.post(
-    //       'https://www.linkedin.com/oauth/v2/accessToken',
-    //       null,
-    //       {
-    //         params: {
-    //           grant_type: 'refresh_token',
-    //           refresh_token: user.socialLinks.linkedinRefreshToken,
-    //           client_id: config.linkedin.clientId,
-    //           client_secret: config.linkedin.clientSecret
-    //         },
-    //         headers: {
-    //           'Content-Type': 'application/x-www-form-urlencoded'
-    //         }
-    //       }
-    //     );
-    //     // Update user with new tokens
-    //     user.socialLinks.linkedinAccessToken = response.data.access_token;
-    //     user.socialLinks.linkedinTokenExpiry = new Date(Date.now() + response.data.expires_in * 1000);
-    //     // If a new refresh token is provided, update it
-    //     if (response.data.refresh_token) {
-    //       user.socialLinks.linkedinRefreshToken = response.data.refresh_token;
-    //     }
-    //     await user.save();
-    //     return response.data.access_token;
-    //   } catch (error) {
-    //     console.error('LinkedIn token refresh error:', error);
-    //     throw new AppError('Failed to refresh LinkedIn access token', 401);
-    //   }
-    // }
-    // In linkedin.auth.service.ts
     // static async refreshLinkedInToken(user: any): Promise<void> {
     //   // Check if refresh token exists
     //   if (!user.socialLinks?.linkedinRefreshToken) {
+    //     console.warn('No LinkedIn refresh token available for user:', user._id);
     //     throw new AppError('No LinkedIn refresh token available. Please reconnect your LinkedIn account.', 401);
     //   }
     //   try {
@@ -229,9 +179,11 @@ class LinkedInService {
     //         'Content-Type': 'application/x-www-form-urlencoded'
     //       }
     //     });
+    //     // Log the response to understand what's being returned
+    //     console.log('LinkedIn Refresh Token Response:', response.data);
     //     // Update user's tokens
     //     user.socialLinks.linkedinAccessToken = response.data.access_token;
-    //     user.socialLinks.linkedinTokenExpiry = new Date(Date.now() + response.data.expires_in * 1000);
+    //     user.socialLinks.linkedinTokenExpiry = new Date(Date.now() + 60 * 24 * 60 * 60 * 1000); // 60 days
     //     // Optional: Update refresh token if a new one is provided
     //     if (response.data.refresh_token) {
     //       user.socialLinks.linkedinRefreshToken = response.data.refresh_token;
@@ -244,7 +196,7 @@ class LinkedInService {
     // }
     static refreshLinkedInToken(user) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a;
+            var _a, _b, _c;
             // Check if refresh token exists
             if (!((_a = user.socialLinks) === null || _a === void 0 ? void 0 : _a.linkedinRefreshToken)) {
                 console.warn('No LinkedIn refresh token available for user:', user._id);
@@ -256,18 +208,17 @@ class LinkedInService {
                         grant_type: 'refresh_token',
                         refresh_token: user.socialLinks.linkedinRefreshToken,
                         client_id: config_1.default.linkedin.clientId,
-                        client_secret: config_1.default.linkedin.clientSecret
+                        client_secret: config_1.default.linkedin.clientSecret,
+                        redirect_uri: config_1.default.linkedin.callbackUrl // Include redirect_uri if required
                     },
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
                     }
                 });
-                // Log the response to understand what's being returned
-                console.log('LinkedIn Refresh Token Response:', response.data);
                 // Update user's tokens
                 user.socialLinks.linkedinAccessToken = response.data.access_token;
                 user.socialLinks.linkedinTokenExpiry = new Date(Date.now() + response.data.expires_in * 1000);
-                // Optional: Update refresh token if a new one is provided
+                // Update refresh token if a new one is provided (some OAuth providers issue new refresh tokens)
                 if (response.data.refresh_token) {
                     user.socialLinks.linkedinRefreshToken = response.data.refresh_token;
                 }
@@ -275,29 +226,14 @@ class LinkedInService {
             }
             catch (error) {
                 console.error('LinkedIn token refresh failed:', error);
+                // Handle specific error cases
+                if (axios_1.default.isAxiosError(error) && ((_c = (_b = error.response) === null || _b === void 0 ? void 0 : _b.data) === null || _c === void 0 ? void 0 : _c.error) === 'invalid_grant') {
+                    throw new errors_utils_1.AppError('LinkedIn session expired. Please reconnect your account.', 401);
+                }
                 throw new errors_utils_1.AppError('Failed to refresh LinkedIn token. Please reconnect your account.', 401);
             }
         });
     }
-    /**
-     * Get current valid access token for a user
-     */
-    //   static async getValidAccessToken(user: any): Promise<string> {
-    //     // Check if current token is valid (not expired)
-    //     if (user.socialLinks?.linkedinTokenExpiry &&
-    //         new Date(user.socialLinks.linkedinTokenExpiry) > new Date()) {
-    //       return user.socialLinks.linkedinAccessToken;
-    //     }
-    //     // If token is expired, refresh it
-    //     try {
-    //       await this.refreshLinkedInToken(user);
-    //       return user.socialLinks.linkedinAccessToken;
-    //     } catch (error) {
-    //       console.error('Failed to refresh LinkedIn token:', error);
-    //       throw new AppError('Failed to refresh LinkedIn token', 401);
-    //     }
-    //   }
-    // }
     /**
     * Get current valid access token for a user
     */

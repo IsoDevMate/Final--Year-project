@@ -87,11 +87,35 @@ class MPaymentController {
                     return response_utils_1.ResponseUtil.error(res, 401, 'Not authenticated');
                 }
                 const userId = req.user.userId;
+                console.log('User ID:', userId);
                 const payment = yield this.mpaymentService.getPaymentByEventAndUser(id, userId);
                 if (!payment) {
                     return response_utils_1.ResponseUtil.error(res, 404, 'No payment found for this event');
                 }
                 return response_utils_1.ResponseUtil.success(res, 200, payment, 'Payment status retrieved successfully');
+            }
+            catch (error) {
+                if (error instanceof zod_1.ZodError) {
+                    return response_utils_1.ResponseUtil.error(res, 400, error.errors[0].message);
+                }
+                if (error instanceof errors_utils_1.AppError) {
+                    return response_utils_1.ResponseUtil.error(res, error.statusCode, error.message);
+                }
+                next(error);
+            }
+        });
+    }
+    checkPaymentStatus(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { id } = event_validation_1.eventIdSchema.parse(req.params);
+                // Check authentication
+                if (!req.user) {
+                    return response_utils_1.ResponseUtil.error(res, 401, 'Not authenticated');
+                }
+                const userId = req.user.userId;
+                const result = yield this.mpaymentService.checkPaymentStatus(id, userId);
+                return response_utils_1.ResponseUtil.success(res, 200, result, 'Payment status checked successfully');
             }
             catch (error) {
                 if (error instanceof zod_1.ZodError) {

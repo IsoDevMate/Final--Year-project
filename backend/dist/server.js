@@ -24,6 +24,9 @@ const passport_2 = __importDefault(require("passport"));
 const config_1 = __importDefault(require("./config/config"));
 const node_cron_1 = __importDefault(require("node-cron"));
 const compression_1 = __importDefault(require("compression"));
+const eventcleanup_service_1 = require("./services/eventcleanup.service");
+const paymentchecker_utils_1 = require("./utils/paymentchecker.utils");
+const logger_middleware_1 = require("./middleware/logger.middleware");
 const corsOptions = {
     origin: "*"
 };
@@ -40,6 +43,21 @@ app.use((req, res, next) => {
     });
     next();
 });
+paymentchecker_utils_1.paymentChecker.start();
+process.on('SIGTERM', () => {
+    console.log('SIGTERM received, shutting down gracefully');
+    paymentchecker_utils_1.paymentChecker.stop();
+    // Other cleanup code...
+    process.exit(0);
+});
+// cleanup every 10 minutes
+const scheduleCleanup = () => {
+    node_cron_1.default.schedule('0 */6 * * *', () => {
+        eventcleanup_service_1.EventCleanupService.cleanupPastEvents()
+            .catch(err => console.error('Error during event cleanup:', err));
+    });
+};
+scheduleCleanup();
 function manageMemory() {
     const memUsage = process.memoryUsage();
     const heapUsedMB = memUsage.heapUsed / 1024 / 1024;
@@ -47,11 +65,11 @@ function manageMemory() {
     const rss = memUsage.rss / 1024 / 1024;
     console.log(`Memory Status: HeapUsed: ${heapUsedMB.toFixed(2)}MB, HeapTotal: ${heapTotalMB.toFixed(2)}MB, RSS: ${rss.toFixed(2)}MB`);
     // If memory usage gets high, try to clean up
-    if (heapUsedMB > 300) { // 75% of your 400MB limit
+    if (heapUsedMB > 500) {
         console.log('Memory usage high, attempting cleanup...');
         try {
             if (typeof global.gc === 'function') {
-                global.gc(); // Force garbage collection (requires --expose-gc flag)
+                global.gc();
             }
             else {
                 console.log('Manual garbage collection not available. Run with --expose-gc flag');
@@ -71,16 +89,15 @@ process.on('SIGINT', gracefulShutdown);
 function gracefulShutdown() {
     return __awaiter(this, void 0, void 0, function* () {
         console.log('Graceful shutdown initiated...');
-        // Close database connections
         yield db_1.databaseService.disconnect();
-        // Close any other connections
         console.log('Graceful shutdown complete');
         process.exit(0);
     });
 }
+app.use((0, cors_1.default)(corsOptions));
+app.use(logger_middleware_1.loggerMiddleware); // Add comprehensive logging middleware BEFORE JSON parsing
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
-app.use((0, cors_1.default)(corsOptions));
 (0, passport_1.setupPassport)();
 app.use(passport_2.default.initialize());
 app.use('/', routes_1.default);
@@ -107,12 +124,11 @@ app.use((err, req, res, next) => {
 function startServer() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            // Check db connection
+            console.log("🚀 Starting server with enhanced logging...");
             const connectionStatus = yield db_1.databaseService.testConnection();
             console.log("here is the connectionstatus message", connectionStatus.message);
             if (!connectionStatus.success) {
                 console.log("Waiting for database connection...");
-                // Wait for a bit and try again or proceed with caution
             }
             else {
                 try {
@@ -121,7 +137,6 @@ function startServer() {
                 }
                 catch (error) {
                     console.error("Failed to get database stats:", error);
-                    // Continue anyway as this isn't critical
                 }
             }
             const PORT = parseInt(String(config_1.default.port || "3000"), 10);

@@ -22,7 +22,7 @@ const setupPassport = () => {
     passport_1.default.use(new passport_linkedin_oauth2_1.Strategy({
         clientID: config_1.default.linkedin.clientId || '',
         clientSecret: config_1.default.linkedin.clientSecret || '',
-        callbackURL: config_1.default.linkedin.callbackUrl || '',
+        callbackURL: 'https://final-year-project-5d85.onrender.com/api/v1/auth/linkedin/callback',
         scope: ['openid profile email  w_member_social']
     }, (accessToken, refreshToken, profile, done) => __awaiter(void 0, void 0, void 0, function* () {
         var _a, _b, _c, _d, _e;
@@ -44,13 +44,16 @@ const setupPassport = () => {
                     profileImage: (_b = (_a = profile.photos) === null || _a === void 0 ? void 0 : _a[0]) === null || _b === void 0 ? void 0 : _b.value,
                     socialLinks: {
                         linkedin: profile.id,
-                        linkedinAccessToken: accessToken
+                        linkedinAccessToken: accessToken,
+                        linkedinRefreshToken: refreshToken,
+                        linkedinTokenExpiry: new Date(Date.now() + 2 * 30 * 24 * 60 * 60 * 1000) // 2 months
                     }
                 });
             }
             else if (!((_c = user.socialLinks) === null || _c === void 0 ? void 0 : _c.linkedinId)) {
                 // Update existing user with LinkedIn ID if not set
-                user.socialLinks = Object.assign(Object.assign({}, user.socialLinks), { linkedinId: profile.id, linkedinAccessToken: accessToken });
+                user.socialLinks = Object.assign(Object.assign({}, user.socialLinks), { linkedinId: profile.id, linkedinAccessToken: accessToken, linkedinRefreshToken: refreshToken, linkedinTokenExpiry: new Date(Date.now() + 2 * 30 * 24 * 60 * 60 * 1000) // 2 months
+                 });
                 user.firstName = profile.name.givenName;
                 user.lastName = profile.name.familyName;
                 user.email = profile.emails[0].value;

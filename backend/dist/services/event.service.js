@@ -55,15 +55,78 @@ class EventService {
     }
     createEvent(eventData) {
         return __awaiter(this, void 0, void 0, function* () {
+            const requestId = Math.random().toString(36).substring(7);
+            console.log(`[${requestId}] EventService.createEvent started - Organizer: ${eventData.organizer}`);
+            console.log(`[${requestId}] Event data:`, {
+                title: eventData.title,
+                type: eventData.type,
+                startDate: eventData.startDate,
+                endDate: eventData.endDate,
+                capacity: eventData.capacity,
+                ticketPrice: eventData.ticketPrice
+            });
             try {
+                console.log(`[${requestId}] Starting business logic validation...`);
+                // Additional business logic validation
+                if (eventData.startDate >= eventData.endDate) {
+                    console.log(`[${requestId}] Business validation failed: End date must be after start date`);
+                    throw new errors_utils_1.AppError('End date must be after start date', 400);
+                }
+                if (eventData.startDate <= new Date()) {
+                    console.log(`[${requestId}] Business validation failed: Start date must be in the future`);
+                    throw new errors_utils_1.AppError('Start date must be in the future', 400);
+                }
+                if (!eventData.capacity) {
+                    console.log(`[${requestId}] Business validation failed: Capacity is required`);
+                    throw new errors_utils_1.AppError('Event capacity is required', 400);
+                }
+                if (eventData.capacity < 30) {
+                    console.log(`[${requestId}] Business validation failed: Capacity ${eventData.capacity} is below minimum of 30`);
+                    throw new errors_utils_1.AppError('Event capacity must be at least 30 people', 400);
+                }
+                if (eventData.ticketPrice && eventData.ticketPrice < 0) {
+                    console.log(`[${requestId}] Business validation failed: Ticket price ${eventData.ticketPrice} is negative`);
+                    throw new errors_utils_1.AppError('Ticket price cannot be negative', 400);
+                }
+                console.log(`[${requestId}] Business logic validation passed`);
+                console.log(`[${requestId}] Creating Event model instance...`);
                 const event = new event_model_1.Event(eventData);
+                console.log(`[${requestId}] Event model instance created, attempting to save...`);
                 yield event.save();
+                console.log(`[${requestId}] Event saved successfully to database - Event ID: ${event._id}`);
                 return event;
             }
             catch (error) {
+                console.log(`[${requestId}] Error occurred in EventService.createEvent`);
+                // Handle Mongoose validation errors
+                if (error instanceof Error && error.name === 'ValidationError') {
+                    const validationError = error;
+                    const formattedErrors = (0, errors_utils_1.formatMongooseErrors)(validationError);
+                    console.log(`[${requestId}] Mongoose validation error: ${formattedErrors}`);
+                    throw new errors_utils_1.AppError(`Validation failed: ${formattedErrors}`, 400);
+                }
+                // Handle duplicate key errors
+                if (error instanceof Error && error.code === 11000) {
+                    console.log(`[${requestId}] Duplicate key error: Event with title "${eventData.title}" already exists`);
+                    throw new errors_utils_1.AppError('An event with this title already exists', 400);
+                }
+                // Handle cast errors (invalid ObjectId, etc.)
+                if (error instanceof Error && error.name === 'CastError') {
+                    const castError = error;
+                    console.log(`[${requestId}] Cast error: Invalid ${castError.path}: ${castError.value}`);
+                    throw new errors_utils_1.AppError(`Invalid ${castError.path}: ${castError.value}`, 400);
+                }
+                // Handle AppError instances (from our business logic validation)
+                if (error instanceof errors_utils_1.AppError) {
+                    console.log(`[${requestId}] AppError re-thrown: ${error.message}`);
+                    throw error;
+                }
+                // Handle other specific errors
                 if (error instanceof Error) {
+                    console.log(`[${requestId}] Generic error: ${error.message}`);
                     throw new errors_utils_1.AppError(error.message, 400);
                 }
+                console.log(`[${requestId}] Unknown error type, throwing generic error`);
                 throw new errors_utils_1.AppError('Failed to create event', 500);
             }
         });
@@ -182,46 +245,79 @@ class EventService {
             }
         });
     }
+    // async registerAttendee(eventId: string, userId: string): Promise<{ event: Event | null, qrCodeUrl: string }> {
+    //   try {
+    //     console.log(`Registering attendee. Event ID: ${eventId}, User ID: ${userId}`);
+    //     if (!Types.ObjectId.isValid(eventId) || !Types.ObjectId.isValid(userId)) {
+    //       console.error(`Invalid ID(s). Event ID: ${eventId}, User ID: ${userId}`);
+    //       throw new AppError('Invalid ID', 400);
+    //     }
+    //     // Check if event exists
+    //     const event = await Event.findById(eventId);
+    //     if (!event) {
+    //       console.error(`Event not found. Event ID: ${eventId}`);
+    //       throw new AppError('Event not found', 404);
+    //     }
+    //     console.log(`Event found. Event ID: ${eventId}, Title: ${event.title}`);
+    //     // Check if user is already registered
+    //     if (event.attendees.includes(new Types.ObjectId(userId))) {
+    //       console.warn(`User already registered. Event ID: ${eventId}, User ID: ${userId}`);
+    //       throw new AppError('User already registered for this event', 400);
+    //     }
     registerAttendee(eventId, userId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                console.log(`Registering attendee. Event ID: ${eventId}, User ID: ${userId}`);
                 if (!mongoose_1.Types.ObjectId.isValid(eventId) || !mongoose_1.Types.ObjectId.isValid(userId)) {
+                    console.error(`Invalid ID(s). Event ID: ${eventId}, User ID: ${userId}`);
                     throw new errors_utils_1.AppError('Invalid ID', 400);
                 }
                 // Check if event exists
                 const event = yield event_model_1.Event.findById(eventId);
                 if (!event) {
+                    console.error(`Event not found. Event ID: ${eventId}`);
                     throw new errors_utils_1.AppError('Event not found', 404);
+                }
+                console.log(`Event found. Event ID: ${eventId}, Title: ${event.title}`);
+                // Check if event has already ended
+                if (event.endDate < new Date()) {
+                    console.error(`Event has already ended. Event ID: ${eventId}`);
+                    throw new errors_utils_1.AppError('Cannot register for an event that has already ended', 400);
                 }
                 // Check if user is already registered
                 if (event.attendees.includes(new mongoose_1.Types.ObjectId(userId))) {
+                    console.warn(`User already registered. Event ID: ${eventId}, User ID: ${userId}`);
                     throw new errors_utils_1.AppError('User already registered for this event', 400);
                 }
                 // Check if event has reached capacity
                 if (event.capacity && event.attendees.length >= event.capacity) {
+                    console.warn(`Event capacity reached. Event ID: ${eventId}, Capacity: ${event.capacity}`);
                     throw new errors_utils_1.AppError('Event has reached maximum capacity', 400);
                 }
                 // If event has a ticket price, check for payment
                 if (event.ticketPrice && event.ticketPrice > 0) {
-                    // Import here to avoid circular dependency
+                    console.log(`Event requires payment. Event ID: ${eventId}, Ticket Price: ${event.ticketPrice}`);
                     const MpesaPayment = yield Promise.resolve().then(() => __importStar(require('../models/mpesapayment.model'))).then(module => module.MpesaPayment);
                     const { MpesaPaymentStatus } = yield Promise.resolve().then(() => __importStar(require('../models/mpesapayment.model')));
-                    // Check if payment exists and is completed
                     const payment = yield MpesaPayment.findOne({
                         eventId: new mongoose_1.Types.ObjectId(eventId),
                         userId: new mongoose_1.Types.ObjectId(userId),
                         status: MpesaPaymentStatus.COMPLETED
                     });
                     if (!payment) {
+                        console.error(`Payment not found or incomplete. Event ID: ${eventId}, User ID: ${userId}`);
                         throw new errors_utils_1.AppError('Payment required to register for this event', 400);
                     }
+                    console.log(`Payment verified. Event ID: ${eventId}, User ID: ${userId}`);
                 }
                 // Add user to attendees
                 event.attendees.push(new mongoose_1.Types.ObjectId(userId));
                 yield event.save();
+                console.log(`User added to attendees. Event ID: ${eventId}, User ID: ${userId}`);
                 // Generate QR code token and QR code
                 const token = this.qrCodeService.generateTokenForEventAttendee(eventId, userId);
                 const qrCodeUrl = yield this.qrCodeService.generateQRCode(token);
+                console.log(`QR code generated. Event ID: ${eventId}, User ID: ${userId}, QR Code URL: ${qrCodeUrl}`);
                 // Get user details for sending email
                 const populatedEvent = yield event_model_1.Event.findById(eventId)
                     .populate({
@@ -230,12 +326,12 @@ class EventService {
                     select: 'email firstName lastName'
                 });
                 if (!populatedEvent) {
+                    console.error(`Event not found after population. Event ID: ${eventId}`);
                     throw new errors_utils_1.AppError('Event not found after population', 404);
                 }
-                // Find the specific attendee in the populated attendees array
                 const attendee = populatedEvent.attendees.find(a => a._id.toString() === userId);
-                // Send email with QR code if we have user's email
                 if (attendee) {
+                    console.log(`Attendee details found. User ID: ${userId}, Email: ${attendee.email}`);
                     process.nextTick(() => __awaiter(this, void 0, void 0, function* () {
                         try {
                             yield email_service_1.EmailService.sendEventRegistrationEmail(attendee.email, {
@@ -243,17 +339,23 @@ class EventService {
                                 eventDate: event.startDate.toDateString(),
                                 eventLocation: `${event.location.name}, ${event.location.city}`,
                                 qrCodeUrl,
-                                attendeeName: `${attendee.firstName} ${attendee.lastName}`
+                                attendeeName: `${attendee.firstName} ${attendee.lastName}`,
+                                recipientName: `${attendee.firstName} ${attendee.lastName}`
                             });
+                            console.log(`Registration email sent. User ID: ${userId}, Email: ${attendee.email}`);
                         }
                         catch (err) {
-                            console.error('Email sending error:', err);
+                            console.error(`Email sending error. User ID: ${userId}, Error: ${err}`);
                         }
                     }));
+                }
+                else {
+                    console.warn(`Attendee details not found for email. User ID: ${userId}`);
                 }
                 return { event, qrCodeUrl };
             }
             catch (error) {
+                console.error(`Error during registration. Event ID: ${eventId}, User ID: ${userId}, Error: ${error}`);
                 if (error instanceof errors_utils_1.AppError) {
                     throw error;
                 }

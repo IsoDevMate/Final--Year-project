@@ -75,6 +75,30 @@ class LinkedInStatusService {
             }
         });
     }
+    // Disconnect LinkedIn account
+    static disconnectLinkedIn(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const user = yield user_model_1.User.findById(userId);
+                if (!user) {
+                    throw new errors_utils_1.AppError('User not found', 404);
+                }
+                // Clear LinkedIn connection data
+                if (user.socialLinks) {
+                    user.socialLinks.linkedinId = undefined;
+                    user.socialLinks.linkedinAccessToken = undefined;
+                    user.socialLinks.linkedinRefreshToken = undefined;
+                    user.socialLinks.linkedinTokenExpiry = undefined;
+                }
+                yield user.save();
+                return true;
+            }
+            catch (error) {
+                console.error('LinkedIn disconnect error:', error);
+                return false;
+            }
+        });
+    }
 }
 exports.LinkedInStatusService = LinkedInStatusService;
 exports.default = LinkedInStatusService;

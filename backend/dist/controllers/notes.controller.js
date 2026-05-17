@@ -153,13 +153,15 @@ class NoteController {
                 if (!req.file) {
                     return response_utils_1.ResponseUtil.error(res, 400, 'No file uploaded');
                 }
-                // Check if user object exists (should be set by auth middleware)
                 if (!req.user) {
                     return response_utils_1.ResponseUtil.error(res, 401, 'Not authenticated');
                 }
                 const userId = req.user.userId;
                 // Determine file type based on MIME type
-                const fileType = req.file.mimetype.split('/')[0];
+                const mimePrefix = req.file.mimetype.split('/')[0];
+                const fileType = mimePrefix === 'image' ? 'image' :
+                    mimePrefix === 'audio' ? 'audio' :
+                        mimePrefix === 'video' ? 'video' : 'document';
                 // Create a Buffer from the file
                 const fileBuffer = req.file.buffer;
                 const fileName = req.file.originalname;
@@ -179,7 +181,8 @@ class NoteController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { id } = notes_validation_utils_1.noteIdSchema.parse(req.params);
-                const { attachmentId } = req.body;
+                const { attachmentId } = req.params;
+                console.log("here is the attachmentId", attachmentId);
                 if (!attachmentId) {
                     return response_utils_1.ResponseUtil.error(res, 400, 'Attachment ID is required');
                 }
