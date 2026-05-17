@@ -17,15 +17,13 @@ export class LinkedInController {
 
 
 static getAuthUrl(req: Request, res: Response) {
-  // If user is already logged in (token in header), embed it in state so callback can link instead of create
   const existingToken = req.headers.authorization?.split(' ')[1] || '';
   const statePayload = existingToken
     ? Buffer.from(JSON.stringify({ token: existingToken, nonce: Math.random().toString(36) })).toString('base64url')
     : crypto.randomBytes(16).toString('hex');
 
-  const scope = ['openid', 'profile', 'email', 'w_member_social'];
   const clientId = config.linkedin.clientId;
-  const redirectUri = 'https://final-year-project-5d85.onrender.com/api/v1/auth/linkedin/callback';
+  const redirectUri = config.linkedin.callbackUrl;
 
   return ResponseUtil.success(res, 200, {
     url: `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&state=${statePayload}&scope=openid%20profile%20email%20w_member_social`
@@ -67,7 +65,6 @@ static async handleCallback(req: Request, res: Response, next: NextFunction) {
 
       const tokenResponse = await LinkedInService.getAccessTokenInitial(code.toString());
       const profile = await LinkedInService.getUserProfile(tokenResponse.access_token);
-
       // Check if this LinkedIn account is already linked to a DIFFERENT user
       const existingLinkedUser = await User.findOne({ 'socialLinks.linkedinId': profile.sub });
       if (existingLinkedUser && (existingLinkedUser._id as any).toString() !== payload.userId) {
