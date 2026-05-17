@@ -28,7 +28,7 @@ static getAuthUrl(req: Request, res: Response) {
   const redirectUri = 'https://final-year-project-5d85.onrender.com/api/v1/auth/linkedin/callback';
 
   return ResponseUtil.success(res, 200, {
-    url: `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&state=${statePayload}&scope=openid%20profile%20email%20w_member_social`
+    url: `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&state=${statePayload}&scope=openid%20profile%20email%20w_member_social`
   }, 'LinkedIn authentication URL generated successfully');
 }
 
