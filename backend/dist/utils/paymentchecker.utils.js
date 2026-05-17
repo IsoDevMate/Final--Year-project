@@ -1,0 +1,109 @@
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.paymentChecker = exports.PaymentChecker = void 0;
+const mpesapayment_model_1 = require("../models/mpesapayment.model");
+const mpesaApi_service_1 = require("../services/mpesaApi.service");
+const event_service_1 = require("../services/event.service");
+class PaymentChecker {
+    constructor(checkIntervalMinutes = 15, maxPendingHours = 6) {
+        this.intervalId = null;
+        this.mpesaService = new mpesaApi_service_1.MpesaService();
+        this.eventService = new event_service_1.EventService();
+        this.checkIntervalMinutes = checkIntervalMinutes;
+        this.maxPendingHours = maxPendingHours;
+    }
+    start() {
+        this.checkPendingPayments();
+        // Then set up interval
+        this.intervalId = setInterval(() => {
+            this.checkPendingPayments();
+        }, this.checkIntervalMinutes * 60 * 1000);
+        console.log(`Payment checker started. Checking every ${this.checkIntervalMinutes} minutes.`);
+    }
+    stop() {
+        if (this.intervalId) {
+            clearInterval(this.intervalId);
+            this.intervalId = null;
+            console.log('Payment checker stopped.');
+        }
+    }
+    checkPendingPayments() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                console.log('Checking for pending payments...');
+                // Get all pending payments
+                const cutoffTime = new Date();
+                cutoffTime.setMinutes(cutoffTime.getMinutes() - 10);
+                const pendingPayments = yield mpesapayment_model_1.MpesaPayment.find({
+                    status: mpesapayment_model_1.MpesaPaymentStatus.PENDING,
+                    createdAt: { $lt: cutoffTime }
+                });
+                console.log(`Found ${pendingPayments.length} pending payments older than 10 minutes.`);
+                // Process each pending payment
+                for (const payment of pendingPayments) {
+                    // Check if payment is too old (beyond max pending hours)
+                    const paymentAge = (new Date().getTime() - payment.createdAt.getTime()) / (1000 * 60 * 60);
+                    if (paymentAge > this.maxPendingHours) {
+                        console.log(`Payment ${payment._id} is too old (${paymentAge.toFixed(2)} hours). Marking as failed.`);
+                        payment.status = mpesapayment_model_1.MpesaPaymentStatus.FAILED;
+                        payment.resultDesc = 'Timeout: Payment not completed in allowed time';
+                        yield payment.save();
+                        continue;
+                    }
+                    // Check with M-Pesa for status
+                    try {
+                        console.log(`Checking status for payment ${payment._id} with CheckoutRequestID ${payment.checkoutRequestId}`);
+                        if (!payment.checkoutRequestId) {
+                            console.warn(`Payment ${payment._id} has no CheckoutRequestID. Skipping status check.`);
+                            continue;
+                        }
+                        const stkStatusResponse = yield this.mpesaService.querySTKStatus(payment.checkoutRequestId);
+                        const resultCode = stkStatusResponse.ResultCode;
+                        const resultDesc = stkStatusResponse.ResultDesc;
+                        console.log(`STK query for payment ${payment._id}: Code=${resultCode}, Desc=${resultDesc}`);
+                        // Update payment based on status
+                        if (resultCode === 0) {
+                            // Success - payment completed
+                            payment.status = mpesapayment_model_1.MpesaPaymentStatus.COMPLETED;
+                            payment.resultCode = resultCode;
+                            payment.resultDesc = resultDesc;
+                            yield payment.save();
+                            // Register the user for the event
+                            yield this.eventService.registerAttendee(payment.eventId.toString(), payment.userId.toString());
+                            console.log(`Payment ${payment._id} marked as completed and user registered.`);
+                        }
+                        else if (resultCode !== 1032) {
+                            // Failed transaction (1032 means request cancelled or still pending)
+                            payment.status = mpesapayment_model_1.MpesaPaymentStatus.FAILED;
+                            payment.resultCode = resultCode;
+                            payment.resultDesc = resultDesc;
+                            yield payment.save();
+                            console.log(`Payment ${payment._id} marked as failed.`);
+                        }
+                        else {
+                            console.log(`Payment ${payment._id} is still pending or was cancelled by user.`);
+                        }
+                    }
+                    catch (error) {
+                        console.error(`Error checking status for payment ${payment._id}:`, error);
+                    }
+                }
+            }
+            catch (error) {
+                console.error('Error in checkPendingPayments:', error);
+            }
+        });
+    }
+}
+exports.PaymentChecker = PaymentChecker;
+// Singleton instance to be used across the application
+exports.paymentChecker = new PaymentChecker();
