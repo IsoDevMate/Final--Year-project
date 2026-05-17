@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
+import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import axios from 'axios';
 import { User, Camera } from 'lucide-react';
@@ -12,8 +12,7 @@ interface FormData {
 }
 
 const ProfilePage: React.FC = () => {
-    const { user } = useAuth();
-    const [userData, setUserData] = useState<any>(null);
+    const { user, checkAuthStatus } = useAuth();
     const [loading, setLoading] = useState<boolean>(false);
     const [success, setSuccess] = useState<boolean>(false);
     const [error, setError] = useState<string>('');
@@ -68,9 +67,7 @@ const ProfilePage: React.FC = () => {
         );
 
         if (response.data.success) {
-            const updatedUser = { ...user, ...formData };
-            setUserData(updatedUser);
-            localStorage.setItem('user', JSON.stringify(updatedUser));
+            await checkAuthStatus(); // refresh user state from server
             setSuccess(true);
             setTimeout(() => setSuccess(false), 3000);
         }

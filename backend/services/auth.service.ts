@@ -204,6 +204,11 @@ async resetPassword(data: ResetPasswordDto): Promise<void> {
       throw new AppError('Invalid email or password', 401);
     }
 
+    // Check if account is deactivated
+    if (user.isActive === false) {
+      throw new AppError('Your account has been deactivated. Please contact support or reactivate your account.', 403);
+    }
+
     const tokens = await this.generateTokens(user);
 
     // Remove password from response

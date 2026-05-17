@@ -69,7 +69,13 @@ router.get('/mpesa/:period', AuthMiddleware.verifyToken, AuthMiddleware.hasRole(
     if (!startDate) return res.status(400).json({ success: false, message: 'Invalid period. Use daily, weekly, or monthly.' });
 
     const query: any = { createdAt: { $gte: startDate, $lte: now } };
-    if (userRole !== UserRole.ADMIN) query.userId = userId;
+    if (userRole !== UserRole.ADMIN) {
+      // For organizers: show payments for events they own
+      const { Event } = await import('../models/event.model');
+      const organizerEvents = await Event.find({ organizer: userId }).select('_id').lean();
+      const eventIds = organizerEvents.map((e: any) => e._id);
+      query.eventId = { $in: eventIds };
+    }
 
     const payments = await MpesaPayment.find(query)
       .populate('eventId', 'title')

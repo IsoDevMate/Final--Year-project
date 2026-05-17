@@ -10,10 +10,18 @@ interface EventSummary { id: string; title: string; attendeeCount: number; date:
 
 const openPdfReport = async (url: string, filename: string) => {
   try {
-    const r = await axios.get(url, { headers: authHeaders(), responseType: 'blob' });
+    const r = await axios.get(url, { headers: authHeaders(), responseType: 'text' });
     const blob = new Blob([r.data], { type: 'text/html' });
-    const win = window.open(window.URL.createObjectURL(blob), '_blank');
-    if (win) win.onload = () => setTimeout(() => win.print(), 500);
+    const blobUrl = window.URL.createObjectURL(blob);
+    const win = window.open(blobUrl, '_blank');
+    if (!win) {
+      toast.error('Popup blocked — please allow popups for this site');
+      return;
+    }
+    // Print after the new window signals it has loaded
+    win.addEventListener('load', () => {
+      setTimeout(() => win.print(), 300);
+    });
     toast.success(`${filename} opened — use Print → Save as PDF`);
   } catch { toast.error('Failed to generate PDF report'); }
 };

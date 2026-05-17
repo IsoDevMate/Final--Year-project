@@ -50,7 +50,11 @@ axios.interceptors.response.use(
     }
 
     if (error.response && error.response.status === 403) {
-      toast.error('You do not have permission to access this resource.');
+      // Don't show generic toast for deactivated account — let the caller handle it
+      const msg = error.response?.data?.message;
+      if (!msg?.toLowerCase().includes('deactivated')) {
+        toast.error('You do not have permission to access this resource.');
+      }
     }
     if (error.response && error.response.status === 404) {
       toast.error('The requested resource was not found.');
@@ -303,15 +307,6 @@ export const App: React.FC = () => {
                     <NotesListPage />
                   </motion.div>
                 }
-              />
-{/*
-              <Route
-                path="/dashboard/linkedin"
-                element={<LinkedInShareComponent/>}
-              /> */}
-              <Route
-                path="/dashboard/notes/:noteId"
-                element={<div>Note Details</div>}
               />
               <Route
                 path="/dashboard/profile"

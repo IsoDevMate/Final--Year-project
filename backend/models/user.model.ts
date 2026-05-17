@@ -22,6 +22,7 @@ export interface User extends Document {
   };
   phoneNumber?: string;
   isVerified?: boolean;
+  isActive?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -84,6 +85,10 @@ const userSchema = new Schema<User>(
     isVerified: {
       type: Boolean,
       default: false
+    },
+    isActive: {
+      type: Boolean,
+      default: true
     }
   },
   {

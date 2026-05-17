@@ -24,12 +24,69 @@ router.get('/profile',
   AuthMiddleware.verifyToken,
   AuthController.getUserProfile);
 
-// Deactivate own account (sets isVerified=false as a soft disable flag)
+// Change password (requires current password)
+router.post('/change-password', AuthMiddleware.verifyToken, async (req, res, next) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) return ResponseUtil.error(res, 400, 'Current and new password are required');
+    if (newPassword.length < 8) return ResponseUtil.error(res, 400, 'New password must be at least 8 characters');
+
+    const userId = (req.user as any).userId;
+    const user = await User.findById(userId);
+    if (!user) return ResponseUtil.error(res, 404, 'User not found');
+
+    const bcrypt = await import('bcrypt');
+    const valid = await bcrypt.compare(currentPassword, user.password);
+    if (!valid) return ResponseUtil.error(res, 400, 'Current password is incorrect');
+
+    user.password = await bcrypt.hash(newPassword, 10);
+    await user.save();
+    // Revoke all other tokens so other sessions are invalidated
+    await Token.deleteMany({ userId });
+    return ResponseUtil.success(res, 200, null, 'Password changed successfully');
+  } catch (e) { next(e); }
+});
+
+// List active sessions (tokens) for current user
+router.get('/sessions', AuthMiddleware.verifyToken, async (req, res, next) => {
+  try {
+    const userId = (req.user as any).userId;
+    const currentToken = req.headers.authorization?.split(' ')[1];
+    const sessions = await Token.find({ userId }).lean();
+    const data = sessions.map(s => ({
+      _id: s._id,
+      createdAt: s.createdAt,
+      expiresAt: s.expiresAt,
+      isCurrent: s.token === currentToken,
+      userAgent: (req.headers['user-agent'] || 'Unknown') // simplified — all tokens show same UA
+    }));
+    return ResponseUtil.success(res, 200, data, 'Sessions retrieved');
+  } catch (e) { next(e); }
+});
+
+// Revoke a specific session
+router.delete('/sessions/:tokenId', AuthMiddleware.verifyToken, async (req, res, next) => {
+  try {
+    const userId = (req.user as any).userId;
+    await Token.deleteOne({ _id: req.params.tokenId, userId });
+    return ResponseUtil.success(res, 200, null, 'Session revoked');
+  } catch (e) { next(e); }
+});
+
+// Revoke all sessions except current
+router.delete('/sessions', AuthMiddleware.verifyToken, async (req, res, next) => {
+  try {
+    const userId = (req.user as any).userId;
+    const currentToken = req.headers.authorization?.split(' ')[1];
+    await Token.deleteMany({ userId, token: { $ne: currentToken } });
+    return ResponseUtil.success(res, 200, null, 'All other sessions revoked');
+  } catch (e) { next(e); }
+});
 router.post('/deactivate', AuthMiddleware.verifyToken, async (req, res, next) => {
   try {
     const userId = (req.user as any).userId;
-    await User.findByIdAndUpdate(userId, { isVerified: false });
-    // Revoke all tokens
+    await User.findByIdAndUpdate(userId, { isActive: false });
+    // Revoke all tokens so they must re-login (which will be blocked)
     await Token.deleteMany({ userId });
     return ResponseUtil.success(res, 200, null, 'Account deactivated successfully');
   } catch (e) { next(e); }
@@ -39,7 +96,7 @@ router.post('/deactivate', AuthMiddleware.verifyToken, async (req, res, next) =>
 router.post('/reactivate', AuthMiddleware.verifyToken, async (req, res, next) => {
   try {
     const userId = (req.user as any).userId;
-    await User.findByIdAndUpdate(userId, { isVerified: true });
+    await User.findByIdAndUpdate(userId, { isActive: true });
     return ResponseUtil.success(res, 200, null, 'Account reactivated successfully');
   } catch (e) { next(e); }
 });

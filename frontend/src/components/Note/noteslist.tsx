@@ -232,7 +232,7 @@ const NotesListPage: React.FC = () => {
         <h1 className="text-2xl font-bold">My Notes</h1>
         <div className="flex space-x-2">
           <button
-            onClick={() => navigate('/dashboard/notes')}
+            onClick={() => navigate('/dashboard/notes/new')}
             className="flex items-center bg-tiffany-600 text-white px-4 py-2 rounded-md hover:bg-tiffany-700"
           >
             <Plus className="h-5 w-5 mr-2" /> New Note

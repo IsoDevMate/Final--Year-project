@@ -61,17 +61,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (isTokenValid()) {
       const token = localStorage.getItem('accessToken');
 
-      // Fetch from API first to ensure we have the most up-to-date user data
-      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/v1/auth/me`, {
+      // Use /auth/profile to get fresh data from DB (not stale JWT payload)
+      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/v1/auth/profile`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      // Handle different response formats
       const userData = response.data.data || response.data.user || response.data;
-      console.log('User data from API:', userData);
 
       if (userData) {
-        // Store complete user object in localStorage
         localStorage.setItem('user', JSON.stringify(userData));
         setUser(userData);
       } else {
@@ -83,7 +80,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   } catch (error) {
     console.error('Auth status check failed:', error);
-    // Clear invalid tokens
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
