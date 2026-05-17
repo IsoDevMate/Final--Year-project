@@ -1,3 +1,4 @@
+import { BrevoClient } from '@getbrevo/brevo';
 import nodemailer from 'nodemailer';
 import config from '../config/config';
 
@@ -18,13 +19,46 @@ export interface WelcomeEmailData extends EmailDataBase {}
 export interface PasswordResetEmailData extends EmailDataBase { resetUrl: string; }
 export interface PasswordResetConfirmationEmailData extends EmailDataBase {}
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: config.email.user,
-    pass: config.email.appPassword,
-  },
+// Brevo HTTP API (works on Render — no SMTP ports needed)
+const brevo = new BrevoClient({ apiKey: config.sendgrid.apiKey });
+
+// Nodemailer SMTP fallback (local dev only)
+const smtpTransporter = nodemailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 587,
+  secure: false,
+  auth: { user: config.email.user, pass: config.email.appPassword },
 });
+
+async function sendEmail(to: string, subject: string, html: string, attachments?: any[]): Promise<void> {
+  const senderEmail = config.sendgrid.senderEmail || config.email.user;
+  const senderName = config.sendgrid.senderName || 'eventbase';
+
+  if (config.sendgrid.apiKey) {
+    // Use Brevo HTTP API — not blocked by Render
+    let htmlContent = html;
+    const brevoAttachments: any[] = [];
+
+    if (attachments?.length) {
+      // Brevo doesn't support CID inline; embed as base64 data URL directly in HTML
+      htmlContent = html.replace('cid:qrcode@eventbase', `data:image/png;base64,${attachments[0].content.toString('base64')}`);
+    }
+
+    await brevo.transactionalEmails.sendTransacEmail({
+      sender: { name: senderName, email: senderEmail },
+      to: [{ email: to }],
+      subject,
+      htmlContent,
+      ...(brevoAttachments.length ? { attachment: brevoAttachments } : {}),
+    });
+  } else {
+    // Local dev fallback via Gmail SMTP
+    await smtpTransporter.sendMail({
+      from: `"${senderName}" <${senderEmail}>`,
+      to, subject, html, attachments,
+    });
+  }
+}
 
 const primaryColor = '#0ABAB5';
 const fontFamily = 'Arial, sans-serif';
@@ -52,17 +86,12 @@ function btn(url: string, label: string) {
 export class EmailService {
   static async sendWelcomeEmail(to: string, data: WelcomeEmailData): Promise<boolean> {
     try {
-      await transporter.sendMail({
-        from: `"eventbase" <${config.email.user}>`,
-        to,
-        subject: 'Welcome to eventbase 🎫',
-        html: `${header('Welcome to eventbase')}
+      await sendEmail(to, 'Welcome to eventbase 🎫', `${header('Welcome to eventbase')}
           <p>Hello ${data.recipientName},</p>
           <p>Welcome to eventbase! We're excited to have you on board.</p>
           ${btn(`${config.frontendUrl}/dashboard`, 'Go to Dashboard')}
           <p>The eventbase Team</p>
-          ${footer()}`,
-      });
+          ${footer()}`);
       console.log(`[Email] ✅ Welcome email sent to ${to}`);
       return true;
     } catch (error: any) {
@@ -73,18 +102,13 @@ export class EmailService {
 
   static async sendPasswordResetEmail(to: string, data: PasswordResetEmailData): Promise<boolean> {
     try {
-      await transporter.sendMail({
-        from: `"eventbase" <${config.email.user}>`,
-        to,
-        subject: 'Password Reset Request',
-        html: `${header('Password Reset Request')}
+      await sendEmail(to, 'Password Reset Request', `${header('Password Reset Request')}
           <p>Hello ${data.recipientName},</p>
           <p>You requested a password reset. This link expires in 1 hour.</p>
           ${btn(data.resetUrl, 'Reset Password')}
           <p>If you did not request this, please ignore this email.</p>
           <p>The eventbase Team</p>
-          ${footer()}`,
-      });
+          ${footer()}`);
       console.log(`[Email] ✅ Password reset email sent to ${to}`);
       return true;
     } catch (error: any) {
@@ -95,17 +119,12 @@ export class EmailService {
 
   static async sendPasswordResetConfirmationEmail(to: string, data: PasswordResetConfirmationEmailData): Promise<boolean> {
     try {
-      await transporter.sendMail({
-        from: `"eventbase" <${config.email.user}>`,
-        to,
-        subject: 'Password Reset Successful',
-        html: `${header('Password Reset Successful')}
+      await sendEmail(to, 'Password Reset Successful', `${header('Password Reset Successful')}
           <p>Hello ${data.recipientName},</p>
           <p>Your password has been successfully reset.</p>
           <p>If you did not make this change, contact support immediately.</p>
           <p>The eventbase Team</p>
-          ${footer()}`,
-      });
+          ${footer()}`);
       console.log(`[Email] ✅ Password reset confirmation sent to ${to}`);
       return true;
     } catch (error: any) {
@@ -116,11 +135,18 @@ export class EmailService {
 
   static async sendEventRegistrationEmail(to: string, data: EventRegistrationEmailData): Promise<boolean> {
     try {
-      await transporter.sendMail({
-        from: `"eventbase" <${config.email.user}>`,
+      const isDataUrl = data.qrCodeUrl.startsWith('data:');
+      const attachments = isDataUrl ? [{
+        filename: 'qrcode.png',
+        content: Buffer.from(data.qrCodeUrl.split(',')[1], 'base64'),
+        cid: 'qrcode@eventbase',
+      }] : [];
+      const qrImgSrc = isDataUrl ? 'cid:qrcode@eventbase' : data.qrCodeUrl;
+
+      await sendEmail(
         to,
-        subject: `Registration Confirmed: ${data.eventName}`,
-        html: `${header('Event Registration Confirmed')}
+        `Registration Confirmed: ${data.eventName}`,
+        `${header('Event Registration Confirmed')}
           <p>Hello ${data.recipientName},</p>
           <p>Your registration for <strong>${data.eventName}</strong> is confirmed.</p>
           <div style="margin:16px 0;padding:14px;border:1px solid #ddd;border-radius:6px;background:#fff;">
@@ -130,12 +156,13 @@ export class EmailService {
           </div>
           <p>Present the QR code below at check-in:</p>
           <div style="text-align:center;margin:20px 0;">
-            <img src="${data.qrCodeUrl}" alt="QR Code" style="max-width:220px;">
+            <img src="${qrImgSrc}" alt="QR Code" style="max-width:220px;">
           </div>
           ${btn(`${config.frontendUrl}/events`, 'View Your Events')}
           <p>The eventbase Team</p>
           ${footer()}`,
-      });
+        attachments,
+      );
       console.log(`[Email] ✅ Event registration email sent to ${to} for "${data.eventName}"`);
       return true;
     } catch (error: any) {

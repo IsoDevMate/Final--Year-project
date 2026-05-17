@@ -41,6 +41,11 @@ frontendUrl: process.env.FRONTEND_URL,
     user: process.env.EMAIL_USER || '',
     appPassword: process.env.EMAIL_APP_PASSWORD || '',
   },
+  sendgrid: {
+    apiKey: process.env.SENDGRID_API_KEY || '',
+    senderEmail: process.env.SENDGRID_SENDER_EMAIL || process.env.EMAIL_USER || '',
+    senderName: process.env.SENDGRID_SENDER_NAME || 'eventbase',
+  },
 };
 
 export default config;

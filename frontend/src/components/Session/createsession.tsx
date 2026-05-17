@@ -170,6 +170,10 @@ const CreateSessionPage: React.FC = () => {
       newErrors.capacity = 'Capacity must be a positive number';
     }
 
+    if (formData.speaker?.name && !/^[A-Za-z\s'\-]+$/.test(formData.speaker.name)) {
+      newErrors.speakerName = 'Speaker name must contain letters only';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -179,19 +183,18 @@ const CreateSessionPage: React.FC = () => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: name === 'capacity' ? (value === '' ? undefined : parseInt(value, 10)) : value
     }));
   };
 
   // Handle speaker input changes
   const handleSpeakerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    // Speaker name: letters, spaces, hyphens, apostrophes only
+    if (name === 'name' && value && !/^[A-Za-z\s'\-]*$/.test(value)) return;
     setFormData(prev => ({
       ...prev,
-      speaker: {
-        ...prev.speaker,
-        [name]: value || ''
-      }
+      speaker: { ...prev.speaker, [name]: value || '' }
     }));
   };
 
@@ -262,9 +265,14 @@ const CreateSessionPage: React.FC = () => {
     }
 
     // Prepare data for submission
-    const submissionData = {
+    const submissionData: any = {
       ...formData,
-
+      // Ensure capacity is a number or omitted
+      capacity: formData.capacity ? Number(formData.capacity) : undefined,
+      // Only include speaker if name is filled
+      speaker: formData.speaker?.name?.trim()
+        ? { ...formData.speaker, userId: currentUserId }
+        : undefined,
       materials: formData.materials?.map(material => ({
         type: material.type,
         title: material.title,
@@ -471,6 +479,7 @@ const CreateSessionPage: React.FC = () => {
               onChange={handleSpeakerChange}
               className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm py-2 px-3"
             />
+            {errors.speakerName && <p className="text-red-500 text-xs mt-1">{errors.speakerName}</p>}
           </div>
           <div>
             <label htmlFor="speakerTitle" className="block text-sm font-medium text-gray-700">

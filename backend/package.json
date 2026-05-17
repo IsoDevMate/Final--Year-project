@@ -21,6 +21,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@getbrevo/brevo": "^5.0.4",
     "@google-cloud/storage": "^7.15.2",
     "@sendgrid/mail": "^8.1.4",
     "axios": "^1.6.2",

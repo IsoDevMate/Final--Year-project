@@ -44,23 +44,21 @@ export class QRCodeService {
    */
   async generateQRCode(token: string): Promise<string> {
     try {
-
-      // Generate QR code as buffer
-      const qrCodeBuffer = await QRCode.toBuffer(token);
-
-      // Create a unique filename
-      const fileName = `qrcode-${Date.now()}.png`;
-
-      // Upload to Firebase Storage using your existing StorageService
-      const uploadResult = await this.storageService.uploadFile(
-        qrCodeBuffer,
-        fileName,
-        'system',
-        'image'
-      );
-
-      // Return the public URL
-      return uploadResult.url;
+      // Try Firebase Storage first; fall back to base64 data URL if unavailable
+      try {
+        const qrCodeBuffer = await QRCode.toBuffer(token);
+        const fileName = `qrcode-${Date.now()}.png`;
+        const uploadResult = await this.storageService.uploadFile(
+          qrCodeBuffer,
+          fileName,
+          'system',
+          'image'
+        );
+        return uploadResult.url;
+      } catch {
+        // Firebase unavailable — return inline data URL (works in email <img> tags)
+        return await QRCode.toDataURL(token);
+      }
     } catch (error) {
       if (error instanceof Error) {
         throw new AppError(`Error generating QR code: ${error.message}`, 500);
