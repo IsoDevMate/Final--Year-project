@@ -207,13 +207,6 @@ const handleUnregister = async (eventId: string) => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">My Registered Events</h1>
-        <Link
-          to="/dashboard/events"
-          className="flex items-center text-tiffany-600 hover:text-tiffany-800"
-        >
-          <Calendar className="h-5 w-5 mr-2" />
-          Browse Events
-        </Link>
       </div>
 
       {/* Registered Events */}

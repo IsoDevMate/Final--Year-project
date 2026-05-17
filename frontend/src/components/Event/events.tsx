@@ -122,7 +122,7 @@ const EventsPage = () => {
   // Set user ID when user data is available
   useEffect(() => {
     if (user) {
-      setUserId(user.id);
+      setUserId(user.id || user.userId);
     }
   }, [user]);
 

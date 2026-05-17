@@ -84,6 +84,8 @@ const CreateSessionPage: React.FC = () => {
     const cancreatesession = user &&
     (user.role === 'organizer' || user.role === 'admin');
 
+  const currentUserId = user?.id || user?.userId;
+
 
   // Form state
   const [formData, setFormData] = useState<CreateSessionForm>({
@@ -248,6 +250,17 @@ const CreateSessionPage: React.FC = () => {
 
     if (!validateForm()) return;
 
+    // Verify the user is the organizer of the selected event
+    const selectedEventData = events.find(ev => ev._id === selectedEvent);
+    const isOwner = selectedEventData && (
+      selectedEventData.organizer === currentUserId ||
+      (typeof selectedEventData.organizer === 'object' && selectedEventData.organizer?._id === currentUserId)
+    );
+    if (!isOwner) {
+      toast.error('You can only create sessions for events you organize.');
+      return;
+    }
+
     // Prepare data for submission
     const submissionData = {
       ...formData,
@@ -262,7 +275,10 @@ const CreateSessionPage: React.FC = () => {
     };
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/v1/sessions/create`, submissionData);
+      const token = localStorage.getItem('accessToken');
+      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/v1/sessions/create`, submissionData, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
 
       if (response.data.success) {
         navigate(`/dashboard/events/${selectedEvent}/sessions`);
@@ -325,11 +341,16 @@ const CreateSessionPage: React.FC = () => {
             className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm py-2 px-3"
           >
             <option value="">Select an Event</option>
-            {events.map(event => (
-              <option key={event._id} value={event._id}>
-                {event.title}
-              </option>
-            ))}
+            {events
+              .filter(event =>
+                event.organizer === currentUserId ||
+                (typeof event.organizer === 'object' && event.organizer?._id === currentUserId)
+              )
+              .map(event => (
+                <option key={event._id} value={event._id}>
+                  {event.title}
+                </option>
+              ))}
           </select>
               </div>
 
