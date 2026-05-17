@@ -66,9 +66,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      const userData = response.data.data || response.data.user || response.data;
+      const raw = response.data.data || response.data.user || response.data;
 
-      if (userData) {
+      if (raw) {
+        const userData = { ...raw, id: raw.id || raw.userId || raw._id?.toString() };
         localStorage.setItem('user', JSON.stringify(userData));
         setUser(userData);
       } else {
@@ -101,7 +102,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       password
     });
 
-    const { tokens, user } = response.data.data;
+    const { tokens, user: rawUser } = response.data.data;
+    const user = { ...rawUser, id: rawUser.id || rawUser.userId || rawUser._id?.toString() };
 
     localStorage.setItem('accessToken', tokens.accessToken);
     localStorage.setItem('refreshToken', tokens.refreshToken);
