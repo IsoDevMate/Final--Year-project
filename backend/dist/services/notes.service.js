@@ -69,7 +69,7 @@ class NoteService {
     getNotes(queryParams, userId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { page = 1, limit = 10, eventId, sessionId, searchTerm, tags, isPublic } = queryParams;
+                const { page = 1, limit = 10, eventId, sessionId, searchTerm, tags, isPrivate } = queryParams;
                 const skip = (page - 1) * limit;
                 // Build query filters
                 const filter = {};
@@ -85,8 +85,8 @@ class NoteService {
                     filter.sessionId = new mongoose_1.Types.ObjectId(sessionId);
                 if (tags && tags.length > 0)
                     filter.tags = { $in: tags };
-                if (isPublic !== undefined)
-                    filter.isPrivate = !isPublic;
+                if (isPrivate !== undefined)
+                    filter.isPrivate = isPrivate;
                 // Text search if searchTerm is provided
                 if (searchTerm) {
                     filter.$text = { $search: searchTerm };

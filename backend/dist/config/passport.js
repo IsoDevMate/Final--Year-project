@@ -22,7 +22,7 @@ const setupPassport = () => {
     passport_1.default.use(new passport_linkedin_oauth2_1.Strategy({
         clientID: config_1.default.linkedin.clientId || '',
         clientSecret: config_1.default.linkedin.clientSecret || '',
-        callbackURL: 'https://final-year-project-5d85.onrender.com/api/v1/auth/linkedin/callback',
+        callbackURL: 'https://final-year-project-jy2j.onrender.com/api/v1/auth/linkedin/callback',
         scope: ['openid profile email  w_member_social']
     }, (accessToken, refreshToken, profile, done) => __awaiter(void 0, void 0, void 0, function* () {
         var _a, _b, _c, _d, _e;

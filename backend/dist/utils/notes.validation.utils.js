@@ -54,8 +54,8 @@ exports.noteQuerySchema = zod_1.z.object({
         message: 'Invalid session ID format'
     }).optional(),
     searchTerm: zod_1.z.string().optional(),
-    tags: zod_1.z.array(zod_1.z.string()).optional(),
-    isPrivate: zod_1.z.boolean().optional(),
+    tags: zod_1.z.union([zod_1.z.array(zod_1.z.string()), zod_1.z.string().transform(s => [s])]).optional(),
+    isPrivate: zod_1.z.union([zod_1.z.boolean(), zod_1.z.string().transform(s => s === 'true')]).optional(),
 });
 // Media attachment validation schema
 exports.mediaAttachmentUploadSchema = zod_1.z.object({

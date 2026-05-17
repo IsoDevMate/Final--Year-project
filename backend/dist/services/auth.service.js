@@ -172,6 +172,10 @@ class AuthService {
                 if (!isPasswordValid) {
                     throw new errors_utils_1.AppError('Invalid email or password', 401);
                 }
+                // Check if account is deactivated
+                if (user.isActive === false) {
+                    throw new errors_utils_1.AppError('Your account has been deactivated. Please contact support or reactivate your account.', 403);
+                }
                 const tokens = yield this.generateTokens(user);
                 // Remove password from response
                 const userObject = user.toObject();

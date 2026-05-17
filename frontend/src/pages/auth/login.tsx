@@ -53,7 +53,9 @@ const onSubmit = async (data: LoginFormData) => {
     navigate('/dashboard');
   } catch (error: unknown) {
     console.error('Login error:', error);
-    if (axios.isAxiosError(error) && error.response?.data?.error) {
+    if (error instanceof Error && error.message) {
+      toast.error(error.message);
+    } else if (axios.isAxiosError(error) && error.response?.data?.error) {
       toast.error(error.response.data.error);
     } else {
       toast.error('Login failed. Please try again.');

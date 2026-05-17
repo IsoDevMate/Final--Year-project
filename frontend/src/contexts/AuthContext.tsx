@@ -101,21 +101,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       password
     });
 
-    // Extract data based on the actual response structure
     const { tokens, user } = response.data.data;
 
-      console.log('Full user object from server:', user);
-
-
-    // Store tokens and user
     localStorage.setItem('accessToken', tokens.accessToken);
     localStorage.setItem('refreshToken', tokens.refreshToken);
     localStorage.setItem('user', JSON.stringify(user));
-
-    // Update state
     setUser(user);
-  } catch (error) {
-    console.error('Login failed:', error);
+  } catch (error: any) {
+    // Surface deactivated account message clearly
+    const msg = error?.response?.data?.message || error?.response?.data?.error;
+    if (msg) throw new Error(msg);
     throw error;
   }
 };

@@ -80,7 +80,7 @@ class MPaymentService {
                     throw new errors_utils_1.AppError(`Payment amount doesn't match event ticket price. Expected: ${ticketPrice}`, 400);
                 }
                 // Generate a unique callbackUrl with event and user IDs
-                const callbackUrl = `${process.env.APP_URL || 'https://final-year-project-3qr3.onrender.com'}/api/v1/mpesa/callback/${paymentData.eventId}/${paymentData.userId}`;
+                const callbackUrl = `${process.env.APP_URL || 'https://final-year-project-jy2j.onrender.com'}/api/v1/mpesa/callback/${paymentData.eventId}/${paymentData.userId}`;
                 // Initiate STK push
                 const stkPushResponse = yield this.mpesaService.initiateSTKPush({
                     phoneNumber: paymentData.phoneNumber,
