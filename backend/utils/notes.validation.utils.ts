@@ -58,8 +58,8 @@ export const noteQuerySchema = z.object({
     message: 'Invalid session ID format'
   }).optional(),
   searchTerm: z.string().optional(),
-  tags: z.array(z.string()).optional(),
-  isPrivate: z.boolean().optional(),
+  tags: z.union([z.array(z.string()), z.string().transform(s => [s])]).optional(),
+  isPrivate: z.union([z.boolean(), z.string().transform(s => s === 'true')]).optional(),
 });
 
 // Media attachment validation schema
