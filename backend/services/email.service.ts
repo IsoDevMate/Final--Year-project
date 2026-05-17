@@ -34,29 +34,26 @@ async function sendEmail(to: string, subject: string, html: string, attachments?
   const senderEmail = config.sendgrid.senderEmail || config.email.user;
   const senderName = config.sendgrid.senderName || 'eventbase';
 
-  if (config.sendgrid.apiKey) {
-    // Use Brevo HTTP API — not blocked by Render
+  if (config.email.user && config.email.appPassword) {
+    // Primary: Gmail SMTP (works locally and on paid Render plans)
+    await smtpTransporter.sendMail({
+      from: `"${senderName}" <${config.email.user}>`,
+      to, subject, html, attachments,
+    });
+  } else if (config.sendgrid.apiKey) {
+    // Fallback: Brevo HTTP API (use when SMTP is blocked e.g. Render free tier)
     let htmlContent = html;
-    const brevoAttachments: any[] = [];
-
     if (attachments?.length) {
-      // Brevo doesn't support CID inline; embed as base64 data URL directly in HTML
       htmlContent = html.replace('cid:qrcode@eventbase', `data:image/png;base64,${attachments[0].content.toString('base64')}`);
     }
-
     await brevo.transactionalEmails.sendTransacEmail({
       sender: { name: senderName, email: senderEmail },
       to: [{ email: to }],
       subject,
       htmlContent,
-      ...(brevoAttachments.length ? { attachment: brevoAttachments } : {}),
     });
   } else {
-    // Local dev fallback via Gmail SMTP
-    await smtpTransporter.sendMail({
-      from: `"${senderName}" <${senderEmail}>`,
-      to, subject, html, attachments,
-    });
+    throw new Error('No email provider configured');
   }
 }
 
