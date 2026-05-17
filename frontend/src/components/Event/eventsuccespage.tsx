@@ -514,66 +514,7 @@ const RegistrationSuccessPage = () => {
         if (eventResponse.data.success) {
           const fetchedEvent = eventResponse.data.data;
           setEvent(fetchedEvent);
-
-          // Enhanced logging for registration process
-          const isRegistered = Array.isArray(fetchedEvent.attendees) &&
-            fetchedEvent.attendees.some((attendee: { _id: string } | string) => {
-              // Convert to string, handle different input types
-              const attendeeId = typeof attendee === 'string'
-                ? attendee
-                : (attendee._id || attendee.toString());
-
-              console.group('🔍 Registration Check');
-              console.log('Attendee ID:', attendeeId);
-              console.log('User ID:', user.id);
-              console.log('Attendee Type:', typeof attendee);
-              console.log('Exact Match:', attendeeId === user.id);
-              console.log('Attendees Array:', fetchedEvent.attendees);
-              console.groupEnd();
-
-              // FIX: Use user.id consistently instead of user.userId
-              return attendeeId === user.id;
-            });
-
-          console.group('📋 Registration Result');
-          console.log('Is Registered:', isRegistered);
-          console.log('Attendees Type:', typeof fetchedEvent.attendees);
-          console.log('Attendees Length:', Array.isArray(fetchedEvent.attendees) ? fetchedEvent.attendees.length : 0);
-          console.groupEnd();
-
-          // Only check registration if we came directly from a successful registration flow
-          // If registrationSuccess is true in the state, we know we just registered
-          // If it's not, we're probably just viewing an event we already registered for
-          if (registrationState?.registrationSuccess && !isRegistered) {
-            console.error('User is not registered for this event', {
-              eventId,
-              userId: user.id,
-              attendees: fetchedEvent.attendees
-            });
-            toast.error('You are not registered for this event');
-            navigate('/dashboard/events');
-            return;
-          }
-
-          // Fetch QR code (optional)
-          // try {
-          //   const qrResponse = await axios.get(
-          //     `${import.meta.env.VITE_API_BASE_URL}/api/v1/events/${eventId}/qrcode`,
-          //     {
-          //       headers: {
-          //         Authorization: `Bearer ${token}`
-          //       }
-          //     }
-          //   );
-
-          //   console.log('QR Code Response:', qrResponse.data);
-
-          //   if (qrResponse.data.success && qrResponse.data.data.qrCodeUrl) {
-          //     setQrCodeUrl(qrResponse.data.data.qrCodeUrl);
-          //   }
-          // } catch (qrError) {
-          //   console.error("Failed to fetch QR code:", qrError);
-          // }
+          // Registration was confirmed by the navigate() call in eventsdetails — no need to re-verify here
         } else {
           console.log('Failed to load event details');
           setError('Failed to load event details');

@@ -55,7 +55,7 @@ export class NoteService {
         sessionId,
         searchTerm,
         tags,
-        isPublic
+        isPrivate
       } = queryParams;
 
       const skip = (page - 1) * limit;
@@ -73,7 +73,7 @@ export class NoteService {
       if (eventId) filter.event = new Types.ObjectId(eventId);
       if (sessionId) filter.sessionId = new Types.ObjectId(sessionId);
       if (tags && tags.length > 0) filter.tags = { $in: tags };
-      if (isPublic !== undefined) filter.isPrivate = !isPublic;
+      if (isPrivate !== undefined) filter.isPrivate = isPrivate;
 
       // Text search if searchTerm is provided
       if (searchTerm) {

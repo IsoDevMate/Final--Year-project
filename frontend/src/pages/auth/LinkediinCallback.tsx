@@ -1,8 +1,7 @@
-﻿import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '../../contexts/AuthContext';
-import axios from 'axios';
 
 const LinkedInCallback: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -13,7 +12,7 @@ const LinkedInCallback: React.FC = () => {
 useEffect(() => {
   const accessToken = searchParams.get('accessToken');
   const refreshToken = searchParams.get('refreshToken');
-
+  const linkedinConnected = searchParams.get('linkedinConnected');
   const error = searchParams.get('error');
 
   const handleAuthentication = async () => {
@@ -23,41 +22,34 @@ useEffect(() => {
       return;
     }
 
-    if (!accessToken || !refreshToken) {
+    if (!accessToken) {
       toast.error('Invalid authentication response');
       navigate('/auth/login');
       return;
     }
 
     try {
-      // Store tokens in localStorage
-      localStorage.setItem('accessToken', accessToken);
-      localStorage.setItem('refreshToken', refreshToken);
+      // Check if this was a "link" flow — the token is the user's existing token
+      const currentToken = localStorage.getItem('accessToken');
+      const isLinkFlow = linkedinConnected === 'true' && currentToken && accessToken === currentToken;
 
-      try {
-        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/v1/auth/me`, {
-          headers: { Authorization: `Bearer ${accessToken}` }
-        });
-
-        if (response.data && response.data.data) {
-          localStorage.setItem('user', JSON.stringify(response.data.data));
-        } else {
-          throw new Error('Invalid user data format');
-        }
-      } catch (fetchError) {
-        console.error('Error fetching user data:', fetchError);
-        toast.error('Error loading user profile');
-        navigate('/auth/login');
+      if (isLinkFlow) {
+        // Just refresh auth status to pick up the new LinkedIn connection
+        await checkAuthStatus();
+        toast.success('LinkedIn account connected successfully!');
+        navigate('/dashboard/notes');
         return;
       }
 
-      // Update auth context
-      await checkAuthStatus();
+      // Login/register flow — store new tokens
+      localStorage.setItem('accessToken', accessToken);
+      if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
 
+      await checkAuthStatus();
       toast.success('LinkedIn sign-in successful!');
       navigate('/dashboard');
-    } catch (error) {
-      console.error('Error processing LinkedIn callback:', error);
+    } catch (err) {
+      console.error('Error processing LinkedIn callback:', err);
       toast.error('Authentication error');
       navigate('/auth/login');
     } finally {
@@ -65,8 +57,7 @@ useEffect(() => {
     }
   };
 
-  // Reduced delay to improve user experience
-  const delay = setTimeout(handleAuthentication, 500);
+  const delay = setTimeout(handleAuthentication, 300);
   return () => clearTimeout(delay);
 }, [searchParams, navigate, checkAuthStatus]);
 

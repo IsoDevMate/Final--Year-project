@@ -32,5 +32,5 @@ export interface NoteQueryDto {
   sessionId?: string;
   searchTerm?: string;
   tags?: string[];
-  isPublic?: boolean;
+  isPrivate?: boolean;
 }

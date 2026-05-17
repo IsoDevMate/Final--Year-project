@@ -17,25 +17,18 @@ export class LinkedInController {
 
 
 static getAuthUrl(req: Request, res: Response) {
-  const state = crypto.randomBytes(16).toString('hex');
+  // If user is already logged in (token in header), embed it in state so callback can link instead of create
+  const existingToken = req.headers.authorization?.split(' ')[1] || '';
+  const statePayload = existingToken
+    ? Buffer.from(JSON.stringify({ token: existingToken, nonce: Math.random().toString(36) })).toString('base64url')
+    : crypto.randomBytes(16).toString('hex');
+
   const scope = ['openid', 'profile', 'email', 'w_member_social'];
-  const responseType = 'code';
-  const redirectUri = 'https://final-year-project-5d85.onrender.com/api/v1/auth/linkedin/callback';
   const clientId = config.linkedin.clientId;
-
-  console.log('LinkedIn auth URL generation:', {
-    responseType,
-    clientId,
-    redirectUri,
-    state,
-    scope
-  });
-
-  // Generate the LinkedIn authentication URL
-  // const authUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=${responseType}&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&state=${state}&scope=${scope.join(' ')}`;
+  const redirectUri = 'https://final-year-project-5d85.onrender.com/api/v1/auth/linkedin/callback';
 
   return ResponseUtil.success(res, 200, {
-    url: `https://www.linkedin.com/oauth/v2/authorization?response_type=${responseType}&client_id=${clientId}&redirect_uri=https://final-year-project-5d85.onrender.com/api/v1/auth/linkedin/callback&state=${state}&scope=openid%20profile%20email%20w_member_social`
+    url: `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&state=${statePayload}&scope=openid%20profile%20email%20w_member_social`
   }, 'LinkedIn authentication URL generated successfully');
 }
 
@@ -46,36 +39,74 @@ static getAuthUrl(req: Request, res: Response) {
 static async handleCallback(req: Request, res: Response, next: NextFunction) {
   const { code, state } = req.query;
   try {
-    console.log('LinkedIn callback received:', req.query);
-
     if (!code) {
       return ResponseUtil.error(res, 400, 'Authorization code not provided');
     }
 
+    // Decode state to check if this is a "link" flow (logged-in user connecting LinkedIn)
+    let existingUserToken: string | null = null;
+    if (state && typeof state === 'string') {
+      try {
+        const decoded = JSON.parse(Buffer.from(state, 'base64url').toString());
+        if (decoded.token) existingUserToken = decoded.token;
+      } catch { /* plain state string — login flow */ }
+    }
 
+    if (existingUserToken) {
+      // LINK FLOW: attach LinkedIn to the already-logged-in user
+      const jwt = await import('jsonwebtoken');
+      const config2 = (await import('../config/config')).default;
+      let payload: any;
+      try {
+        payload = jwt.default.verify(existingUserToken, config2.jwt.accessTokenSecret as string);
+      } catch {
+        const loginUrl = new URL(`${config.frontendUrl}/auth/login`);
+        loginUrl.searchParams.append('error', 'Session expired. Please log in again.');
+        return res.redirect(loginUrl.toString());
+      }
 
+      const tokenResponse = await LinkedInService.getAccessTokenInitial(code.toString());
+      const profile = await LinkedInService.getUserProfile(tokenResponse.access_token);
+
+      // Check if this LinkedIn account is already linked to a DIFFERENT user
+      const existingLinkedUser = await User.findOne({ 'socialLinks.linkedinId': profile.sub });
+      if (existingLinkedUser && (existingLinkedUser._id as any).toString() !== payload.userId) {
+        const callbackUrl = new URL(`${config.frontendUrl}/auth/linkedin/callback`);
+        callbackUrl.searchParams.append('error', 'This LinkedIn account is already linked to another user.');
+        return res.redirect(callbackUrl.toString());
+      }
+
+      // Link LinkedIn to the existing user
+      await User.findByIdAndUpdate(payload.userId, {
+        'socialLinks.linkedinId': profile.sub,
+        'socialLinks.linkedinAccessToken': tokenResponse.access_token,
+        ...(tokenResponse.refresh_token && { 'socialLinks.linkedinRefreshToken': tokenResponse.refresh_token }),
+        'socialLinks.linkedinTokenExpiry': new Date(Date.now() + 60 * 24 * 60 * 60 * 1000)
+      });
+
+      // Redirect back with the SAME token (user stays logged in as themselves)
+      const callbackUrl = new URL(`${config.frontendUrl}/auth/linkedin/callback`);
+      callbackUrl.searchParams.append('accessToken', existingUserToken);
+      callbackUrl.searchParams.append('refreshToken', req.body?.refreshToken || '');
+      callbackUrl.searchParams.append('linkedinConnected', 'true');
+      return res.redirect(callbackUrl.toString());
+    }
+
+    // LOGIN/REGISTER FLOW: normal find-or-create
     const result = await LinkedInService.authenticate(code.toString());
-
-    // Build the redirect URL with properly encoded parameters
     const redirectUrl = new URL(`${config.frontendUrl}/auth/linkedin/callback`);
     redirectUrl.searchParams.append('accessToken', result.tokens.accessToken);
     redirectUrl.searchParams.append('refreshToken', result.tokens.refreshToken);
     redirectUrl.searchParams.append('linkedinConnected', 'true');
-
-    // Add user data to the redirect URL
     redirectUrl.searchParams.append('user', JSON.stringify(result.user));
-
-    console.log('Redirect URL:', redirectUrl.toString());
-    res.redirect(redirectUrl.toString());
+    return res.redirect(redirectUrl.toString());
   } catch (error) {
     console.error('LinkedIn callback error:', error);
-
-    // Redirect to login page with error message
     const loginUrl = new URL(`${config.frontendUrl}/auth/login`);
     loginUrl.searchParams.append('error', 'LinkedIn authentication failed');
-    res.redirect(loginUrl.toString());
+    return res.redirect(loginUrl.toString());
   }
-  }
+}
 
  /**
    * Disconnect LinkedIn account
