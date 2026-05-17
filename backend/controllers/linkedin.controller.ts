@@ -23,7 +23,7 @@ static getAuthUrl(req: Request, res: Response) {
     : crypto.randomBytes(16).toString('hex');
 
   const clientId = config.linkedin.clientId;
-  const redirectUri = config.linkedin.callbackUrl;
+  const redirectUri = 'https://final-year-project-jy2j.onrender.com/api/v1/auth/linkedin/callback';
 
   return ResponseUtil.success(res, 200, {
     url: `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&state=${statePayload}&scope=openid%20profile%20email%20w_member_social`

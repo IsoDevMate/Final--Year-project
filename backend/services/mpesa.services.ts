@@ -92,7 +92,7 @@ export class MPaymentService {
       }
 
       // Generate a unique callbackUrl with event and user IDs
-      const callbackUrl = `${process.env.APP_URL || 'https://final-year-project-3qr3.onrender.com'}/api/v1/mpesa/callback/${paymentData.eventId}/${paymentData.userId}`;
+      const callbackUrl = `${process.env.APP_URL || 'https://final-year-project-jy2j.onrender.com'}/api/v1/mpesa/callback/${paymentData.eventId}/${paymentData.userId}`;
 
       // Initiate STK push
       const stkPushResponse = await this.mpesaService.initiateSTKPush({
