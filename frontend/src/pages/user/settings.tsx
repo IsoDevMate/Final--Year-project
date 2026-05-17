@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Bell, Shield, Mail, CreditCard, Globe, Key, Lock, ExternalLink, Zap, X, Eye, EyeOff, Monitor, Smartphone, LogOut } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Shield, Mail, CreditCard, Key, Lock, Zap, X, Eye, EyeOff, Monitor, Smartphone, LogOut } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 
 const API = `${import.meta.env.VITE_API_BASE_URL}/api/v1`;
 const authHeaders = () => ({ Authorization: `Bearer ${localStorage.getItem('accessToken')}` });
 
-type TabType = 'account' | 'security' | 'notifications' | 'billing' | 'integrations';
+type TabType = 'account' | 'security' | 'billing';
 
 interface NotificationSettings {
   events: boolean;
@@ -24,9 +24,7 @@ const SettingsPage: React.FC = () => {
     switch (activeTab) {
       case 'account': return <AccountSettings navigate={navigate} />;
       case 'security': return <SecuritySettings />;
-      case 'notifications': return <NotificationSettingsTab />;
       case 'billing': return <BillingSettings />;
-      case 'integrations': return <IntegrationsSettings />;
       default: return <AccountSettings navigate={navigate} />;
     }
   };
@@ -42,9 +40,7 @@ const SettingsPage: React.FC = () => {
               {([
                 { key: 'account', icon: <Mail className="mr-3 h-5 w-5" />, label: 'Account' },
                 { key: 'security', icon: <Shield className="mr-3 h-5 w-5" />, label: 'Security' },
-                { key: 'notifications', icon: <Bell className="mr-3 h-5 w-5" />, label: 'Notifications' },
                 { key: 'billing', icon: <CreditCard className="mr-3 h-5 w-5" />, label: 'Billing' },
-                { key: 'integrations', icon: <Globe className="mr-3 h-5 w-5" />, label: 'Integrations' },
               ] as const).map(({ key, icon, label }) => (
                 <button key={key} onClick={() => setActiveTab(key)}
                   className={`flex items-center px-3 py-2 text-sm font-medium rounded-md w-full text-left ${
@@ -390,11 +386,11 @@ const BillingSettings: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-sm font-medium text-gray-900">Payment Info</h3>
-              <p className="text-sm text-gray-500">Check your payment method for billing</p>
+              <p className="text-sm text-gray-500">M-Pesa payments are processed via Safaricom STK Push</p>
             </div>
-            <Link to="/dashboard/payments" className="text-sm text-tiffany-600 hover:text-tiffany-500 flex items-center">
-              <CreditCard className="mr-1 h-4 w-4" /> Check
-            </Link>
+            <span className="text-sm text-tiffany-600 flex items-center">
+              <CreditCard className="mr-1 h-4 w-4" /> M-Pesa
+            </span>
           </div>
         </div>
 
